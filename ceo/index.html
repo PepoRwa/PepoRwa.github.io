@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>GRX COMMAND | Haut Commandement GOWRAX</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    <style>
+        :root { --abyss: #0B0C15; --void: #1A1C2E; --magenta: #D62F7F; --gold: #D4AF37; }
+        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; cursor: none; -webkit-font-smoothing: antialiased; }
+        
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .accent-font { font-family: 'Rock Salt', cursive; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+
+        .ceo-card { background: rgba(26, 28, 46, 0.4); border: 1px solid rgba(212, 175, 55, 0.1); backdrop-blur: 10px; transition: 0.4s; }
+        .ceo-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
+
+        /* Skill Bars */
+        .skill-bar-bg { background: rgba(255,255,255,0.05); height: 4px; width: 100%; margin-top: 4px; }
+        .skill-bar-fill { background: var(--gold); height: 100%; box-shadow: 0 0 10px var(--gold); }
+
+        .gold-gradient { background: linear-gradient(to right, var(--gold), #f3e5ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        
+        #custom-cursor { width: 24px; height: 24px; border: 1px solid var(--gold); position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--gold); }
+    </style>
+</head>
+<body class="bg-[#020205]">
+
+    <div id="custom-cursor"></div>
+    <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
+
+    <div class="relative z-10 p-6 md:p-12 max-w-7xl mx-auto">
+        
+        <header class="mb-20 border-b border-gold/20 pb-10 flex flex-col md:flex-row justify-between items-start md:items-end">
+            <div>
+                <span class="tech-font text-gold text-[10px] tracking-[0.6em] mb-2 block">NIVEAU_ALPHA // DOSSIER_FONDATION</span>
+                <h1 class="title-font text-6xl font-bold uppercase gold-gradient italic">Haut_Commandement</h1>
+            </div>
+            <a href="/" class="tech-font text-[10px] text-gray-500 hover:text-gold transition uppercase tracking-widest mt-4 md:mt-0 underline">Accès_Terminal_Principal</a>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
+            
+            <article class="ceo-card p-8 flex flex-col h-full">
+                <div class="mb-6">
+                    <span class="tech-font text-gold text-[9px] uppercase tracking-widest">Unité: L'Étincelle (CEO)</span>
+                    <h2 class="title-font text-4xl font-bold mt-1 uppercase">Ptitegow</h2>
+                </div>
+                
+                <div class="flex-grow space-y-4 text-sm text-gray-400 leading-relaxed">
+                    <p>Symbole de la <span class="text-white font-bold uppercase tracking-tighter">Détermination Absolue</span>. Après une pause, elle revient au sommet avec 2,2k followers, prouvant que tout est possible par la volonté.</p>
+                    <p class="accent-font text-gold text-[10px] -rotate-2">"C'est pas parce qu'on est p'tit qu'on doit se laisser faire."</p>
+                </div>
+
+                <div class="mt-8 space-y-4">
+                    <div>
+                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Influence_Sociale</span><span>95%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 95%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Résilience_Alpha</span><span>100%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 100%"></div></div>
+                    </div>
+                </div>
+                <span class="accent-font text-gold/40 text-xs mt-8 self-end">Ptitegow</span>
+            </article>
+
+            <article class="ceo-card p-8 flex flex-col h-full border-t-gold border-t-2">
+                <div class="mb-6">
+                    <span class="tech-font text-gold text-[9px] uppercase tracking-widest">Unité: L'Architecte (CTO)</span>
+                    <h2 class="title-font text-4xl font-bold mt-1 uppercase">Filouxx</h2>
+                </div>
+                
+                <div class="flex-grow space-y-4 text-sm text-gray-400 leading-relaxed">
+                    <p>Garant de la <span class="text-white font-bold uppercase tracking-tighter">Puissance de Feu</span>. Il définit l'arsenal technique et ne recrute que l'élite. Son objectif : porter chaque pôle au sommet.</p>
+                </div>
+
+                <div class="mt-8 space-y-4">
+                    <div>
+                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Expertise_Technique</span><span>100%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 100%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Recrutement_Elite</span><span>90%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 90%"></div></div>
+                    </div>
+                </div>
+                <span class="accent-font text-gold/40 text-xs mt-8 self-end">Filouxx</span>
+            </article>
+
+            <article class="ceo-card p-8 flex flex-col h-full">
+                <div class="mb-6">
+                    <span class="tech-font text-gold text-[9px] uppercase tracking-widest">Unité: Le Bâtisseur (COO)</span>
+                    <h2 class="title-font text-4xl font-bold mt-1 uppercase">Crazzynel</h2>
+                </div>
+                
+                <div class="flex-grow space-y-4 text-sm text-gray-400 leading-relaxed">
+                    <p>Le <span class="text-white font-bold uppercase tracking-tighter">Pivot Stratégique</span>. Il convertit la théorie académique en infrastructure réelle (Web, Admin, Discord) pour forger une base indestructible.</p>
+                    <p class="accent-font text-gold text-[10px] -rotate-2">"Ensemble, il y aura toujours une place pour briller."</p>
+                </div>
+
+                <div class="mt-8 space-y-4">
+                    <div>
+                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Infrasctructure_Core</span><span>100%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 100%"></div></div>
+                    </div>
+                    <div>
+                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Communication_Tactique</span><span>95%</span></div>
+                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 95%"></div></div>
+                    </div>
+                </div>
+                <span class="accent-font text-gold/40 text-xs mt-8 self-end">Crazzynel</span>
+            </article>
+
+        </div>
+
+        <section class="mt-32">
+            <h3 class="tech-font text-gold text-xs tracking-[1em] mb-12 text-center uppercase">// Chronologie_Genèse</h3>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 tech-font text-[10px]">
+                <div class="border-l border-gold/30 pl-4 py-2 hover:bg-gold/5 transition">
+                    <span class="text-gold">PHASE_01</span>
+                    <p class="text-white mt-1">L'ÉVEIL : Convergence des trois fondateurs et naissance du protocole GOWRAX.</p>
+                </div>
+                <div class="border-l border-gold/30 pl-4 py-2 hover:bg-gold/5 transition">
+                    <span class="text-gold">PHASE_02</span>
+                    <p class="text-white mt-1">L'INFRASTRUCTURE : Déploiement du terminal web et sécurisation du pôle recrutement.</p>
+                </div>
+                <div class="border-l border-gold/30 pl-4 py-2 hover:bg-gold/5 transition">
+                    <span class="text-gold">PHASE_03</span>
+                    <p class="text-white mt-1">L'EXPANSION : Activation des divisions Valorant, Fortnite et Rocket League.</p>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => { if (e.key === "F12" || ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'i' || e.key === 's'))) e.preventDefault(); });
+        
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+        const canvas = document.getElementById('starCanvas'); const ctx = canvas.getContext('2d');
+        let stars = [];
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<300; i++) stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5, op: Math.random(), speed: Math.random()*0.005});
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            stars.forEach(s => {
+                s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1;
+                ctx.fillStyle = `rgba(212, 175, 55, ${s.op * 0.3})`; ctx.fillRect(s.x, s.y, s.size, s.size);
+            });
+            requestAnimationFrame(animate);
+        }
+        initStars(); animate();
+    </script>
+</body>
+</html>

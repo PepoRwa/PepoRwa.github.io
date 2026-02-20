@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+# Lien vers le sitemap pour une indexation immédiate
+Sitemap: https://gowrax.me/sitemap.xml

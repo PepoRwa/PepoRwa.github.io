@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX ROSTER | Sélection de l'Unité</title>
+    
+    <meta name="description" content="Accédez aux divisions d'élite GOWRAX. Fortnite, Rocket League, Valorant. Choisissez votre protocole.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { --abyss: #0B0C15; --void: #1A1C2E; --purple: #6F2DBD; --magenta: #D62F7F; }
+        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; cursor: none; overflow: hidden; }
+        
+        .accent-font { font-family: 'Rock Salt', cursive; }
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+
+        /* Effet de scanline persistant */
+        .scanline { width: 100%; height: 100px; z-index: 40; pointer-events: none; background: linear-gradient(0deg, rgba(214, 47, 127, 0) 0%, rgba(214, 47, 127, 0.05) 50%, rgba(214, 47, 127, 0) 100%); position: absolute; top: -100px; animation: scan 4s linear infinite; }
+        @keyframes scan { 0% { top: -100px; } 100% { top: 100%; } }
+
+        #custom-cursor { width: 24px; height: 24px; border: 1px solid var(--magenta); position: fixed; pointer-events: none; z-index: 999; border-radius: 50%; transition: transform 0.05s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--magenta); }
+        
+        .game-card { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); filter: grayscale(1) brightness(0.5); border-left: 1px solid rgba(214, 47, 127, 0.2); }
+        .game-card:hover { filter: grayscale(0) brightness(1); border-left: 4px solid var(--magenta); background: rgba(111, 45, 189, 0.05); }
+    </style>
+</head>
+<body class="bg-[#050508]">
+
+    <div id="custom-cursor"></div>
+    <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
+    <div class="scanline"></div>
+
+    <div class="relative z-10 flex flex-col h-screen">
+        <header class="p-6 flex justify-between items-center border-b border-white/5 backdrop-blur-md">
+            <div class="title-font text-2xl text-magenta font-bold tracking-tighter">GOWRAX<span class="text-white">.ME</span></div>
+            <nav class="tech-font text-[10px] space-x-8 tracking-[0.3em]">
+                <a href="/" class="hover:text-magenta transition">>> RETURN_HOME</a>
+                <span class="text-white/20">|</span>
+                <span class="text-magenta">UNIT_SELECTION</span>
+            </nav>
+        </header>
+
+        <main class="flex-1 flex flex-col lg:flex-row">
+            
+            <a href="/roster/fortnite" class="game-card flex-1 relative group flex items-end p-12 overflow-hidden border-r border-white/5">
+                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589241062272-c0a000072dfa?q=80&w=1000')] bg-cover bg-center opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
+                <div class="relative z-10">
+                    <span class="tech-font text-magenta text-xs tracking-[0.5em] block mb-2">DIVISION_01</span>
+                    <h2 class="title-font text-6xl font-bold uppercase tracking-tighter mb-4">Fortnite</h2>
+                    <p class="accent-font text-magenta text-xl opacity-0 group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-4 group-hover:translate-y-0">Victory Royale</p>
+                </div>
+            </a>
+
+            <a href="/roster/rl" class="game-card flex-1 relative group flex items-end p-12 overflow-hidden border-r border-white/5">
+                <div class="absolute inset-0 bg-[url('https://www.lequipe.fr/_medias/img-photo-jpg/rocket-league-un-jeu-qui-prend-de-l-ampleur-dans-l-esport-psyonix/1500000001326873/15:32,1286:879-828-552-75/10609.jpg')] bg-cover bg-center opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
+                <div class="relative z-10">
+                    <span class="tech-font text-magenta text-xs tracking-[0.5em] block mb-2">DIVISION_02</span>
+                    <h2 class="title-font text-6xl font-bold uppercase tracking-tighter mb-4">Rocket League</h2>
+                    <p class="accent-font text-magenta text-xl opacity-0 group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-4 group-hover:translate-y-0">Supersonic</p>
+                </div>
+            </a>
+
+            <a href="/roster/valorant" class="game-card flex-1 relative group flex items-end p-12 overflow-hidden">
+                <div class="absolute inset-0 bg-[url('https://www.riotgames.com/darkroom/1440/079912352d14904fc4ab9030d42fdcab:532f9940a41045428ef02e1312fd4844/53098657981-5372ccd676-o.png')] bg-cover bg-center opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
+                <div class="relative z-10">
+                    <span class="tech-font text-magenta text-xs tracking-[0.5em] block mb-2">DIVISION_03</span>
+                    <h2 class="title-font text-6xl font-bold uppercase tracking-tighter mb-4">Valorant</h2>
+                    <p class="accent-font text-magenta text-xl opacity-0 group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-4 group-hover:translate-y-0">Clutch or Kick</p>
+                </div>
+            </a>
+
+        </main>
+
+        <footer class="p-4 bg-black border-t border-white/5 tech-font text-[9px] flex justify-between text-gray-600">
+            <div class="flex gap-6">
+                <span>DATABASE_ACCESS: GRANTED</span>
+                <span>TOTAL_UNITS: 03_DIVISIONS</span>
+            </div>
+            <div class="animate-pulse text-magenta">SELECT AN OPERATIVE DIVISION TO VIEW PERSONNEL FILES</div>
+        </footer>
+    </div>
+
+    <script>
+        // --- CURSEUR & INTERACTION ---
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px';
+            cursor.style.top = e.clientY + 'px';
+        });
+
+        // --- STARS SYSTEM (Optimisé) ---
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = [];
+            for(let i=0; i<150; i++) stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.2, op: Math.random(), s: Math.random()*0.01});
+        }
+        function animateStars() {
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            stars.forEach(s => {
+                s.op += s.s; if(s.op > 1 || s.op < 0) s.s *= -1;
+                ctx.fillStyle = `rgba(255,255,255,${s.op})`;
+                ctx.fillRect(s.x, s.y, s.size, s.size);
+            });
+            requestAnimationFrame(animateStars);
+        }
+        initStars(); animateStars();
+        window.addEventListener('resize', initStars);
+    </script>
+</body>
+</html>
