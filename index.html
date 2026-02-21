@@ -8,25 +8,35 @@
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --abyss: #0B0C15; --void: #1A1C2E; --purple: #6F2DBD; --magenta: #D62F7F; }
-        body, html { background: #000; color: #fff; margin: 0; overflow: hidden; font-family: 'Montserrat', sans-serif; cursor: none; }
         
-        #bios-boot { position: fixed; inset: 0; background: #000; z-index: 100; padding: 2rem; font-size: 0.9rem; color: #00ff00; line-height: 1.4; font-family: 'Share Tech Mono', monospace; }
+        /* Modif 1: On empêche le scroll mais on permet au contenu de respirer */
+        body, html { background: #000; color: #fff; margin: 0; overflow: hidden; font-family: 'Montserrat', sans-serif; height: 100%; width: 100%; }
+        
+        /* Modif 2: On cache le curseur custom sur mobile via media query */
+        #custom-cursor { 
+            width: 24px; height: 24px; border: 1px solid var(--magenta); 
+            position: fixed; pointer-events: none; z-index: 999; border-radius: 50%; 
+            transition: transform 0.05s ease-out; transform: translate(-50%, -50%); 
+            box-shadow: 0 0 10px var(--magenta); 
+            display: none; /* Caché par défaut */
+        }
+        @media (min-width: 1024px) { 
+            body { cursor: none; } 
+            #custom-cursor { display: block; } 
+        }
+
+        #bios-boot { position: fixed; inset: 0; background: #000; z-index: 100; padding: 1.5rem; font-size: 0.8rem; color: #00ff00; line-height: 1.4; font-family: 'Share Tech Mono', monospace; }
         .cursor-blink { display: inline-block; width: 8px; height: 15px; background: #00ff00; animation: blink 0.8s infinite; }
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
 
-        /* Effet Scanline & Glitch */
         .scanline { width: 100%; height: 100px; z-index: 40; pointer-events: none; background: linear-gradient(0deg, rgba(214, 47, 127, 0) 0%, rgba(214, 47, 127, 0.05) 50%, rgba(214, 47, 127, 0) 100%); position: absolute; top: -100px; animation: scan 4s linear infinite; }
         @keyframes scan { 0% { top: -100px; } 100% { top: 100%; } }
         
         .glitch { position: relative; font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; }
-        .glitch:hover::before { content: attr(data-text); position: absolute; left: -2px; text-shadow: 2px 0 var(--magenta); top: 0; color: #fff; background: var(--abyss); overflow: hidden; clip: rect(0, 900px, 0, 0); animation: noise-1 2s infinite linear alternate-reverse; }
-        @keyframes noise-1 { 0% { clip: rect(10px, 9999px, 50px, 0); } 100% { clip: rect(80px, 9999px, 100px, 0); } }
 
         .bar { width: 3px; height: 10px; background: var(--magenta); animation: pulse 0.5s infinite alternate; opacity: 0.2; transition: opacity 0.5s; }
         .bar.active { opacity: 1; }
         @keyframes pulse { from { height: 4px; } to { height: 15px; } }
-
-        #custom-cursor { width: 24px; height: 24px; border: 1px solid var(--magenta); position: fixed; pointer-events: none; z-index: 999; border-radius: 50%; transition: transform 0.05s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--magenta); }
     </style>
 </head>
 <body>
@@ -42,34 +52,37 @@
     
     <canvas id="starCanvas" class="fixed inset-0 z-0 bg-[#050508]"></canvas>
 
-    <div id="main-ui" class="relative z-10 opacity-0 transition-opacity duration-[1500ms] flex flex-col h-screen">
+    <div id="main-ui" class="relative z-10 opacity-0 transition-opacity duration-[1500ms] flex flex-col h-screen h-[100dvh]">
         <div class="scanline"></div>
-        <header class="p-6 flex justify-between items-center border-b border-magenta/20 backdrop-blur-md bg-black/20">
-            <div class="glitch text-2xl text-magenta tracking-tighter" data-text="GOWRAX.ME">GOWRAX.ME</div>
-            <nav class="hidden md:flex space-x-8 text-xs tracking-[0.2em] font-mono font-bold">
+        
+        <header class="p-4 md:p-6 flex justify-between items-center border-b border-magenta/20 backdrop-blur-md bg-black/20">
+            <div class="glitch text-xl md:text-2xl text-magenta tracking-tighter" data-text="GOWRAX.ME">GOWRAX.ME</div>
+            
+            <nav class="flex space-x-4 md:space-x-8 text-[9px] md:text-xs tracking-[0.2em] font-mono font-bold">
                 <a href="/" class="text-magenta underline underline-offset-8">ACCUEIL</a>
                 <a href="./ceo/index.html" class="hover:text-magenta transition opacity-50">FONDATEURS</a>
                 <a href="./roster/index.html" class="hover:text-magenta transition opacity-50">ROSTERS</a>
             </nav>
         </header>
 
-        <main class="flex-1 flex items-center justify-center relative overflow-hidden">
-            <div class="text-center" id="hero-card" style="transition: transform 0.1s ease-out; transform-style: preserve-3d;">
-                <h1 class="text-[18vw] font-rajdhani leading-none font-bold tracking-tighter opacity-5 select-none text-white">GRX</h1>
+        <main class="flex-1 flex items-center justify-center relative overflow-hidden p-4">
+            <div class="text-center w-full" id="hero-card" style="transition: transform 0.1s ease-out; transform-style: preserve-3d;">
+                <h1 class="text-[25vw] md:text-[18vw] font-rajdhani leading-none font-bold tracking-tighter opacity-5 select-none text-white">GRX</h1>
+                
                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <h2 class="text-6xl md:text-9xl font-rajdhani font-bold mb-2 tracking-tighter drop-shadow-[0_0_30px_rgba(214,47,127,0.3)]">GOWRAX</h2>
-                    <p class="font-mono text-magenta tracking-[0.4em] text-[10px] md:text-sm uppercase bg-black/60 px-6 py-2 border border-magenta/30 backdrop-blur-sm">Protocol Alpha Activated</p>
+                    <h2 class="text-5xl md:text-9xl font-rajdhani font-bold mb-2 tracking-tighter drop-shadow-[0_0_30px_rgba(214,47,127,0.3)]">GOWRAX</h2>
+                    <p class="font-mono text-magenta tracking-[0.2em] md:tracking-[0.4em] text-[8px] md:text-sm uppercase bg-black/60 px-4 md:px-6 py-2 border border-magenta/30 backdrop-blur-sm">Protocol Alpha Activated</p>
                 </div>
             </div>
         </main>
 
-        <footer class="p-4 border-t border-white/5 bg-black/80 backdrop-blur-md flex justify-between items-center text-[9px] text-gray-500 uppercase font-mono">
-            <div class="flex items-center gap-4">
+        <footer class="p-3 md:p-4 border-t border-white/5 bg-black/80 backdrop-blur-md flex justify-between items-center text-[8px] md:text-[9px] text-gray-500 uppercase font-mono">
+            <div class="flex items-center gap-2 md:gap-4">
                 <span>Node: GRX-01</span>
-                <span class="text-green-500 animate-pulse">● ONLINE</span>
+                <span class="text-green-500 animate-pulse hidden xs:inline">● ONLINE</span>
             </div>
-            <div class="flex items-center gap-3 text-magenta">
-                <span id="audio-status">SYNCING_SYSTEM...</span>
+            <div class="flex items-center gap-2 md:gap-3 text-magenta">
+                <span id="audio-status" class="hidden sm:inline">SYNCING_SYSTEM...</span>
                 <div class="flex gap-1 items-end h-4">
                     <div class="bar"></div><div class="bar"></div><div class="bar"></div>
                 </div>
@@ -109,16 +122,21 @@
         function unlockAudio() {
             if (player && !audioStarted) {
                 player.unMute(); player.setVolume(50);
-                document.getElementById('audio-status').innerText = "AUDIO: STREAMING";
+                const status = document.getElementById('audio-status');
+                if(status) status.innerText = "AUDIO: STREAMING";
                 document.querySelectorAll('.bar').forEach(b => b.classList.add('active'));
                 audioStarted = true;
             }
         }
-        window.addEventListener('mousemove', unlockAudio);
+        
+        // Modif 7: On débloque l'audio aussi au "click/touch" pour mobile
+        window.addEventListener('mousedown', unlockAudio);
+        window.addEventListener('touchstart', unlockAudio);
+
         var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         document.head.appendChild(tag);
 
-        // --- CANVAS ÉTOILES & FILANTES ---
+        // --- CANVAS ÉTOILES ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -127,7 +145,9 @@
         function initStars() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             stars = [];
-            for(let i=0; i<400; i++) {
+            // Moins d'étoiles sur mobile pour la perf
+            const count = window.innerWidth < 768 ? 150 : 400;
+            for(let i=0; i<count; i++) {
                 stars.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
@@ -150,31 +170,22 @@
 
         function animateStars() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Étoiles fixes (scintillantes)
             stars.forEach(s => {
                 s.opacity += s.speed;
                 if(s.opacity > 1 || s.opacity < 0) s.speed *= -1;
                 ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
                 ctx.fillRect(s.x, s.y, s.size, s.size);
             });
-
-            // Étoiles filantes
             shootingStars.forEach((ss, i) => {
-                ss.x -= ss.speed;
-                ss.y += ss.speed;
-                ss.opacity -= 0.02;
-                
+                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.02;
                 ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`;
                 ctx.lineWidth = 2;
                 ctx.beginPath();
                 ctx.moveTo(ss.x, ss.y);
                 ctx.lineTo(ss.x + ss.len, ss.y - ss.len);
                 ctx.stroke();
-
                 if(ss.opacity <= 0) shootingStars.splice(i, 1);
             });
-
             if(Math.random() < 0.02) createShootingStar();
             requestAnimationFrame(animateStars);
         }
@@ -182,10 +193,12 @@
         initStars(); animateStars();
         window.addEventListener('resize', initStars);
 
-        // CURSEUR & TILT
+        // --- TILT & CURSEUR ---
         const cursor = document.getElementById('custom-cursor');
         window.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+            if(cursor.style.display !== 'none') {
+                cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
+            }
             const x = (window.innerWidth/2 - e.pageX)/40; const y = (window.innerHeight/2 - e.pageY)/40;
             document.getElementById('hero-card').style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
         });
