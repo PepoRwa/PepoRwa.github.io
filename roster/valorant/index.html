@@ -6,7 +6,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
     <style>
-        :root { --abyss: #0B0C15; --void: #1A1C2E; --magenta: #D62F7F; }
+        :root { --abyss: #0B0C15; --void: #1A1C2E; --magenta: #D62F7F; --gold: #D4AF37; }
         body { 
             background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; 
             cursor: none; overflow-x: hidden; -webkit-font-smoothing: antialiased;
@@ -25,6 +25,14 @@
         .slot-filled { border-left: 3px solid var(--magenta); background: linear-gradient(90deg, rgba(214, 47, 127, 0.05) 0%, transparent 100%); }
         .slot-empty { border: 1px dashed rgba(214, 47, 127, 0.2); opacity: 0.5; }
         .slot-empty:hover { opacity: 1; border-color: var(--magenta); }
+
+        /* Style Spécial Ptitegow Gold */
+        .slot-gold { 
+            border: 1px solid var(--gold); 
+            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%); 
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
+        }
+        .text-gold { color: var(--gold); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
 
         .coach-banner {
             background: linear-gradient(45deg, var(--void), var(--abyss));
@@ -52,6 +60,26 @@
             box-shadow: 0 0 15px var(--magenta);
         }
         .discord-btn:hover { transform: scale(1.05) rotate(-1deg); background: #fff; color: var(--magenta); }
+
+        /* Bouton Stream Pulsant */
+        .stream-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: #6441a5;
+            color: white;
+            font-size: 9px;
+            padding: 4px 10px;
+            border-radius: 2px;
+            margin-top: 10px;
+            transition: 0.3s;
+            animation: pulse-twitch 2s infinite;
+        }
+        @keyframes pulse-twitch {
+            0% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0.7); }
+            70% { box-shadow: 0 0 0 10px rgba(100, 65, 165, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0); }
+        }
     </style>
 </head>
 <body class="bg-[#050508]">
@@ -102,7 +130,7 @@
             <div class="flex items-center gap-4 mb-8">
                 <h2 class="tech-font text-magenta text-sm tracking-widest uppercase">// Escouade_Élite (Rang: ASC+)</h2>
                 <div class="h-px flex-1 bg-magenta/10"></div>
-                <span class="tech-font text-[10px] text-gray-600 uppercase">01 / 05 Slots Occupés</span>
+                <span class="tech-font text-[10px] text-gray-600 uppercase">02 / 05 Slots Occupés</span>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -111,8 +139,10 @@
                     <h3 class="title-font text-2xl font-bold mt-2">NENE</h3>
                     <p class="accent-font text-magenta text-[10px] mt-2">Opérateur Élite</p>
                 </div>
-                <div class="slot-card slot-empty p-6 flex flex-col justify-center items-center recruiting-blink">
-                    <span class="tech-font text-[9px] text-magenta tracking-tighter">SLOT_VACANT</span>
+                <div class="slot-card slot-filled p-6">
+                    <span class="tech-font text-[9px] text-gray-500 uppercase">Id_02</span>
+                    <h3 class="title-font text-2xl font-bold mt-2">NATI</h3>
+                    <p class="accent-font text-magenta text-[10px] mt-2">Unité de Choc</p>
                 </div>
                 <div class="slot-card slot-empty p-6 flex flex-col justify-center items-center recruiting-blink">
                     <span class="tech-font text-[9px] text-magenta tracking-tighter">SLOT_VACANT</span>
@@ -130,12 +160,26 @@
             <section>
                 <h3 class="tech-font text-magenta text-xs mb-6 uppercase tracking-widest">// Unités_de_Front (Tryhardeurs)</h3>
                 <div class="space-y-4">
+                    <div class="slot-card slot-gold p-5 relative overflow-hidden">
+                        <span class="tech-font text-gold text-[8px] tracking-[0.3em] uppercase block mb-1">FOUNDER_TRYHARDEUSE</span>
+                        <h4 class="title-font text-2xl font-bold text-gold uppercase tracking-tighter">PTITEGOW</h4>
+                        <a href="https://twitch.tv/ptitegow" target="_blank" class="stream-btn tech-font uppercase tracking-tighter">
+                            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Stream
+                        </a>
+                        <div class="absolute right-[-10px] bottom-[-10px] opacity-5 pointer-events-none">
+                            <span class="title-font text-6xl font-bold">CEO</span>
+                        </div>
+                    </div>
                     <div class="slot-card slot-filled p-4 flex justify-between items-center">
                         <h4 class="title-font text-xl font-bold uppercase">PASTEK</h4>
                         <span class="tech-font text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase">Opérationnel</span>
                     </div>
-                    <div class="slot-card slot-empty p-4 border-dashed text-center">
-                        <span class="tech-font text-[10px] text-gray-600 italic">Candidatures en cours d'analyse...</span>
+                    <div class="slot-card slot-filled p-4 flex justify-between items-center">
+                        <h4 class="title-font text-xl font-bold uppercase">Adri</h4>
+                        <span class="tech-font text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Analyste</span>
+                    </div>
+                    <div class="slot-card slot-empty p-4 border-dashed text-center recruiting-blink">
+                        <span class="tech-font text-[10px] text-magenta italic uppercase tracking-widest">Candidatures Ouvertes_</span>
                     </div>
                 </div>
             </section>
@@ -143,19 +187,20 @@
             <section class="space-y-12">
                 <div>
                     <h3 class="tech-font text-magenta text-xs mb-6 uppercase tracking-widest">// Programme_Academy</h3>
-                    <div class="slot-card slot-filled p-4">
-                        <h4 class="title-font text-xl font-bold uppercase">PINPIN7850</h4>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">PINPIN7850</h4></div>
+                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">Kopoxx</h4></div>
+                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">T3tsu</h4></div>
+                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">SuKu</h4></div>
                     </div>
                 </div>
+
                 <div>
                     <h3 class="tech-font text-magenta text-xs mb-6 uppercase tracking-widest">// Unités_de_Réserve (Chill)</h3>
-                    <div class="flex flex-wrap gap-4">
-                        <div class="slot-card slot-filled p-4 min-w-[140px]">
-                            <h4 class="title-font text-lg font-bold">GRIMACE-NRV</h4>
-                        </div>
-                        <div class="slot-card slot-filled p-4 min-w-[140px]">
-                            <h4 class="title-font text-lg font-bold uppercase">MR.MEGA</h4>
-                        </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase text-center">GRIMACE-NRV</h4></div>
+                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase text-center">MR.MEGA</h4></div>
+                        <div class="slot-card slot-filled p-4 col-span-1 md:col-span-2"><h4 class="title-font text-lg font-bold uppercase text-center">Dragon</h4></div>
                     </div>
                 </div>
             </section>
@@ -163,28 +208,22 @@
 
     </div>
 
-        <footer class="mt-20 p-8 border-t border-white/5 tech-font text-[9px] text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex gap-4">
-                <span>© 2026 GOWRAX_ESPORT. TOUS DROITS RÉSERVÉS.</span>
-                <span class="text-magenta/40">//</span>
-                <span>DESIGN_BY_CRAZZYNEL</span>
-            </div>
-            <div class="flex gap-6 uppercase tracking-widest">
-                <span class="hover:text-magenta cursor-help">Mentions_Légales</span>
-                <span class="hover:text-magenta cursor-help">Protocole_Confidentialité</span>
-                <span class="text-magenta animate-pulse">Système_Opérationnel_V2.6</span>
-            </div>
-        </footer>
+    <footer class="mt-20 p-8 border-t border-white/5 tech-font text-[9px] text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div class="flex gap-4">
+            <span>© 2026 GOWRAX_ESPORT.</span>
+            <span class="text-magenta/40">//</span>
+            <span>DESIGN_BY_CRAZZYNEL</span>
+        </div>
+        <div class="flex gap-6 uppercase tracking-widest">
+            <span class="text-magenta animate-pulse">Système_Opérationnel_V2.6</span>
+        </div>
+    </footer>
 
     <script>
         // SÉCURITÉ GOWRAX (Windows & macOS)
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('keydown', e => {
-            if (e.key === "F12" || 
-                ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'i' || e.key === 's')) ||
-                (e.metaKey && e.altKey && e.key === 'i')) {
-                e.preventDefault();
-            }
+            if (e.key === "F12" || ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'i' || e.key === 's'))) e.preventDefault();
         });
 
         // CURSEUR CUSTOM
@@ -197,32 +236,14 @@
         // --- MÉTÉORITES & ÉTOILES ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
-        let stars = [];
-        let shootingStars = [];
-
+        let stars = []; let shootingStars = [];
         function initStars() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            stars = [];
-            for(let i=0; i<200; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 1.5,
-                    op: Math.random(),
-                    speed: Math.random() * 0.01
-                });
-            }
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<200; i++) { stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5, op: Math.random(), speed: Math.random()*0.01}); }
         }
 
         function createShootingStar() {
-            shootingStars.push({
-                x: Math.random() * (canvas.width * 1.5),
-                y: -100,
-                len: Math.random() * 120 + 80,
-                speed: Math.random() * 12 + 8,
-                opacity: 1
-            });
+            shootingStars.push({x: Math.random()*(canvas.width*1.5), y: -100, len: Math.random()*120+80, speed: Math.random()*12+8, opacity: 1});
         }
 
         function animate() {
@@ -230,35 +251,21 @@
             
             // Étoiles de fond
             stars.forEach(s => {
-                s.op += s.speed;
-                if(s.op > 1 || s.op < 0) s.speed *= -1;
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`;
-                ctx.fillRect(s.x, s.y, s.size, s.size);
+                s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1;
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.size, s.size);
             });
 
             // Pluie d'étoiles filantes
             shootingStars.forEach((ss, i) => {
-                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`;
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(ss.x, ss.y);
-                ctx.lineTo(ss.x - ss.len, ss.y + ss.len);
-                ctx.stroke();
-
-                ss.x -= ss.speed;
-                ss.y += ss.speed;
-                ss.opacity -= 0.015;
-
+                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`; ctx.lineWidth = 2; ctx.beginPath();
+                ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y + ss.len); ctx.stroke();
+                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.015;
                 if(ss.opacity <= 0) shootingStars.splice(i, 1);
             });
-
-            if(Math.random() < 0.08) createShootingStar(); // Fréquence de la pluie
+            if(Math.random() < 0.08) createShootingStar();
             requestAnimationFrame(animate);
         }
-
-        window.addEventListener('resize', initStars);
-        initStars();
-        animate();
+        window.addEventListener('resize', initStars); initStars(); animate();
     </script>
 </body>
 </html>

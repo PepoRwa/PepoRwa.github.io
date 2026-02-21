@@ -62,6 +62,8 @@
                 <a href="/" class="text-magenta underline underline-offset-8">ACCUEIL</a>
                 <a href="./ceo/index.html" class="hover:text-magenta transition opacity-50">FONDATEURS</a>
                 <a href="./roster/index.html" class="hover:text-magenta transition opacity-50">ROSTERS</a>
+                <a href="./staff/index.html" class="hover:text-magenta transition opacity-50">STAFF</a>
+
             </nav>
         </header>
 
@@ -121,7 +123,7 @@
         }
         function unlockAudio() {
             if (player && !audioStarted) {
-                player.unMute(); player.setVolume(50);
+                player.unMute(); player.setVolume(20);
                 const status = document.getElementById('audio-status');
                 if(status) status.innerText = "AUDIO: STREAMING";
                 document.querySelectorAll('.bar').forEach(b => b.classList.add('active'));

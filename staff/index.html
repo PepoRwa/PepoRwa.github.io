@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX STAFF | Direction Opérationnelle</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    <style>
+        :root { --abyss: #0B0C15; --chrome: #C0C0C0; }
+        body { 
+            background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; 
+            cursor: none; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        }
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .accent-font { font-family: 'Rock Salt', cursive; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+
+        .chrome-card { 
+            background: linear-gradient(135deg, rgba(192, 192, 192, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
+            border: 1px solid rgba(192, 192, 192, 0.2);
+            backdrop-blur: 10px;
+            transition: 0.4s;
+        }
+        .chrome-card:hover { border-color: var(--chrome); transform: translateY(-5px); }
+        .slot-vacant { border: 1px dashed rgba(192, 192, 192, 0.2); opacity: 0.4; }
+
+        #custom-cursor { width: 24px; height: 24px; border: 1px solid var(--chrome); position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--chrome); }
+        @keyframes pulse-silver { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
+        .blink-silver { animation: pulse-silver 2s infinite; }
+    </style>
+</head>
+<body class="bg-[#050508]">
+
+    <div id="custom-cursor"></div>
+    <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
+
+    <div class="relative z-10 p-6 md:p-12 max-w-7xl mx-auto">
+        
+        <header class="mb-16 border-b border-white/10 pb-10 flex justify-between items-end">
+            <div>
+                <span class="tech-font text-chrome text-[10px] tracking-[0.6em] mb-2 block uppercase">Accès Niveau_Bêta // Personnel Naviguant</span>
+                <h1 class="title-font text-5xl md:text-6xl font-bold uppercase tracking-tighter italic">GOWRAX_<span class="text-chrome">STAFF</span></h1>
+            </div>
+            <a href="/" class="tech-font text-[10px] text-gray-500 hover:text-chrome transition uppercase underline">Retour_Base</a>
+        </header>
+
+        <section class="mb-20">
+            <h3 class="tech-font text-chrome text-xs mb-8 tracking-widest uppercase flex items-center gap-4">
+                <span class="w-8 h-px bg-chrome/30"></span> STAFF_OPÉRATIONNEL
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <div class="chrome-card p-6 border-l-4 border-l-teal-500">
+                    <h4 class="title-font text-2xl font-bold">SILVADAGG</h4>
+                    <p class="tech-font text-[10px] text-teal-400 uppercase tracking-widest">GWX | Coach</p>
+                    <div class="accent-font text-chrome/30 text-[10px] mt-4 italic">Tactique</div>
+                </div>
+
+                <div class="chrome-card p-6 border-l-4 border-l-gray-400">
+                    <h4 class="title-font text-2xl font-bold">DRAGON</h4>
+                    <p class="tech-font text-[10px] text-gray-400 uppercase tracking-widest">Pôle Technique</p>
+                    <div class="accent-font text-chrome/30 text-[10px] mt-4 italic">Infrastructure</div>
+                </div>
+
+                <div class="chrome-card p-6 border-l-4 border-l-pink-500">
+                    <h4 class="title-font text-2xl font-bold">KOPOXX</h4>
+                    <p class="tech-font text-[10px] text-pink-400 uppercase tracking-widest">Creative (Graph/Vidéo)</p>
+                    <div class="accent-font text-chrome/30 text-[10px] mt-4 italic">Factory</div>
+                </div>
+
+                <div class="chrome-card p-6 border-l-4 border-l-red-600">
+                    <h4 class="title-font text-xl font-bold">PTITEGOW / FILOUXX / CRAZZYNEL</h4>
+                    <p class="tech-font text-[10px] text-red-500 uppercase tracking-widest">Casters / Streamers</p>
+                    <div class="accent-font text-chrome/30 text-[10px] mt-4 italic">Gowrax_TV</div>
+                </div>
+
+                <div class="chrome-card slot-vacant p-6 flex items-center justify-center blink-silver">
+                    <span class="tech-font text-[9px] text-chrome/60 uppercase">Team_Manager // RECRUTEMENT_OPEN</span>
+                </div>
+
+                <div class="chrome-card slot-vacant p-6 flex items-center justify-center blink-silver">
+                    <span class="tech-font text-[9px] text-chrome/60 uppercase">Community_Manager // RECRUTEMENT_OPEN</span>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-20">
+            <h3 class="tech-font text-chrome text-xs mb-8 tracking-widest uppercase flex items-center gap-4">
+                <span class="w-8 h-px bg-chrome/30"></span> SÉCURITÉ_&_MODÉRATION
+            </h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="chrome-card slot-vacant p-8 flex flex-col items-center justify-center blink-silver">
+                    <h4 class="tech-font text-[10px] text-blue-400 uppercase tracking-widest mb-2">🛡️ Modérateur_Base</h4>
+                    <span class="tech-font text-[9px] text-chrome/40 italic">Candidatures_En_Attente</span>
+                </div>
+                <div class="chrome-card slot-vacant p-8 flex flex-col items-center justify-center blink-silver">
+                    <h4 class="tech-font text-[10px] text-purple-400 uppercase tracking-widest mb-2">👾 Twitch_Operator</h4>
+                    <span class="tech-font text-[9px] text-chrome/40 italic">Candidatures_En_Attente</span>
+                </div>
+            </div>
+        </section>
+
+    </div>
+
+    <footer class="mt-32 p-12 text-center tech-font text-[8px] text-gray-600 border-t border-white/5">
+        <p>© 2026 GOWRAX OPERATIONAL COMMAND // DESIGN BY CRAZZYNEL</p>
+        <p class="mt-2 text-chrome tracking-[0.5em] uppercase italic opacity-50">Support et Structure au service de l'élite.</p>
+    </footer>
+
+    <script>
+        document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('keydown', e => { if (e.key === "F12" || ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'i' || e.key === 's'))) e.preventDefault(); });
+        
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = []; let shootingStars = [];
+        
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<150; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*1.2, op:Math.random(), speed:Math.random()*0.005});
+        }
+
+        function createShootingStar() {
+            shootingStars.push({x: Math.random()*(canvas.width+200), y: -100, speed: Math.random()*12+8, len: Math.random()*120+80, op: 1});
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => {
+                s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1;
+                ctx.fillStyle = `rgba(192, 192, 192, ${s.op * 0.4})`;
+                ctx.fillRect(s.x, s.y, s.s, s.s);
+            });
+            shootingStars.forEach((ss, i) => {
+                ctx.strokeStyle = `rgba(255, 255, 255, ${ss.op})`; 
+                ctx.lineWidth = 1.5; ctx.beginPath();
+                ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y + ss.len); ctx.stroke();
+                ss.x -= ss.speed; ss.y += ss.speed; ss.op -= 0.015;
+                if(ss.op <= 0) shootingStars.splice(i, 1);
+            });
+            if(Math.random() < 0.06) createShootingStar();
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initStars); initStars(); animate();
+    </script>
+</body>
+</html>
