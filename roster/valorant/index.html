@@ -50,7 +50,7 @@
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             z-index: 1000; width: 90%; max-width: 450px;
             background: rgba(11, 12, 21, 0.95); border: 1px solid var(--magenta);
-            backdrop-blur: 12px; box-shadow: 0 0 40px rgba(214, 47, 127, 0.4);
+            -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 0 40px rgba(214, 47, 127, 0.4);
             display: flex; flex-direction: column; align-items: center; padding: 25px;
             text-align: center;
         }
@@ -170,7 +170,7 @@
                             <span class="title-font text-6xl font-bold">CEO</span>
                         </div>
                     </div>
-                                    <div class="space-y-4">
+                    <div class="space-y-4">
                     <div class="slot-card slot-gold p-5 relative overflow-hidden">
                         <span class="tech-font text-gold text-[8px] tracking-[0.3em] uppercase block mb-1">FOUNDER_TRYHARDEUR</span>
                         <h4 class="title-font text-2xl font-bold text-gold uppercase tracking-tighter">FILOUXX</h4>
@@ -188,6 +188,10 @@
                     <div class="slot-card slot-filled p-4 flex justify-between items-center">
                         <h4 class="title-font text-xl font-bold uppercase">Adri</h4>
                         <span class="tech-font text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Analyste</span>
+                    </div>
+                        <div class="slot-card slot-filled p-4 flex justify-between items-center">
+                        <h4 class="title-font text-xl font-bold uppercase">BlackOutZ</h4>
+                        <span class="tech-font text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Stratège</span>
                     </div>
                     <div class="slot-card slot-empty p-4 border-dashed text-center recruiting-blink">
                         <span class="tech-font text-[10px] text-magenta italic uppercase tracking-widest">Candidatures Ouvertes_</span>
