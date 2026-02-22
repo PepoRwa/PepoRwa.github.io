@@ -26,7 +26,6 @@
         .slot-empty { border: 1px dashed rgba(214, 47, 127, 0.2); opacity: 0.5; }
         .slot-empty:hover { opacity: 1; border-color: var(--magenta); }
 
-        /* Style Spécial Ptitegow Gold */
         .slot-gold { 
             border: 1px solid var(--gold); 
             background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%); 
@@ -45,7 +44,6 @@
         @keyframes pulse-neon { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
         .recruiting-blink { animation: pulse-neon 2s infinite; }
 
-        /* POP-UP RECRUTEMENT */
         #recruitment-popup {
             position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
             z-index: 1000; width: 90%; max-width: 450px;
@@ -61,31 +59,32 @@
         }
         .discord-btn:hover { transform: scale(1.05) rotate(-1deg); background: #fff; color: var(--magenta); }
 
-        /* Bouton Stream Pulsant */
         .stream-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: #6441a5;
-            color: white;
-            font-size: 9px;
-            padding: 4px 10px;
-            border-radius: 2px;
-            margin-top: 10px;
-            transition: 0.3s;
-            animation: pulse-twitch 2s infinite;
+            display: inline-flex; align-items: center; gap: 8px;
+            background: #6441a5; color: white; font-size: 9px;
+            padding: 4px 10px; border-radius: 2px; margin-top: 10px;
+            transition: 0.3s; animation: pulse-twitch 2s infinite;
         }
-        @keyframes pulse-twitch {
-            0% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0.7); }
-            70% { box-shadow: 0 0 0 10px rgba(100, 65, 165, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0); }
-        }
+
+        .bar { width: 2px; height: 8px; background: var(--magenta); transition: 0.3s; opacity: 0.3; }
+        .bar.active { animation: audio-pulse 0.5s infinite alternate; opacity: 1; }
+        @keyframes audio-pulse { from { height: 4px; } to { height: 12px; } }
+        @keyframes pulse-twitch { 0% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(100, 65, 165, 0); } 100% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0); } }
+    
+        /* Info son */
+        #audio-init-prompt { position: fixed; top: 10px; right: 10px; z-index: 1000; }
     </style>
 </head>
 <body class="bg-[#050508]">
 
     <div id="custom-cursor"></div>
     <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
+
+    <div id="audio-init-prompt" class="tech-font text-[8px] text-magenta/50 tracking-widest uppercase animate-pulse">
+        [ Cliquez n'importe où pour synchroniser l'audio ]
+    </div>
+
+    <div id="yt-player-container" style="position:absolute; top:-9999px;"><div id="yt-player"></div></div>
 
     <div id="recruitment-popup">
         <span class="tech-font text-magenta text-[10px] tracking-[0.4em] uppercase">Alerte // Candidature_Ouverte</span>
@@ -130,7 +129,7 @@
             <div class="flex items-center gap-4 mb-8">
                 <h2 class="tech-font text-magenta text-sm tracking-widest uppercase">// Escouade_Élite (Rang: ASC+)</h2>
                 <div class="h-px flex-1 bg-magenta/10"></div>
-                <span class="tech-font text-[10px] text-gray-600 uppercase">02 / 05 Slots Occupés</span>
+                <span class="tech-font text-[10px] text-gray-600 uppercase">02 / 10 Slots Occupés</span>
             </div>
 
             <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
@@ -220,14 +219,18 @@
                 </div>
             </section>
         </div>
-
     </div>
 
-    <footer class="mt-20 p-8 border-t border-white/5 tech-font text-[9px] text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div class="flex gap-4">
-            <span>© 2026 GOWRAX_ESPORT.</span>
+    <footer class="mt-20 p-8 border-t border-white/5 tech-font text-[9px] text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4 bg-black/50 backdrop-blur-md">
+        <div class="flex gap-4 items-center">
+            <span>© 2026 GOWRAX_ESPORT. // DESIGNED_BY_CRAZZYNEL</span>
             <span class="text-magenta/40">//</span>
-            <span>DESIGN_BY_CRAZZYNEL</span>
+            <div id="audio-terminal" class="flex items-center gap-3 cursor-pointer group" onclick="toggleAudio()">
+                <div class="flex gap-0.5 items-end h-3">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+                <span id="audio-status" class="text-magenta group-hover:text-white transition uppercase">[ SYNC_AUDIO_REQUIRED ]</span>
+            </div>
         </div>
         <div class="flex gap-6 uppercase tracking-widest">
             <span class="text-magenta animate-pulse">Système_Opérationnel_V2.6</span>
@@ -235,20 +238,75 @@
     </footer>
 
     <script>
-        // SÉCURITÉ GOWRAX (Windows & macOS)
         document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => {
-            if (e.key === "F12" || ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'i' || e.key === 's'))) e.preventDefault();
-        });
+        document.addEventListener('keydown', e => { if (e.key === "F12" || ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'i' || e.key === 's'))) e.preventDefault(); });
 
-        // CURSEUR CUSTOM
         const cursor = document.getElementById('custom-cursor');
-        window.addEventListener('mousemove', e => {
-            cursor.style.left = e.clientX + 'px';
-            cursor.style.top = e.clientY + 'px';
-        });
+        window.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
 
-        // --- MÉTÉORITES & ÉTOILES ---
+        // --- AUDIO ENGINE ---
+        var player;
+        var audioStarted = false;
+        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
+        document.head.appendChild(tag);
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('yt-player', {
+                height: '0', width: '0',
+                playerVars: {
+                    'listType': 'playlist',
+                    'list': 'PLf8bLE6HsEKO-f8pGzoZRNOLhf19TPiUA',
+                    'autoplay': 0, 'mute': 1, 'loop': 1, 'index': 0
+                },
+                events: { 'onReady': onPlayerReady }
+            });
+        }
+
+        function onPlayerReady(event) {
+            // Prépare le shuffle mais YouTube est capricieux, on force manuellement au clic
+        }
+
+        function toggleAudio() {
+            // Fonction de contrôle manuel via le footer
+            if (audioStarted) {
+                const statusText = document.getElementById('audio-status');
+                const bars = document.querySelectorAll('.bar');
+                if (player.getPlayerState() == 1) {
+                    player.pauseVideo();
+                    statusText.innerText = "[ AMBIANCE: PAUSE ]";
+                    bars.forEach(b => b.classList.remove('active'));
+                } else {
+                    player.playVideo();
+                    statusText.innerText = "[ AMBIANCE: ACTIVE ]";
+                    bars.forEach(b => b.classList.add('active'));
+                }
+            } else {
+                startTacticalAudio();
+            }
+        }
+
+        function startTacticalAudio() {
+            if (!audioStarted && player) {
+                // TRUE SHUFFLE: On choisit un index au hasard entre 0 et 20 (ou taille playlist)
+                const randomIndex = Math.floor(Math.random() * 15); 
+                player.unMute();
+                player.setVolume(15);
+                player.setShuffle(true);
+                player.playVideoAt(randomIndex);
+                
+                document.getElementById('audio-status').innerText = "[ AMBIANCE: ACTIVE ]";
+                document.querySelectorAll('.bar').forEach(b => b.classList.add('active'));
+                document.getElementById('audio-init-prompt').style.display = 'none';
+                audioStarted = true;
+            }
+        }
+
+        // LANCE L'AUDIO AU PREMIER CLIC N'IMPORTE OU
+        document.addEventListener('click', function() {
+            startTacticalAudio();
+        }, { once: true }); // S'exécute une seule fois
+
+        // --- CANVAS ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let stars = []; let shootingStars = [];
@@ -256,21 +314,12 @@
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             stars = []; for(let i=0; i<200; i++) { stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5, op: Math.random(), speed: Math.random()*0.01}); }
         }
-
         function createShootingStar() {
             shootingStars.push({x: Math.random()*(canvas.width*1.5), y: -100, len: Math.random()*120+80, speed: Math.random()*12+8, opacity: 1});
         }
-
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
-            // Étoiles de fond
-            stars.forEach(s => {
-                s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1;
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.size, s.size);
-            });
-
-            // Pluie d'étoiles filantes
+            stars.forEach(s => { s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1; ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.size, s.size); });
             shootingStars.forEach((ss, i) => {
                 ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`; ctx.lineWidth = 2; ctx.beginPath();
                 ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y + ss.len); ctx.stroke();
