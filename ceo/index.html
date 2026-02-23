@@ -13,14 +13,14 @@
         .accent-font { font-family: 'Rock Salt', cursive; }
         .title-font { font-family: 'Rajdhani', sans-serif; }
 
-        .ceo-card { background: rgba(26, 28, 46, 0.4); border: 1px solid rgba(212, 175, 55, 0.1); backdrop-blur: 10px; transition: 0.4s; }
+        .ceo-card { background: rgba(26, 28, 46, 0.4); border: 1px solid rgba(212, 175, 55, 0.1); backdrop-filter: blur(10px); transition: 0.4s; }
         .ceo-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
 
         /* Skill Bars */
         .skill-bar-bg { background: rgba(255,255,255,0.05); height: 4px; width: 100%; margin-top: 4px; }
         .skill-bar-fill { background: var(--gold); height: 100%; box-shadow: 0 0 10px var(--gold); }
 
-        .gold-gradient { background: linear-gradient(to right, var(--gold), #f3e5ab); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .gold-gradient { background: linear-gradient(to right, var(--gold), #f3e5ab); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
         
         #custom-cursor { width: 24px; height: 24px; border: 1px solid var(--gold); position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--gold); }
     </style>

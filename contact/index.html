@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX | Transmission Gate</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    <style>
+        :root { --abyss: #0B0C15; --magenta: #D62F7F; --gold: #D4AF37; --red: #ff4444; }
+        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+        .accent-font { font-family: 'Rock Salt', cursive; }
+        canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .grx-input {
+            background: rgba(214, 47, 127, 0.05); border: 1px solid rgba(214, 47, 127, 0.2);
+            padding: 14px; width: 100%; color: white; transition: 0.3s; font-size: 0.85rem;
+        }
+        .grx-input:focus { border-color: var(--magenta); outline: none; background: rgba(214, 47, 127, 0.1); }
+        
+        .step-container { display: none; }
+        .step-active { display: block; animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .btn-grx { background: var(--magenta); color: white; padding: 14px; font-weight: bold; transition: 0.3s; text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.15em; width: 100%; }
+        .btn-grx:hover:not(:disabled) { background: #fff; color: var(--magenta); }
+
+        /* Correction Mobile */
+        @media (max-width: 768px) {
+            .mobile-full { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
+            .mobile-modal { background: var(--abyss); position: fixed; inset: 0; z-index: 50; padding: 20px; overflow-y: auto; }
+        }
+
+        #custom-cursor { width: 20px; height: 20px; border: 1px solid var(--magenta); position: fixed; pointer-events: none; z-index: 999; border-radius: 50%; transform: translate(-50%, -50%); display: none; }
+        @media (min-width: 1024px) { #custom-cursor { display: block; } }
+    </style>
+</head>
+<body class="bg-[#050508]">
+
+    <div id="custom-cursor"></div>
+    <canvas id="starCanvas"></canvas>
+
+    <div id="mobile-notice" class="lg:hidden fixed bottom-0 left-0 right-0 bg-magenta text-white p-4 z-40 flex justify-between items-center shadow-[0_-5px_20px_rgba(214,47,127,0.3)]">
+        <div class="tech-font text-[10px] leading-tight uppercase font-bold">
+            <span class="animate-pulse">●</span> Protocole Relations Publiques : Délais & Accès
+        </div>
+        <button onclick="toggleMobileModal(true)" class="bg-white text-magenta px-4 py-2 text-[10px] font-bold uppercase shadow-lg">Lire les notes</button>
+    </div>
+
+    <div id="mobile-modal" class="hidden mobile-modal z-[60]">
+        <div class="flex justify-between items-center mb-8 border-b border-magenta/30 pb-4">
+            <h3 class="title-font text-xl font-bold italic uppercase text-magenta">Instructions Opérationnelles</h3>
+            <button onclick="toggleMobileModal(false)" class="text-white text-3xl">&times;</button>
+        </div>
+        <div class="space-y-6 tech-font text-[11px] uppercase tracking-tighter">
+            <div class="p-4 border-l-2 border-magenta bg-magenta/5">
+                <p class="text-white font-bold mb-2">Canal Unique : Relations Publiques</p>
+                <p class="text-gray-400">Seule l'unité RP est habilitée à réceptionner vos transmissions. Elle assure l'aiguillage interne vers les pôles concernés après analyse de la demande.</p>
+            </div>
+            <div class="p-4 border-l-2 border-gold bg-gold/5">
+                <p class="text-gold font-bold mb-2">Délais de traitement</p>
+                <p class="text-gray-400">Flux Discord : Réponse moyenne 06H. <br>Flux Web : 72H à 14 jours selon la charge opérationnelle.</p>
+            </div>
+            <div class="p-4 border-l-2 border-red-500 bg-red-500/5">
+                <p class="text-red-400 font-bold mb-2">Avertissement Support</p>
+                <p class="text-gray-400">GOWRAX n'est pas une entité de support technique pour les services Twitch ou Discord. Toute demande liée à leurs services sera supprimée.</p>
+            </div>
+        </div>
+        <button onclick="toggleMobileModal(false)" class="btn-grx mt-10">Confirmer la lecture</button>
+    </div>
+
+    <div class="relative z-10 min-h-screen flex flex-col items-center py-8 px-4 lg:py-16">
+        
+        <header class="text-center mb-8 lg:mb-12">
+            <h1 class="title-font text-4xl lg:text-6xl font-bold tracking-tighter uppercase italic">Transmission_<span class="text-magenta">Gate</span></h1>
+            <p class="tech-font text-[10px] text-magenta tracking-[0.4em] mt-2 uppercase animate-pulse">// Protocol_Operational_Triage</p>
+            <a href="/" class="inline-block mt-4 tech-font text-[9px] text-gray-500 hover:text-white uppercase tracking-widest underline underline-offset-4">Retour_Accueil</a>
+        </header>
+
+        <div class="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-8">
+            
+            <div class="lg:col-span-2 bg-black/80 border border-white/10 p-6 lg:p-10 backdrop-blur-xl relative">
+                <div id="progress-bar" class="absolute top-0 left-0 h-1 bg-magenta transition-all duration-700" style="width: 25%"></div>
+
+                <form id="contactForm">
+                    <div class="step-container step-active" id="step1">
+                        <h2 class="accent-font text-white text-lg mb-8">01. Authentification</h2>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="tech-font text-[10px] text-gray-400 mb-2 block uppercase tracking-widest">Identité de l'émetteur</label>
+                                <input type="text" id="name" required class="grx-input" placeholder="NOM OU STRUCTURE">
+                            </div>
+                            <div>
+                                <label class="tech-font text-[10px] text-gray-400 mb-2 block uppercase tracking-widest">Point de contact (Email)</label>
+                                <input type="email" id="email" required class="grx-input" placeholder="EMAIL DE RÉPONSE">
+                            </div>
+                        </div>
+                        <button type="button" onclick="goToStep(2)" class="btn-grx mt-10">Suivant ></button>
+                    </div>
+
+                    <div class="step-container" id="step2">
+                        <h2 class="accent-font text-white text-lg mb-8">02. Type de Dossier</h2>
+                        <div class="space-y-4">
+                            <select id="subject" onchange="buildDynamicForm(this.value)" class="grx-input tech-font uppercase">
+                                <option value="">-- SÉLECTIONNER UN PROTOCOLE --</option>
+                                <option value="PARTENARIAT">PARTENARIAT & BUSINESS</option>
+                                <option value="RECRUTEMENT">RECRUTEMENT (STAFF/JOUEUR)</option>
+                                <option value="RELATIONS">RELATIONS INTER-ÉQUIPES</option>
+                                <option value="SUGGESTION">SUGGESTIONS & FEEDBACK</option>
+                                <option value="TECH">INCIDENT TECHNIQUE (WEB/LIVE)</option>
+                            </select>
+                        </div>
+                        <div class="grid grid-cols-2 gap-4 mt-10">
+                            <button type="button" onclick="goToStep(1)" class="btn-grx !bg-gray-800 opacity-50">Retour</button>
+                            <button type="button" id="nextTo3" onclick="goToStep(3)" disabled class="btn-grx">Analyser ></button>
+                        </div>
+                    </div>
+
+                    <div class="step-container" id="step3">
+                        <h2 class="accent-font text-white text-lg mb-8">03. Rapport Final</h2>
+                        <div id="dynamic-fields" class="space-y-5"></div>
+                        <div class="grid grid-cols-2 gap-4 mt-10">
+                            <button type="button" onclick="goToStep(2)" class="btn-grx !bg-gray-800 opacity-50">Retour</button>
+                            <button type="submit" id="submitBtn" class="btn-grx">Transmettre</button>
+                        </div>
+                    </div>
+                </form>
+
+                <div id="statusMessage" class="hidden text-center py-12">
+                    <div class="inline-block p-6 border border-green-500 bg-green-500/5 text-green-400 tech-font text-sm uppercase mb-8">
+                        Transmission Réussie <br> <span class="text-xs opacity-60">Ticket Ref:</span> <span id="ticket-id-display" class="font-bold text-white"></span>
+                    </div>
+                    <div id="partnership-next-step" class="hidden p-6 bg-gold/10 border border-gold text-gold text-[10px] uppercase tech-font text-left">
+                        <p class="font-bold mb-4">Protocole Business activé :</p>
+                        <p class="mb-4">Veuillez joindre votre dossier de présentation PDF au mail de confirmation généré ci-dessous pour validation finale.</p>
+                        <a id="mailto-link" href="#" class="bg-gold text-black p-3 font-bold block text-center">Générer le Mail de Sponsoring</a>
+                    </div>
+                    <button onclick="location.reload()" class="mt-8 text-[10px] text-gray-500 hover:text-white uppercase tech-font">[ Initier un nouveau rapport ]</button>
+                </div>
+            </div>
+
+            <div class="hidden lg:flex flex-col gap-6">
+                <div class="p-6 border-l-2 border-magenta bg-black/40">
+                    <h3 class="title-font text-xl font-bold italic text-white uppercase mb-4 tracking-tighter">Accès & Navigation</h3>
+                    <p class="text-[11px] leading-relaxed text-gray-400 tech-font uppercase">Seule l'équipe liée à la <span class="text-magenta">relation publique</span> a accès au message. Elle assure la liaison stratégique entre les pôles GOWRAX. Chaque équipe dispose de ses propres délais internes de traitement.</p>
+                </div>
+                <div class="p-6 border-l-2 border-red-500 bg-red-500/5">
+                    <h4 class="tech-font text-xs font-bold text-red-500 uppercase mb-2">Non-Support Notification</h4>
+                    <p class="text-[10px] text-gray-500 uppercase tech-font">Nous ne sommes pas les supports client de Twitch ou Discord. Toute demande technique étrangère à nos propres services (Site/Overlays) sera automatiquement ignorée et supprimée.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="w-full max-w-6xl mt-16 lg:mt-24 space-y-6">
+            <h3 class="title-font text-2xl font-bold italic text-white uppercase tracking-tighter border-b border-white/10 pb-4 text-center lg:text-left">Dossiers d'Information (FAQ)</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="faq-item p-5">
+                    <h4 class="accent-font text-[12px] text-gold mb-3">Recrutements</h4>
+                    <p class="tech-font text-[10px] text-gray-500 uppercase leading-snug">Traitement exclusif via ticket Discord. Toute demande formulée ici sera rejetée sans analyse préalable.</p>
+                </div>
+                <div class="faq-item p-5">
+                    <h4 class="accent-font text-[12px] text-magenta mb-3">Relations Pro</h4>
+                    <p class="tech-font text-[10px] text-gray-500 uppercase leading-snug">Scrims, tournois ou collaborations inter-teams. Temps de réponse moyen via Discord : 6H.</p>
+                </div>
+                <div class="faq-item p-5">
+                    <h4 class="accent-font text-[12px] text-white mb-3">Sponsoring</h4>
+                    <p class="tech-font text-[10px] text-gray-500 uppercase leading-snug">Soumission de Business Plan requise après validation de ce formulaire. Référence de ticket obligatoire.</p>
+                </div>
+                <div class="faq-item p-5">
+                    <h4 class="accent-font text-[12px] text-cyan-400 mb-3">Signalement</h4>
+                    <p class="tech-font text-[10px] text-gray-500 uppercase leading-snug">Rapport de bugs sur le site GOWRAX.ME ou sur nos interfaces de diffusion compétitive.</p>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-20 py-10 border-t border-white/5 w-full text-center tech-font text-[9px] text-gray-600 tracking-[0.5em] uppercase">
+            GOWRAX Operational Command // Secure Communication Link // 2026
+        </footer>
+    </div>
+
+    <script>
+        const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1475184242253365311/ShciSnxixoFMhHpCppfZlRp-Jo_nJmuchlQZh2dVm2s99H-jcTlqMy8CjbnatvyfZdGG";
+        let ticketID = "GRX-" + Math.floor(Math.random() * 90000 + 10000);
+
+        function toggleMobileModal(show) {
+            const modal = document.getElementById('mobile-modal');
+            modal.style.display = show ? 'block' : 'none';
+            document.body.style.overflow = show ? 'hidden' : 'auto';
+        }
+
+        function goToStep(s) {
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('step-active'));
+            document.getElementById('step'+s).classList.add('step-active');
+            document.getElementById('progress-bar').style.width = (s * 33.33) + '%';
+        }
+
+        function buildDynamicForm(val) {
+            const nextBtn = document.getElementById('nextTo3');
+            const container = document.getElementById('dynamic-fields');
+            nextBtn.disabled = val === "";
+            container.innerHTML = "";
+
+            if(val === "RECRUTEMENT") {
+                container.innerHTML = `
+                <div class="p-6 border border-red-500 bg-red-500/5 text-red-500 text-center">
+                    <p class="tech-font text-xs font-bold mb-4 uppercase italic underline">Protocole Interrompu</p>
+                    <p class="text-[10px] uppercase mb-6 leading-relaxed">Les demandes de recrutement sont centralisées sur notre infrastructure Discord. Aucune exception ne sera faite.</p>
+                    <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="bg-red-500 text-white p-3 tech-font text-[10px] font-bold inline-block w-full">Ouvrir Ticket Discord</a>
+                </div>`;
+                document.getElementById('submitBtn').classList.add('hidden');
+            } else if(val === "PARTENARIAT") {
+                container.innerHTML = `
+                <select id="p-type" required class="grx-input mb-4"><option value="">-- TYPE D'ENTITÉ --</option><option value="CLUB">CLUB / ASSOCIATION</option><option value="ENTREPRISE">ENTREPRISE / MARQUE</option></select>
+                <input type="text" id="p-corp" required class="grx-input mb-4" placeholder="NOM DE VOTRE STRUCTURE">
+                <textarea id="p-msg" required class="grx-input" rows="4" placeholder="PRÉSENTATION SYNTHÉTIQUE DU PROJET (MAX 500 CAR)"></textarea>`;
+                document.getElementById('submitBtn').classList.remove('hidden');
+            } else {
+                container.innerHTML = `<textarea id="p-msg" required class="grx-input" rows="6" placeholder="RÉDIGEZ VOTRE RAPPORT ICI..."></textarea>`;
+                document.getElementById('submitBtn').classList.remove('hidden');
+            }
+        }
+
+        document.getElementById('contactForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "TRANSFERT EN COURS...";
+
+            const sub = document.getElementById('subject').value;
+            const payload = {
+                embeds: [{
+                    title: `📩 TRANSMISSION ${ticketID}`,
+                    color: sub === "TECH" ? 16729136 : (sub === "PARTENARIAT" ? 13936951 : 14036863),
+                    fields: [
+                        { name: "👤 Expéditeur", value: `\`${document.getElementById('name').value}\``, inline: true },
+                        { name: "📧 Email", value: `\`${document.getElementById('email').value}\``, inline: true },
+                        { name: "📝 Rapport", value: document.getElementById('p-msg').value },
+                        { name: "📂 Catégorie", value: sub },
+                        { name: "⚙️ OS/Device", value: `\`${navigator.platform}\`` }
+                    ],
+                    footer: { text: "GOWRAX Operational Web-Gate System" },
+                    timestamp: new Date()
+                }]
+            };
+
+            const resp = await fetch(DISCORD_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+
+            if(resp.ok) {
+                document.getElementById('contactForm').style.display = "none";
+                document.getElementById('statusMessage').classList.remove('hidden');
+                document.getElementById('ticket-id-display').innerText = ticketID;
+                if(sub === "PARTENARIAT") {
+                    document.getElementById('partnership-next-step').classList.remove('hidden');
+                    document.getElementById('mailto-link').href = `mailto:teamgowrax@gmail.com?subject=DOSSIER PARTENARIAT - ${ticketID}&body=Référence Ticket : ${ticketID}\n\nDécrivez ici votre projet et joignez vos documents.`;
+                }
+            }
+        });
+
+        // CANVAS
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = []; let shootingStars = [];
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<80; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*1.2, op:Math.random()});
+        }
+        function createShootingStar() { shootingStars.push({x: Math.random()*canvas.width, y: -20, speed: Math.random()*8+4, len: Math.random()*80+40, op: 1}); }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height); ctx.fillStyle = "rgba(255,255,255,0.5)";
+            stars.forEach(s => { ctx.globalAlpha = s.op; ctx.fillRect(s.x, s.y, s.s, s.s); });
+            shootingStars.forEach((ss, i) => {
+                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.op})`; ctx.lineWidth = 1.5; ctx.beginPath();
+                ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y + ss.len); ctx.stroke();
+                ss.x -= ss.speed; ss.y += ss.speed; ss.op -= 0.02; if(ss.op <= 0) shootingStars.splice(i, 1);
+            });
+            if(Math.random() < 0.05) createShootingStar();
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initStars); initStars(); animate();
+        
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+    </script>
+</body>
+</html>

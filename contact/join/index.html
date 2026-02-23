@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX | Dossier de Recrutement</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    <style>
+        :root { --abyss: #0B0C15; --magenta: #D62F7F; --gold: #D4AF37; }
+        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+        .accent-font { font-family: 'Rock Salt', cursive; }
+        
+        canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .input-grx {
+            background: rgba(214, 47, 127, 0.05); border: 1px solid rgba(214, 47, 127, 0.2);
+            padding: 14px; width: 100%; color: white; transition: 0.3s; font-size: 0.85rem;
+            border-left: 3px solid transparent;
+        }
+        .input-grx:focus { border-color: var(--magenta); border-left: 3px solid var(--magenta); outline: none; background: rgba(214, 47, 127, 0.1); }
+        
+        .age-container { position: relative; }
+        .age-container::after { content: "ANS"; position: absolute; right: 15px; top: 50%; transform: translateY(-50%); font-family: 'Share Tech Mono'; font-size: 10px; color: var(--magenta); opacity: 0.6; }
+
+        .btn-join { background: var(--magenta); color: white; padding: 16px; font-weight: bold; transition: 0.4s; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 0.2em; cursor: pointer; }
+        .btn-join:hover { background: #fff; color: var(--magenta); box-shadow: 0 0 30px rgba(214, 47, 127, 0.4); }
+
+        .warning-strip { background: repeating-linear-gradient(45deg, #d62f7f, #d62f7f 10px, #b02669 10px, #b02669 20px); }
+    </style>
+</head>
+<body class="bg-[#050508]">
+
+    <canvas id="starCanvas"></canvas>
+
+    <div class="relative z-10 min-h-screen flex flex-col items-center py-12 px-4">
+        
+        <header class="text-center mb-12">
+            <div class="inline-block warning-strip px-4 py-1 mb-4">
+                <span class="tech-font text-[10px] text-white font-bold tracking-[0.3em] uppercase italic">Alerte : Système de Recrutement Temporaire</span>
+            </div>
+            <h1 class="title-font text-5xl font-bold tracking-tighter uppercase italic">Join_<span class="text-magenta">Gowrax</span></h1>
+            <p class="tech-font text-[10px] text-gray-500 mt-2 tracking-[0.4em] uppercase">// Protocol_Human_Resources_Alpha</p>
+        </header>
+
+        <div class="w-full max-w-2xl bg-black/60 border border-white/5 p-8 lg:p-12 backdrop-blur-2xl shadow-2xl relative">
+            
+            <div class="mb-10 p-4 border-l-2 border-magenta bg-magenta/5">
+                <p class="tech-font text-[11px] text-gray-300 leading-relaxed uppercase">
+                    Le bot Discord étant en maintenance, ce portail est l'unique canal de candidature. 
+                    <span class="text-white font-bold italic">Un ticket sera ouvert pour chaque dossier valide dans la journée.</span> 
+                    Tout troll sera banni sans sommation.
+                </p>
+            </div>
+
+            <form id="recruitmentForm" class="space-y-8">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="tech-font text-[10px] text-magenta mb-2 block uppercase tracking-widest">Pseudo Discord (ID Complet)</label>
+                        <input type="text" id="discord" required class="input-grx" placeholder="Ex: Crazzynel#0001">
+                    </div>
+                    <div>
+                        <label class="tech-font text-[10px] text-magenta mb-2 block uppercase tracking-widest">Prénom</label>
+                        <input type="text" id="firstname" required class="input-grx" placeholder="Votre prénom">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="age-container">
+                        <label class="tech-font text-[10px] text-magenta mb-2 block uppercase tracking-widest">Âge</label>
+                        <input type="number" id="age" required class="input-grx" placeholder="18">
+                    </div>
+                    <div>
+                        <label class="tech-font text-[10px] text-magenta mb-2 block uppercase tracking-widest">Rôle souhaité</label>
+                        <select id="role" required class="input-grx tech-font uppercase text-xs">
+                            <option value="">-- SÉLECTIONNER --</option>
+                            <option value="JOUEUR_VALORANT">Joueur Valorant</option>
+                            <option value="JOUEUR_RL">Joueur Rocket League</option>
+                            <option value="JOUEUR_FORTNITE">Joueur Fortnite</option>
+                            <option value="COACH">Coach / Analyste</option>
+                            <option value="STAFF">Staff (Manager/Modo)</option>
+                            <option value="WEB_DESIGN">Web / GFX / VFX</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="tech-font text-[10px] text-gold mb-2 block uppercase tracking-widest">Lien Tracker (Obligatoire pour Joueurs)</label>
+                    <input type="url" id="tracker" class="input-grx !border-gold/30" placeholder="https://tracker.gg/valorant/profile/...">
+                </div>
+
+                <div>
+                    <label class="tech-font text-[10px] text-gray-500 mb-2 block uppercase tracking-widest">Présentation personnelle</label>
+                    <textarea id="presentation" rows="3" required class="input-grx" placeholder="Parlez-nous de vous en quelques lignes..."></textarea>
+                </div>
+
+                <div>
+                    <label class="tech-font text-[10px] text-gray-500 mb-2 block uppercase tracking-widest">Motivations</label>
+                    <textarea id="motivations" rows="4" required class="input-grx" placeholder="Pourquoi rejoindre l'unité GOWRAX ?"></textarea>
+                </div>
+
+                <button type="submit" id="submitBtn" class="btn-join w-full">
+                    Soumettre mon dossier au Staff
+                </button>
+            </form>
+
+            <div id="successMsg" class="hidden text-center py-10">
+                <h3 class="accent-font text-2xl text-magenta mb-4">Transmission Réussie !</h3>
+                <p class="tech-font text-[10px] text-gray-400 uppercase tracking-widest leading-loose">
+                    Votre dossier a été injecté dans notre base de données. <br>
+                    Restez attentif à vos MP Discord, un ticket sera généré sous peu.
+                </p>
+                <button onclick="location.reload()" class="mt-8 tech-font text-[9px] text-magenta underline underline-offset-4 uppercase">Nouvelle candidature</button>
+            </div>
+        </div>
+
+        <footer class="mt-12">
+            <a href="/" class="tech-font text-[10px] text-gray-600 hover:text-white transition uppercase tracking-[0.5em] underline underline-offset-8">Retour_Hub</a>
+        </footer>
+    </div>
+
+    <script>
+        const WEBHOOK_URL = "https://discord.com/api/webhooks/1475184242253365311/ShciSnxixoFMhHpCppfZlRp-Jo_nJmuchlQZh2dVm2s99H-jcTlqMy8CjbnatvyfZdGG";
+
+        const form = document.getElementById('recruitmentForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const successMsg = document.getElementById('successMsg');
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            submitBtn.disabled = true;
+            submitBtn.innerText = "ENVOI_EN_COURS...";
+
+            const payload = {
+                username: "GRX RECRUITMENT SYSTEM",
+                avatar_url: "https://gowrax.me/assets/img/logo-team-esport.png", // À vérifier
+                embeds: [{
+                    title: "🎖️ NOUVEAU DOSSIER DE RECRUTEMENT",
+                    color: 14036863, // Magenta
+                    fields: [
+                        { name: "👤 Identité", value: `**Discord:** \`${document.getElementById('discord').value}\`\n**Prénom:** ${document.getElementById('firstname').value}\n**Âge:** ${document.getElementById('age').value} ans`, inline: false },
+                        { name: "🎯 Rôle", value: `\`${document.getElementById('role').value}\``, inline: true },
+                        { name: "📊 Tracker", value: document.getElementById('tracker').value || "Non fourni", inline: true },
+                        { name: "📝 Présentation", value: document.getElementById('presentation').value },
+                        { name: "🔥 Motivations", value: document.getElementById('motivations').value }
+                    ],
+                    footer: { text: "Protocol GOWRAX | Ticket à générer manuellement" },
+                    timestamp: new Date()
+                }]
+            };
+
+            try {
+                const response = await fetch(WEBHOOK_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (response.ok) {
+                    form.style.display = 'none';
+                    successMsg.classList.remove('hidden');
+                } else {
+                    throw new Error();
+                }
+            } catch (err) {
+                alert("Erreur technique. Si le problème persiste, contactez un admin direct.");
+                submitBtn.disabled = false;
+                submitBtn.innerText = "Soumettre mon dossier au Staff";
+            }
+        });
+
+        // CANVAS STARS (Simplifié pour la page join)
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<100; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*1.5});
+        }
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height); ctx.fillStyle = "rgba(214, 47, 127, 0.4)";
+            stars.forEach(s => { ctx.fillRect(s.x, s.y, s.s, s.s); s.y -= 0.3; if(s.y < 0) s.y = canvas.height; });
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initStars); initStars(); animate();
+    </script>
+</body>
+</html>
