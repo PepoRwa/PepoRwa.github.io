@@ -4,6 +4,7 @@ Allow: /
 # Bloquer l'indexation des scripts de template si nécessaire
 Disallow: /js/
 Disallow: /css/
+Disallow /assets/
 
 # Lien vers le sitemap pour les moteurs de recherche
 Sitemap: https://gowrax.me/sitemap.xml

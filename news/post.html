@@ -3,48 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>GRX | TRANSMISSION_INCOMING</title>
+    <meta name="description" content="Décodage du rapport tactique GOWRAX en cours...">
+
+    <meta property="og:type" content="article">
+    <meta property="og:title" id="og-title" content="GRX | Rapport Tactique">
+    <meta property="og:description" id="og-desc" content="Transmission entrante via le protocole GOWRAX.">
+    <meta property="og:image" id="og-image" content="URL_DE_TON_LOGO_PAR_DEFAUT">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" id="twitter-title" content="GRX | Rapport Tactique">
+    <meta name="twitter:image" id="twitter-image" content="URL_DE_TON_LOGO_PAR_DEFAUT">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    
     <style>
         :root { --magenta: #D62F7F; --abyss: #0B0C15; }
         body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
         
+        /* Hiérarchie Markdown Améliorée */
         .markdown-content h1 { font-family: 'Rajdhani'; font-size: 2.5rem; font-weight: bold; text-transform: uppercase; color: var(--magenta); margin: 3rem 0 1.5rem; border-left: 4px solid var(--magenta); padding-left: 1rem; line-height: 1; }
         .markdown-content h2 { font-family: 'Rajdhani'; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; color: #fff; margin: 2.5rem 0 1rem; border-bottom: 1px solid rgba(214, 47, 127, 0.2); padding-bottom: 0.5rem; }
         .markdown-content h3 { font-family: 'Rajdhani'; font-size: 1.4rem; font-weight: bold; color: var(--magenta); margin: 2rem 0 1rem; }
+        .markdown-content h4 { font-family: 'Rajdhani'; font-size: 1.1rem; font-weight: bold; text-transform: uppercase; color: #aaa; margin: 1.5rem 0 0.5rem; border-left: 2px solid #444; padding-left: 8px; }
+        
         .markdown-content p { margin-bottom: 1.5rem; line-height: 1.8; color: #ccc; font-size: 0.95rem; }
         .markdown-content strong { color: #fff; font-weight: bold; }
         .markdown-content ul { list-style-type: none; margin-bottom: 1.5rem; }
         .markdown-content ul li::before { content: ">"; color: var(--magenta); margin-right: 10px; font-family: 'Share Tech Mono'; }
         .markdown-content blockquote { border-left: 2px solid var(--magenta); background: rgba(214, 47, 127, 0.05); padding: 1rem 1.5rem; margin: 2rem 0; font-style: italic; color: #aaa; }
         
-        #toc { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); width: 220px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 1.5rem; display: none; }
+        /* Sommaire Étendu */
+        #toc { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); width: 220px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 1.5rem; display: none; max-height: 80vh; overflow-y: auto; }
         @media (min-width: 1280px) { #toc { display: block; } }
         #toc ul { list-style: none; font-family: 'Share Tech Mono'; font-size: 10px; }
-        #toc li { margin-bottom: 12px; }
-        #toc a { color: #555; transition: 0.3s; text-transform: uppercase; display: block; }
+        #toc li { margin-bottom: 8px; }
+        #toc a { color: #555; transition: 0.3s; text-transform: uppercase; display: block; line-height: 1.2; }
         #toc a:hover { color: var(--magenta); transform: translateX(5px); }
+        .toc-h3 { padding-left: 15px; opacity: 0.7; font-size: 9px; }
+        .toc-h4 { padding-left: 25px; opacity: 0.5; font-size: 8px; }
 
         .tech-font { font-family: 'Share Tech Mono', monospace; }
         .glow-text { text-shadow: 0 0 15px rgba(214, 47, 127, 0.5); }
         .decrypt-anim { animation: scan 2s infinite; }
         @keyframes scan { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
 
-        .post-banner {
-            position: absolute; top: 0; left: 0; width: 100%; height: 500px;
-            z-index: -1; overflow: hidden;
-        }
+        .post-banner { position: absolute; top: 0; left: 0; width: 100%; height: 500px; z-index: -1; overflow: hidden; }
         .post-banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
-        .post-banner::after {
-            content: ''; position: absolute; inset: 0;
-            background: linear-gradient(to bottom, transparent 0%, var(--abyss) 100%);
-        }
-        /* On ajuste le header pour qu'il soit au dessus de l'image */
+        .post-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 0%, var(--abyss) 100%); }
         #header-post { position: relative; padding-top: 150px; }
     </style>
+    <script src="../global.js"></script>
 </head>
 <body class="bg-[#050508] p-4 md:p-6">
     <div id="banner-container" class="post-banner hidden">
@@ -85,63 +98,65 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        // CORRECTIF RENDERER (Support des versions récentes de Marked)
         const renderer = {
             heading(item) {
-                // Dans les versions récentes, 'item' est un objet. On récupère le texte brut.
                 const rawText = typeof item === 'string' ? item : (item.text || '');
                 const level = item.depth || 1;
                 const slug = rawText.toLowerCase().trim().replace(/[^\w]+/g, '-');
                 return `<h${level} id="${slug}">${rawText}</h${level}>`;
             }
         };
-        
         marked.use({ renderer });
 
         async function loadPost() {
             const urlParams = new URLSearchParams(window.location.search);
             const slug = urlParams.get('slug');
 
-            if (!slug) { 
-                console.error("ERREUR: Aucun slug trouvé dans l'URL");
-                window.location.replace('./index.html'); 
-                return; 
-            }
+            if (!slug) { window.location.replace('./index.html'); return; }
 
             try {
                 const { data: post, error } = await _supabase.from('posts').select('*').eq('slug', slug).single();
                 
-                if (error || !post) {
-                    console.error("ERREUR SUPABASE:", error);
-                    throw new Error("POST_NOT_FOUND");
-                }
+                if (error || !post) throw new Error("POST_NOT_FOUND");
+
+                // UPDATE SEO & OPEN GRAPH
+                const cleanExcerpt = post.content.replace(/[#*`_]/g, '').substring(0, 160) + '...';
+                document.title = `GRX | ${post.title.toUpperCase()}`;
+                
+                // Injection dynamique pour les réseaux (Fonctionne si partagé via certains outils ou indexé)
+                document.getElementById('og-title').setAttribute('content', post.title);
+                document.getElementById('og-desc').setAttribute('content', cleanExcerpt);
+                document.getElementById('twitter-title').setAttribute('content', post.title);
+
                 // GESTION DE LA BANNIÈRE
                 if (post.image_url) {
                     const bannerImg = document.getElementById('post-image');
                     bannerImg.src = post.image_url;
                     document.getElementById('banner-container').classList.remove('hidden');
+                    
+                    // Update image meta tags
+                    document.getElementById('og-image').setAttribute('content', post.image_url);
+                    document.getElementById('twitter-image').setAttribute('content', post.image_url);
                 }
 
                 // DATA INJECTION
-                document.title = `GRX | ${post.title.toUpperCase()}`;
                 document.getElementById('post-title').innerText = post.title;
                 document.getElementById('post-date').innerText = `DÉCRYPTÉ_LE: ${new Date(post.created_at).toLocaleDateString('fr-FR')}`;
                 
                 const tagsContainer = document.getElementById('post-tags');
                 if (post.tags) {
-                    tagsContainer.innerHTML = ''; // Clear previous tags
+                    tagsContainer.innerHTML = '';
                     post.tags.forEach(tag => {
                         tagsContainer.innerHTML += `<span class="bg-magenta/10 border border-magenta/30 text-magenta text-[8px] px-2 py-0.5 uppercase tracking-tighter">${tag}</span>`;
                     });
                 }
 
-                // RENDER MARKDOWN
                 document.getElementById('post-content').innerHTML = marked.parse(post.content, { breaks: true });
 
-                // TOC GENERATION (Sommaire)
+                // SOMMAIRE ÉTENDU (H1 à H4)
                 const tocList = document.getElementById('toc-list');
-                tocList.innerHTML = ''; // Clear previous TOC
-                const headings = document.getElementById('post-content').querySelectorAll('h1, h2');
+                tocList.innerHTML = '';
+                const headings = document.getElementById('post-content').querySelectorAll('h1, h2, h3, h4');
                 
                 if (headings.length > 0) {
                     headings.forEach(h => {
@@ -149,16 +164,19 @@
                         const a = document.createElement('a');
                         a.href = `#${h.id}`;
                         a.innerText = h.innerText;
-                        if (h.tagName === 'H2') li.classList.add('pl-4', 'opacity-60');
+                        
+                        // Indentation selon le niveau
+                        if (h.tagName === 'H2') li.classList.add('pl-2', 'opacity-80');
+                        if (h.tagName === 'H3') li.classList.add('toc-h3');
+                        if (h.tagName === 'H4') li.classList.add('toc-h4');
+                        
                         li.appendChild(a);
                         tocList.appendChild(li);
                     });
                 } else {
-                    const tocNav = document.getElementById('toc');
-                    if (tocNav) tocNav.style.display = 'none';
+                    document.getElementById('toc').style.display = 'none';
                 }
 
-                // REVEAL ANIMATION
                 const loader = document.getElementById('loader');
                 if (loader) {
                     loader.style.opacity = '0';
@@ -171,11 +189,8 @@
 
             } catch (err) {
                 console.error("CATCH_ERROR:", err);
-                // Optionnel : rediriger si erreur fatale
-                // window.location.replace('./index.html');
             }
         }
-
         document.addEventListener('DOMContentLoaded', loadPost);
     </script>
 </body>
