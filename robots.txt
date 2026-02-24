@@ -1,5 +1,9 @@
 User-agent: *
 Allow: /
 
-# Lien vers le sitemap pour une indexation immédiate
+# Bloquer l'indexation des scripts de template si nécessaire
+Disallow: /js/
+Disallow: /css/
+
+# Lien vers le sitemap pour les moteurs de recherche
 Sitemap: https://gowrax.me/sitemap.xml

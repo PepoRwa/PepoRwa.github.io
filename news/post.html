@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX | TRANSMISSION_INCOMING</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --magenta: #D62F7F; --abyss: #0B0C15; }
+        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
+        
+        .markdown-content h1 { font-family: 'Rajdhani'; font-size: 2.5rem; font-weight: bold; text-transform: uppercase; color: var(--magenta); margin: 3rem 0 1.5rem; border-left: 4px solid var(--magenta); padding-left: 1rem; line-height: 1; }
+        .markdown-content h2 { font-family: 'Rajdhani'; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; color: #fff; margin: 2.5rem 0 1rem; border-bottom: 1px solid rgba(214, 47, 127, 0.2); padding-bottom: 0.5rem; }
+        .markdown-content h3 { font-family: 'Rajdhani'; font-size: 1.4rem; font-weight: bold; color: var(--magenta); margin: 2rem 0 1rem; }
+        .markdown-content p { margin-bottom: 1.5rem; line-height: 1.8; color: #ccc; font-size: 0.95rem; }
+        .markdown-content strong { color: #fff; font-weight: bold; }
+        .markdown-content ul { list-style-type: none; margin-bottom: 1.5rem; }
+        .markdown-content ul li::before { content: ">"; color: var(--magenta); margin-right: 10px; font-family: 'Share Tech Mono'; }
+        .markdown-content blockquote { border-left: 2px solid var(--magenta); background: rgba(214, 47, 127, 0.05); padding: 1rem 1.5rem; margin: 2rem 0; font-style: italic; color: #aaa; }
+        
+        #toc { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); width: 220px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 1.5rem; display: none; }
+        @media (min-width: 1280px) { #toc { display: block; } }
+        #toc ul { list-style: none; font-family: 'Share Tech Mono'; font-size: 10px; }
+        #toc li { margin-bottom: 12px; }
+        #toc a { color: #555; transition: 0.3s; text-transform: uppercase; display: block; }
+        #toc a:hover { color: var(--magenta); transform: translateX(5px); }
+
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .glow-text { text-shadow: 0 0 15px rgba(214, 47, 127, 0.5); }
+        .decrypt-anim { animation: scan 2s infinite; }
+        @keyframes scan { 0% { opacity: 0.3; } 50% { opacity: 1; } 100% { opacity: 0.3; } }
+
+        .post-banner {
+            position: absolute; top: 0; left: 0; width: 100%; height: 500px;
+            z-index: -1; overflow: hidden;
+        }
+        .post-banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
+        .post-banner::after {
+            content: ''; position: absolute; inset: 0;
+            background: linear-gradient(to bottom, transparent 0%, var(--abyss) 100%);
+        }
+        /* On ajuste le header pour qu'il soit au dessus de l'image */
+        #header-post { position: relative; padding-top: 150px; }
+    </style>
+</head>
+<body class="bg-[#050508] p-4 md:p-6">
+    <div id="banner-container" class="post-banner hidden">
+        <img id="post-image" src="" alt="Banner">
+    </div>
+
+    <nav id="toc">
+        <div class="tech-font text-[9px] text-magenta mb-4 tracking-widest font-bold">// SOMMAIRE_TACTIQUE</div>
+        <ul id="toc-list"></ul>
+    </nav>
+
+    <div class="max-w-3xl mx-auto py-10 md:py-20">
+        <a href="./index.html" class="tech-font text-magenta text-[10px] uppercase tracking-[0.3em] hover:text-white transition block mb-12 italic underline underline-offset-8">
+            [<- RETOUR_ARCHIVES]
+        </a>
+        
+        <header id="header-post" class="mb-12 border-b border-white/10 pb-12 opacity-0 transition-all duration-1000 transform translate-y-4">
+            <div id="post-tags" class="flex flex-wrap gap-2 mb-6"></div>
+            <h1 id="post-title" class="text-4xl md:text-7xl font-bold uppercase italic tracking-tighter mb-4 glow-text leading-none"></h1>
+            <div class="flex justify-between items-center text-gray-600 tech-font text-[10px] uppercase tracking-widest">
+                <span id="post-date"></span>
+                <span>Security: Public_Access</span>
+            </div>
+        </header>
+
+        <article id="post-content" class="markdown-content tech-font opacity-0 transition-all duration-1000 delay-300 transform translate-y-4"></article>
+        
+        <div id="loader" class="fixed inset-0 flex flex-col items-center justify-center bg-[#050508] z-50">
+            <div class="w-12 h-1 bg-white/10 mb-4 relative overflow-hidden">
+                <div class="absolute inset-0 bg-magenta decrypt-anim" style="width: 100%;"></div>
+            </div>
+            <span class="tech-font text-magenta text-[10px] tracking-[0.5em] uppercase">Décryptage_En_Cours...</span>
+        </div>
+    </div>
+
+   <script>
+        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        // CORRECTIF RENDERER (Support des versions récentes de Marked)
+        const renderer = {
+            heading(item) {
+                // Dans les versions récentes, 'item' est un objet. On récupère le texte brut.
+                const rawText = typeof item === 'string' ? item : (item.text || '');
+                const level = item.depth || 1;
+                const slug = rawText.toLowerCase().trim().replace(/[^\w]+/g, '-');
+                return `<h${level} id="${slug}">${rawText}</h${level}>`;
+            }
+        };
+        
+        marked.use({ renderer });
+
+        async function loadPost() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+
+            if (!slug) { 
+                console.error("ERREUR: Aucun slug trouvé dans l'URL");
+                window.location.replace('./index.html'); 
+                return; 
+            }
+
+            try {
+                const { data: post, error } = await _supabase.from('posts').select('*').eq('slug', slug).single();
+                
+                if (error || !post) {
+                    console.error("ERREUR SUPABASE:", error);
+                    throw new Error("POST_NOT_FOUND");
+                }
+                // GESTION DE LA BANNIÈRE
+                if (post.image_url) {
+                    const bannerImg = document.getElementById('post-image');
+                    bannerImg.src = post.image_url;
+                    document.getElementById('banner-container').classList.remove('hidden');
+                }
+
+                // DATA INJECTION
+                document.title = `GRX | ${post.title.toUpperCase()}`;
+                document.getElementById('post-title').innerText = post.title;
+                document.getElementById('post-date').innerText = `DÉCRYPTÉ_LE: ${new Date(post.created_at).toLocaleDateString('fr-FR')}`;
+                
+                const tagsContainer = document.getElementById('post-tags');
+                if (post.tags) {
+                    tagsContainer.innerHTML = ''; // Clear previous tags
+                    post.tags.forEach(tag => {
+                        tagsContainer.innerHTML += `<span class="bg-magenta/10 border border-magenta/30 text-magenta text-[8px] px-2 py-0.5 uppercase tracking-tighter">${tag}</span>`;
+                    });
+                }
+
+                // RENDER MARKDOWN
+                document.getElementById('post-content').innerHTML = marked.parse(post.content, { breaks: true });
+
+                // TOC GENERATION (Sommaire)
+                const tocList = document.getElementById('toc-list');
+                tocList.innerHTML = ''; // Clear previous TOC
+                const headings = document.getElementById('post-content').querySelectorAll('h1, h2');
+                
+                if (headings.length > 0) {
+                    headings.forEach(h => {
+                        const li = document.createElement('li');
+                        const a = document.createElement('a');
+                        a.href = `#${h.id}`;
+                        a.innerText = h.innerText;
+                        if (h.tagName === 'H2') li.classList.add('pl-4', 'opacity-60');
+                        li.appendChild(a);
+                        tocList.appendChild(li);
+                    });
+                } else {
+                    const tocNav = document.getElementById('toc');
+                    if (tocNav) tocNav.style.display = 'none';
+                }
+
+                // REVEAL ANIMATION
+                const loader = document.getElementById('loader');
+                if (loader) {
+                    loader.style.opacity = '0';
+                    setTimeout(() => {
+                        loader.style.display = 'none';
+                        document.getElementById('header-post').classList.remove('opacity-0', 'translate-y-4');
+                        document.getElementById('post-content').classList.remove('opacity-0', 'translate-y-4');
+                    }, 500);
+                }
+
+            } catch (err) {
+                console.error("CATCH_ERROR:", err);
+                // Optionnel : rediriger si erreur fatale
+                // window.location.replace('./index.html');
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', loadPost);
+    </script>
+</body>
+</html>

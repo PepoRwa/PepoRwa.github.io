@@ -5,207 +5,234 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOWRAX.ME | Tactical Interface</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --abyss: #0B0C15; --void: #1A1C2E; --purple: #6F2DBD; --magenta: #D62F7F; }
+        :root { --abyss: #0B0C15; --magenta: #D62F7F; }
+        body, html { background: #000; color: #fff; margin: 0; overflow: hidden; font-family: 'Montserrat', sans-serif; height: 100dvh; width: 100%; }
         
-        /* Modif 1: On empêche le scroll mais on permet au contenu de respirer */
-        body, html { background: #000; color: #fff; margin: 0; overflow: hidden; font-family: 'Montserrat', sans-serif; height: 100%; width: 100%; }
-        
-        /* Modif 2: On cache le curseur custom sur mobile via media query */
         #custom-cursor { 
             width: 24px; height: 24px; border: 1px solid var(--magenta); 
             position: fixed; pointer-events: none; z-index: 999; border-radius: 50%; 
             transition: transform 0.05s ease-out; transform: translate(-50%, -50%); 
-            box-shadow: 0 0 10px var(--magenta); 
-            display: none; /* Caché par défaut */
+            box-shadow: 0 0 10px var(--magenta); display: none;
         }
-        @media (min-width: 1024px) { 
-            body { cursor: none; } 
-            #custom-cursor { display: block; } 
-        }
+        @media (min-width: 1024px) { body { cursor: none; } #custom-cursor { display: block; } }
 
-        #bios-boot { position: fixed; inset: 0; background: #000; z-index: 100; padding: 1.5rem; font-size: 0.8rem; color: #00ff00; line-height: 1.4; font-family: 'Share Tech Mono', monospace; }
-        .cursor-blink { display: inline-block; width: 8px; height: 15px; background: #00ff00; animation: blink 0.8s infinite; }
-        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-
+        #bios-boot { position: fixed; inset: 0; background: #000; z-index: 100; padding: 1.5rem; font-size: 0.8rem; color: #00ff00; font-family: 'Share Tech Mono', monospace; }
+        
         .scanline { width: 100%; height: 100px; z-index: 40; pointer-events: none; background: linear-gradient(0deg, rgba(214, 47, 127, 0) 0%, rgba(214, 47, 127, 0.05) 50%, rgba(214, 47, 127, 0) 100%); position: absolute; top: -100px; animation: scan 4s linear infinite; }
         @keyframes scan { 0% { top: -100px; } 100% { top: 100%; } }
-        
-        .glitch { position: relative; font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; }
 
-        .bar { width: 3px; height: 10px; background: var(--magenta); animation: pulse 0.5s infinite alternate; opacity: 0.2; transition: opacity 0.5s; }
-        .bar.active { opacity: 1; }
-        @keyframes pulse { from { height: 4px; } to { height: 15px; } }
+        /* Mobile Menu Overlay */
+        #mobile-nav { transform: translateX(100%); transition: transform 0.5s cubic-bezier(0.77,0.2,0.05,1.0); }
+        #mobile-nav.active { transform: translateX(0); }
+
+        .news-flash-card { background: rgba(214, 47, 127, 0.03); border: 1px solid rgba(214, 47, 127, 0.1); transition: 0.3s; backdrop-filter: blur(5px); }
+        .news-flash-card:hover { border-color: var(--magenta); background: rgba(214, 47, 127, 0.08); transform: translateY(-2px); }
     </style>
 </head>
-<body>
+<body class="bg-[#050508]">
 
     <div id="custom-cursor"></div>
 
     <div id="bios-boot">
         <div id="boot-text"></div>
-        <span class="cursor-blink"></span>
+        <span class="inline-block w-2 h-4 bg-[#00ff00] animate-pulse"></span>
     </div>
 
     <div id="player-container" style="position:absolute; top:-9999px;"><div id="yt-player"></div></div>
     
-    <canvas id="starCanvas" class="fixed inset-0 z-0 bg-[#050508]"></canvas>
+    <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
 
-    <div id="main-ui" class="relative z-10 opacity-0 transition-opacity duration-[1500ms] flex flex-col h-screen h-[100dvh]">
+    <div id="main-ui" class="relative z-10 opacity-0 transition-opacity duration-[1500ms] flex flex-col h-full">
         <div class="scanline"></div>
         
         <header class="p-4 md:p-6 flex justify-between items-center border-b border-magenta/20 backdrop-blur-md bg-black/20">
-            <div class="glitch text-xl md:text-2xl text-magenta tracking-tighter" data-text="GOWRAX.ME">GOWRAX.ME</div>
+            <div class="font-rajdhani font-bold text-xl md:text-2xl text-magenta tracking-tighter uppercase italic">Gowrax_<span class="text-white">HQ</span></div>
             
-            <nav class="flex space-x-4 md:space-x-8 text-[9px] md:text-xs tracking-[0.2em] font-mono font-bold">
+            <nav class="hidden md:flex space-x-6 text-[10px] tracking-[0.2em] font-mono font-bold">
                 <a href="/" class="text-magenta underline underline-offset-8">ACCUEIL</a>
-                <a href="./ceo/index.html" class="hover:text-magenta transition opacity-50">FONDATEURS</a>
                 <a href="./roster/index.html" class="hover:text-magenta transition opacity-50">ROSTERS</a>
                 <a href="./staff/index.html" class="hover:text-magenta transition opacity-50">STAFF</a>
-
+                <a href="./ceo/index.html" class="hover:text-magenta transition opacity-50">FONDATEURS</a>
+                <a href="./contact/index.html" class="hover:text-magenta transition opacity-50">CONTACT</a>
             </nav>
+
+            <button onclick="toggleNav(true)" class="md:hidden text-magenta font-mono text-[10px] border border-magenta/40 px-3 py-1 uppercase tracking-widest">Menu_</button>
         </header>
 
-        <main class="flex-1 flex items-center justify-center relative overflow-hidden p-4">
-            <div class="text-center w-full" id="hero-card" style="transition: transform 0.1s ease-out; transform-style: preserve-3d;">
+        <main class="flex-1 flex flex-col items-center justify-center relative p-4">
+            <div class="text-center w-full mb-8 lg:mb-12" id="hero-card" style="transition: transform 0.1s ease-out; transform-style: preserve-3d;">
                 <h1 class="text-[25vw] md:text-[18vw] font-rajdhani leading-none font-bold tracking-tighter opacity-5 select-none text-white">GRX</h1>
-                
                 <div class="absolute inset-0 flex flex-col items-center justify-center pointer-events-none">
-                    <h2 class="text-5xl md:text-9xl font-rajdhani font-bold mb-2 tracking-tighter drop-shadow-[0_0_30px_rgba(214,47,127,0.3)]">GOWRAX</h2>
-                    <p class="font-mono text-magenta tracking-[0.2em] md:tracking-[0.4em] text-[8px] md:text-sm uppercase bg-black/60 px-4 md:px-6 py-2 border border-magenta/30 backdrop-blur-sm">Protocol Alpha Activated</p>
+                    <h2 class="text-6xl md:text-9xl font-rajdhani font-bold mb-2 tracking-tighter drop-shadow-[0_0_30px_rgba(214,47,127,0.3)]">GOWRAX</h2>
+                    <p class="font-mono text-magenta tracking-[0.4em] text-[8px] md:text-sm uppercase bg-black/60 px-4 md:px-6 py-2 border border-magenta/30 backdrop-blur-sm italic">Protocol Alpha Activated</p>
+                </div>
+            </div>
+
+            <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-4 px-4 mt-8">
+                <div class="md:col-span-3 flex justify-between items-center text-[10px] font-mono text-magenta mb-2 tracking-widest uppercase italic opacity-60">
+                    <span>// Last_Transmissions</span>
+                    <a href="./news/index.html" class="hover:text-white underline transition">Open_Archives</a>
+                </div>
+                <div id="news-feed" class="contents">
+                    <div class="news-flash-card p-5 animate-pulse h-24"></div>
+                    <div class="news-flash-card p-5 animate-pulse h-24"></div>
+                    <div class="news-flash-card p-5 animate-pulse h-24"></div>
                 </div>
             </div>
         </main>
 
-        <footer class="p-3 md:p-4 border-t border-white/5 bg-black/80 backdrop-blur-md flex justify-between items-center text-[8px] md:text-[9px] text-gray-500 uppercase font-mono">
-            <div class="flex items-center gap-2 md:gap-4">
+        <footer class="p-4 border-t border-white/5 bg-black/80 backdrop-blur-md flex justify-between items-center text-[9px] text-gray-500 uppercase font-mono">
+            <div class="flex items-center gap-4">
                 <span>Node: GRX-01</span>
-                <span class="text-green-500 animate-pulse hidden xs:inline">● ONLINE</span>
-            </div>
-            <div class="flex items-center gap-2 md:gap-3 text-magenta">
-                <span id="audio-status" class="hidden sm:inline">SYNCING_SYSTEM...</span>
-                <div class="flex gap-1 items-end h-4">
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                </div>
+                <span class="text-green-500 animate-pulse">● ONLINE</span>
             </div>
             <div id="live-clock">00:00:00</div>
         </footer>
+        <div id="status-overlay" class="fixed inset-0 z-[200] flex items-center justify-center bg-black/60 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-500">
+            <div id="status-modal" class="max-w-md w-full mx-4 bg-[#050508] border border-magenta/40 p-8 shadow-[0_0_50px_rgba(214,47,127,0.2)] relative overflow-hidden">
+                <div class="scanline opacity-20"></div>
+                
+                <div class="flex justify-between items-center mb-6 border-b border-magenta/20 pb-4">
+                    <div class="flex items-center gap-3">
+                        <div class="w-2 h-2 bg-magenta animate-ping"></div>
+                        <span class="tech-font text-xs text-magenta tracking-[0.4em] font-bold uppercase underline underline-offset-4">System_Broadcast</span>
+                    </div>
+                    <button onclick="closePopup()" class="tech-font text-[10px] text-gray-500 hover:text-white transition uppercase tracking-widest">[ Ignorer_X ]</button>
+                </div>
+
+                <div class="space-y-6">
+                    <p class="text-sm md:text-base text-gray-200 leading-relaxed font-mono italic">
+                        "Les nouveaux membres des rosters seront bientôt mis à jour. Je me concentre actuellement sur la correction des bugs bot/site. Merci de votre patience."
+                    </p>
+                    
+                    <div class="flex justify-between items-center pt-4 border-t border-white/10">
+                        <div class="flex flex-col">
+                            <span class="tech-font text-[11px] text-magenta font-bold uppercase tracking-tighter">Crazzynel</span>
+                            <span class="tech-font text-[8px] text-gray-600 uppercase">Chief Executive Officer</span>
+                        </div>
+                        <button onclick="closePopup()" class="bg-magenta text-white px-6 py-2 tech-font text-[10px] uppercase tracking-widest hover:bg-white hover:text-magenta transition-all duration-300">Confirmer_Lecture</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <div id="mobile-nav" class="fixed inset-0 bg-black z-[100] p-8 flex flex-col justify-center items-center space-y-6 font-mono text-center">
+        <button onclick="toggleNav(false)" class="absolute top-6 right-6 text-magenta border border-magenta p-2 text-xs uppercase tracking-widest">Close_X</button>
+        <a href="/" class="text-3xl text-magenta font-bold italic tracking-tighter" onclick="toggleNav(false)">ACCUEIL</a>
+        <div class="w-full h-px bg-white/10"></div>
+        <a href="./roster/index.html" class="text-xl tracking-widest" onclick="toggleNav(false)">ROSTERS</a>
+        <a href="./staff/index.html" class="text-xl tracking-widest" onclick="toggleNav(false)">STAFF</a>
+        <a href="./ceo/index.html" class="text-xl tracking-widest opacity-50" onclick="toggleNav(false)">FONDATEURS</a>
+        <a href="./contact/index.html" class="text-xl tracking-widest text-magenta border border-magenta/40 px-8 py-3" onclick="toggleNav(false)">CONTACT</a>
     </div>
 
     <script>
-        // --- BOOT ---
-        const bootMessages = ["> BOOTING...", "> LOADING STARMAP...", "> SYNCING NEURAL_LINK...", "> BYPASSING AUDIO_GATE...", "> GOWRAX PROTOCOL: ONLINE"];
+        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function fetchLastNews() {
+            const { data: posts, error } = await _supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(3);
+            if (!error && posts) {
+                document.getElementById('news-feed').innerHTML = posts.map(post => `
+                    <a href="./news/post.html?slug=${post.slug}" class="news-flash-card p-5 group flex flex-col justify-between">
+                        <div class="text-[8px] text-magenta/60 font-mono mb-2">[ ${new Date(post.created_at).toLocaleDateString()} ]</div>
+                        <div class="text-xs font-rajdhani font-bold group-hover:text-magenta transition uppercase leading-tight line-clamp-2">${post.title}</div>
+                    </a>
+                `).join('');
+            }
+        }
+
+        function toggleNav(state) { document.getElementById('mobile-nav').classList.toggle('active', state); }
+
+        const bootMessages = ["> BOOTING...", "> SCANNING STARMAP...", "> SYNCING DATABASE...", "> GOWRAX PROTOCOL: ONLINE"];
         let line = 0;
         function runBios() {
             const container = document.getElementById('boot-text');
             if (line < bootMessages.length) {
                 let p = document.createElement('p'); p.textContent = bootMessages[line];
                 container.appendChild(p); line++;
-                setTimeout(runBios, 150);
+                setTimeout(runBios, 100);
             } else {
                 setTimeout(() => {
                     document.getElementById('bios-boot').style.display = 'none';
                     document.getElementById('main-ui').classList.remove('opacity-0');
-                }, 600);
+                    fetchLastNews();
+                }, 400);
             }
         }
         window.onload = runBios;
 
-        // --- AUDIO ---
+        // YOUTUBE & CANVAS STARS (KEEP ORIGINAL LOGIC)
         var player; var audioStarted = false;
-        function onYouTubeIframeAPIReady() {
-            player = new YT.Player('yt-player', {
-                height: '0', width: '0', videoId: '4xDzrJKXOOY',
-                playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': '4xDzrJKXOOY', 'mute': 1 },
-                events: { 'onReady': (e) => e.target.playVideo() }
-            });
-        }
-        function unlockAudio() {
-            if (player && !audioStarted) {
-                player.unMute(); player.setVolume(20);
-                const status = document.getElementById('audio-status');
-                if(status) status.innerText = "AUDIO: STREAMING";
-                document.querySelectorAll('.bar').forEach(b => b.classList.add('active'));
-                audioStarted = true;
-            }
-        }
-        
-        // Modif 7: On débloque l'audio aussi au "click/touch" pour mobile
-        window.addEventListener('mousedown', unlockAudio);
-        window.addEventListener('touchstart', unlockAudio);
-
+        function onYouTubeIframeAPIReady() { player = new YT.Player('yt-player', { height: '0', width: '0', videoId: '4xDzrJKXOOY', playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': '4xDzrJKXOOY', 'mute': 1 } }); }
+        function unlockAudio() { if (player && !audioStarted) { player.unMute(); player.setVolume(15); audioStarted = true; } }
+        window.addEventListener('mousedown', unlockAudio); window.addEventListener('touchstart', unlockAudio);
         var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         document.head.appendChild(tag);
 
-        // --- CANVAS ÉTOILES ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
-        let stars = [];
-        let shootingStars = [];
-
+        let stars = []; let shootingStars = [];
         function initStars() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            stars = [];
-            // Moins d'étoiles sur mobile pour la perf
-            const count = window.innerWidth < 768 ? 150 : 400;
-            for(let i=0; i<count; i++) {
-                stars.push({
-                    x: Math.random() * canvas.width,
-                    y: Math.random() * canvas.height,
-                    size: Math.random() * 1.5,
-                    opacity: Math.random(),
-                    speed: Math.random() * 0.05
-                });
-            }
+            stars = []; const count = window.innerWidth < 768 ? 100 : 300;
+            for(let i=0; i<count; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*1.5, op:Math.random(), sp:Math.random()*0.05});
         }
-
-        function createShootingStar() {
-            shootingStars.push({
-                x: Math.random() * canvas.width,
-                y: 0,
-                len: Math.random() * 80 + 20,
-                speed: Math.random() * 10 + 5,
-                opacity: 1
-            });
-        }
-
         function animateStars() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(s => {
-                s.opacity += s.speed;
-                if(s.opacity > 1 || s.opacity < 0) s.speed *= -1;
-                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
-                ctx.fillRect(s.x, s.y, s.size, s.size);
-            });
+            ctx.clearRect(0,0,canvas.width, canvas.height);
+            stars.forEach(s => { s.op += s.sp; if(s.op > 1 || s.op < 0) s.sp *= -1; ctx.fillStyle = `rgba(255,255,255,${s.op})`; ctx.fillRect(s.x, s.y, s.s, s.s); });
+            if(Math.random() < 0.02) shootingStars.push({x:Math.random()*canvas.width, y:0, l:Math.random()*80+20, s:Math.random()*10+5, op:1});
             shootingStars.forEach((ss, i) => {
-                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.02;
-                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`;
-                ctx.lineWidth = 2;
-                ctx.beginPath();
-                ctx.moveTo(ss.x, ss.y);
-                ctx.lineTo(ss.x + ss.len, ss.y - ss.len);
-                ctx.stroke();
+                ss.x -= ss.s; ss.y += ss.s; ss.op -= 0.02;
+                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.op})`; ctx.lineWidth = 1.5;
+                ctx.beginPath(); ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x+ss.l, ss.y-ss.l); ctx.stroke();
                 if(ss.opacity <= 0) shootingStars.splice(i, 1);
             });
-            if(Math.random() < 0.02) createShootingStar();
             requestAnimationFrame(animateStars);
         }
+        initStars(); animateStars(); window.addEventListener('resize', initStars);
 
-        initStars(); animateStars();
-        window.addEventListener('resize', initStars);
-
-        // --- TILT & CURSEUR ---
         const cursor = document.getElementById('custom-cursor');
         window.addEventListener('mousemove', e => {
-            if(cursor.style.display !== 'none') {
-                cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px';
-            }
-            const x = (window.innerWidth/2 - e.pageX)/40; const y = (window.innerHeight/2 - e.pageY)/40;
+            if(cursor.style.display !== 'none') { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
+            const x = (window.innerWidth/2 - e.pageX)/60; const y = (window.innerHeight/2 - e.pageY)/60;
             document.getElementById('hero-card').style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
         });
-
         setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
+
+            // Fonction pour fermer proprement avec fondu
+    function closePopup() {
+        const overlay = document.getElementById('status-overlay');
+        overlay.style.opacity = '0';
+        overlay.style.pointerEvents = 'none';
+    }
+
+    // Modifie ta fonction runBios pour l'activation centrale
+    function runBios() {
+        const container = document.getElementById('boot-text');
+        if (line < bootMessages.length) {
+            let p = document.createElement('p'); p.textContent = bootMessages[line];
+            container.appendChild(p); line++;
+            setTimeout(runBios, 100);
+        } else {
+            setTimeout(() => {
+                document.getElementById('bios-boot').style.display = 'none';
+                document.getElementById('main-ui').classList.remove('opacity-0');
+                fetchLastNews();
+                
+                // --- ACTIVATION DU MODAL CENTRAL ---
+                setTimeout(() => {
+                    const overlay = document.getElementById('status-overlay');
+                    overlay.style.opacity = '1';
+                    overlay.style.pointerEvents = 'auto';
+                }, 1200); 
+            }, 400);
+        }
+    }
     </script>
 </body>
 </html>

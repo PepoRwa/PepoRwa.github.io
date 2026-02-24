@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX | INTELLIGENCE_FEED</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --abyss: #0B0C15; --magenta: #D62F7F; }
+        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+        
+        canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .news-card {
+            background: rgba(26, 28, 46, 0.4);
+            border: 1px solid rgba(214, 47, 127, 0.1);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            backdrop-blur: md;
+        }
+        .news-card:hover {
+            border-color: var(--magenta);
+            transform: translateY(-5px);
+            background: rgba(214, 47, 127, 0.08);
+            box-shadow: 0 10px 30px rgba(214, 47, 127, 0.1);
+        }
+        .tag {
+            font-size: 8px;
+            padding: 2px 8px;
+            border: 1px solid var(--magenta);
+            color: var(--magenta);
+            text-transform: uppercase;
+        }
+        
+        .search-bar {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid rgba(214, 47, 127, 0.2);
+            color: white;
+            padding: 10px 20px;
+            font-family: 'Share Tech Mono';
+            transition: 0.3s;
+        }
+        .search-bar:focus { border-color: var(--magenta); outline: none; background: rgba(214, 47, 127, 0.05); }
+
+        /* Scrollbar custom pour garder le style tech */
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: var(--abyss); }
+        ::-webkit-scrollbar-thumb { background: var(--magenta); }
+    </style>
+</head>
+<body class="bg-[#050508]">
+
+    <canvas id="starCanvas"></canvas>
+
+    <div class="relative z-10 p-6 md:p-12 max-w-7xl mx-auto">
+        
+        <header class="flex flex-col md:flex-row justify-between items-center md:items-end mb-20 border-b border-magenta/20 pb-8 gap-6">
+            <div class="text-center md:text-left">
+                <span class="tech-font text-magenta text-xs tracking-[0.5em] uppercase block mb-2">// Archives_Gowrax</span>
+                <h1 class="title-font text-5xl md:text-7xl font-bold uppercase italic tracking-tighter">News_<span class="text-magenta">Report</span></h1>
+            </div>
+            <div class="flex flex-col items-center md:items-end gap-4 w-full md:w-auto">
+                <input type="text" id="search" placeholder="RECHERCHER_DANS_LA_BASE..." class="search-bar text-xs uppercase tracking-widest w-full md:w-80">
+                <nav class="tech-font text-[10px] space-x-6">
+                    <a href="/" class="text-gray-500 hover:text-white uppercase tracking-widest underline underline-offset-8 transition">Retour_Hub</a>
+                </nav>
+            </div>
+        </header>
+
+        <section class="mb-24">
+            <h3 class="tech-font text-magenta text-[10px] tracking-[0.3em] uppercase mb-8 italic underline underline-offset-4 font-bold">// Last_3_Updates</h3>
+            <div id="featured-news" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div class="animate-pulse tech-font text-gray-600 uppercase text-xs tracking-widest">Initialisation de la liaison satellite...</div>
+            </div>
+        </section>
+
+        <section class="pb-20">
+             <h3 class="tech-font text-magenta text-[10px] tracking-[0.3em] uppercase mb-8 italic underline underline-offset-4 font-bold">// Database_Full_Access</h3>
+             <div id="archives-news" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                 </div>
+        </section>
+
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        marked.setOptions({ breaks: true, gfm: true });
+
+        async function fetchNews() {
+            const { data: posts, error } = await _supabase
+                .from('posts')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) return console.error("Erreur de liaison satellite.");
+            renderNews(posts);
+        }
+
+        function createCardHTML(post) {
+            const date = new Date(post.created_at).toLocaleDateString('fr-FR');
+            const excerpt = post.content.replace(/[#*`_]/g, '').substring(0, 100) + '...';
+            
+            return `
+                <div class="news-card p-6 flex flex-col justify-between h-full group" onclick="window.location.href='./post.html?slug=${post.slug}'">
+                    <div>
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="tech-font text-[9px] text-gray-500">${date}</span>
+                            <div class="flex gap-2 flex-wrap justify-end">
+                                ${post.tags ? post.tags.map(tag => `<span class="tag">${tag}</span>`).join('') : ''}
+                            </div>
+                        </div>
+                        <h2 class="title-font text-2xl font-bold uppercase tracking-tight group-hover:text-magenta transition mb-3">${post.title}</h2>
+                        <p class="text-[10px] text-gray-400 tech-font leading-relaxed opacity-80 group-hover:opacity-100 transition">${excerpt}</p>
+                    </div>
+                    <div class="mt-6 flex justify-between items-center border-t border-white/5 pt-4">
+                        <span class="tech-font text-[8px] text-magenta font-bold">OUVRIR_DOSSIER_</span>
+                        <span class="tech-font text-[8px] text-gray-600">REF: ${post.slug.substring(0,15).toUpperCase()}</span>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderNews(posts) {
+            const featuredContainer = document.getElementById('featured-news');
+            const archivesContainer = document.getElementById('archives-news');
+            featuredContainer.innerHTML = '';
+            archivesContainer.innerHTML = '';
+
+            posts.forEach((post, index) => {
+                const cardHTML = createCardHTML(post);
+                
+                // On remplit les 3 premiers dans "Featured"
+                if (index < 3) {
+                    featuredContainer.innerHTML += cardHTML;
+                }
+                
+                // On remplit TOUT le monde dans Archives
+                archivesContainer.innerHTML += cardHTML;
+            });
+        }
+
+        // Recherche temps réel
+        document.getElementById('search').addEventListener('input', async (e) => {
+            const term = e.target.value.toLowerCase();
+            const { data: posts } = await _supabase.from('posts').select('*').ilike('title', `%${term}%`);
+            renderNews(posts);
+        });
+
+        fetchNews();
+
+        // --- MOTEUR D'ÉTOILES FILANTES ---
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let shootingStars = [];
+
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = [];
+            const count = window.innerWidth < 768 ? 80 : 200;
+            for(let i=0; i<count; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1.2,
+                    opacity: Math.random(),
+                    speed: Math.random() * 0.02
+                });
+            }
+        }
+
+        function createShootingStar() {
+            shootingStars.push({
+                x: Math.random() * canvas.width,
+                y: 0,
+                len: Math.random() * 80 + 30,
+                speed: Math.random() * 10 + 6,
+                opacity: 1
+            });
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            // Fond noir profond
+            ctx.fillStyle = "#050508";
+            ctx.fillRect(0,0, canvas.width, canvas.height);
+
+            stars.forEach(s => {
+                s.opacity += s.speed;
+                if(s.opacity > 1 || s.opacity < 0) s.speed *= -1;
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
+                ctx.fillRect(s.x, s.y, s.size, s.size);
+            });
+
+            shootingStars.forEach((ss, i) => {
+                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.02;
+                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(ss.x, ss.y);
+                ctx.lineTo(ss.x + ss.len, ss.y - ss.len);
+                ctx.stroke();
+                if(ss.opacity <= 0) shootingStars.splice(i, 1);
+            });
+            if(Math.random() < 0.03) createShootingStar();
+            requestAnimationFrame(animateStars);
+        }
+
+        initStars(); animateStars();
+        window.addEventListener('resize', initStars);
+    </script>
+</body>
+</html>
