@@ -2,6 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRX VALORANT | Dossiers du Personnel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
@@ -13,6 +14,12 @@
             -moz-osx-font-smoothing: grayscale;
         }
         
+        /* Désactivation du curseur sur mobile pour éviter les bugs tactiles */
+        @media (max-width: 1024px) {
+            body { cursor: auto; }
+            #custom-cursor { display: none; }
+        }
+
         .tech-font { font-family: 'Share Tech Mono', monospace; }
         .accent-font { font-family: 'Rock Salt', cursive; }
         .title-font { font-family: 'Rajdhani', sans-serif; }
@@ -45,11 +52,11 @@
         .recruiting-blink { animation: pulse-neon 2s infinite; }
 
         #recruitment-popup {
-            position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
-            z-index: 1000; width: 90%; max-width: 450px;
+            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
+            z-index: 1000; width: 95%; max-width: 450px;
             background: rgba(11, 12, 21, 0.95); border: 1px solid var(--magenta);
             -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); box-shadow: 0 0 40px rgba(214, 47, 127, 0.4);
-            display: flex; flex-direction: column; align-items: center; padding: 25px;
+            display: flex; flex-direction: column; align-items: center; padding: 20px;
             text-align: center;
         }
         .discord-btn {
@@ -71,7 +78,6 @@
         @keyframes audio-pulse { from { height: 4px; } to { height: 12px; } }
         @keyframes pulse-twitch { 0% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(100, 65, 165, 0); } 100% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0); } }
     
-        /* Info son */
         #audio-init-prompt { position: fixed; top: 10px; right: 10px; z-index: 1000; }
     </style>
     <script src="../../global.js"></script>
@@ -82,155 +88,174 @@
     <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
 
     <div id="audio-init-prompt" class="tech-font text-[8px] text-magenta/50 tracking-widest uppercase animate-pulse">
-        [ Cliquez n'importe où pour synchroniser l'audio ]
+        [ Cliquez pour synchroniser l'audio ]
     </div>
 
     <div id="yt-player-container" style="position:absolute; top:-9999px;"><div id="yt-player"></div></div>
 
     <div id="recruitment-popup">
         <span class="tech-font text-magenta text-[10px] tracking-[0.4em] uppercase">Alerte // Candidature_Ouverte</span>
-        <p class="title-font text-2xl font-bold mt-1 tracking-tight">REJOINS L'UNITÉ GOWRAX</p>
+        <p class="title-font text-xl md:text-2xl font-bold mt-1 tracking-tight">REJOINS L'UNITÉ GOWRAX</p>
         <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="discord-btn accent-font text-sm">Postuler sur Discord</a>
-        <button onclick="this.parentElement.style.display='none'" class="text-[8px] tech-font text-gray-600 mt-4 hover:text-white uppercase tracking-widest">[ Fermer la transmission ]</button>
+        <button onclick="this.parentElement.style.display='none'" class="text-[8px] tech-font text-gray-600 mt-4 hover:text-white uppercase tracking-widest">[ Fermer ]</button>
     </div>
 
-    <div class="relative z-10 p-6 md:p-12 max-w-7xl mx-auto pb-32">
+    <div class="relative z-10 p-4 md:p-12 max-w-7xl mx-auto pb-32">
         
-        <header class="mb-12 border-b border-magenta/20 pb-8 flex justify-between items-end">
+        <header class="mb-8 md:mb-12 border-b border-magenta/20 pb-6 md:pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
             <div>
-                <span class="tech-font text-magenta text-[10px] tracking-[0.5em] mb-2 block uppercase">Accès Sécurisé // Archives GRX</span>
-                <h1 class="title-font text-5xl md:text-6xl font-bold uppercase tracking-tighter italic">Valorant_<span class="text-magenta">Unité</span></h1>
+                <span class="tech-font text-magenta text-[8px] md:text-[10px] tracking-[0.5em] mb-2 block uppercase">Accès Sécurisé // Archives GRX</span>
+                <h1 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter italic leading-none">Valorant_<span class="text-magenta">Unité</span></h1>
             </div>
-            <nav class="tech-font text-[10px] space-x-6 mb-2">
+            <nav class="tech-font text-[9px] md:text-[10px] space-x-4 md:space-x-6">
                 <a href="/roster" class="text-gray-500 hover:text-white transition uppercase tracking-widest underline underline-offset-4">Retour_Hub</a>
             </nav>
         </header>
 
-        <section class="mb-20">
-            <h3 class="tech-font text-magenta text-xs mb-6 tracking-widest uppercase">// Centre_de_Commandement</h3>
-            <div class="coach-banner p-8 rounded-sm relative overflow-hidden max-w-2xl">
-                <div class="flex items-center gap-6">
-                    <div class="h-16 w-16 bg-magenta/20 border border-magenta flex items-center justify-center title-font text-3xl font-bold text-magenta">S</div>
-                    <div>
-                        <span class="tech-font text-magenta text-[10px] tracking-[0.3em]">STRATÈGE_EN_CHEF</span>
-                        <h2 class="title-font text-4xl font-bold uppercase tracking-tight">SILVADA</h2>
-                        <div class="flex flex-wrap gap-3 mt-2">
-                            <span class="bg-magenta text-white text-[9px] px-2 py-0.5 tech-font">COACH OFFICIEL</span>
-                            <span class="border border-white/20 text-gray-400 text-[9px] px-2 py-0.5 tech-font italic">(Joueur Cat: Tryhardeur)</span>
+        <section class="mb-12 md:mb-20">
+            <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 tracking-widest uppercase">// Commandement_Tactique</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div class="coach-banner p-6 md:p-8 rounded-sm relative overflow-hidden">
+                    <div class="flex items-center gap-4 md:gap-6">
+                        <div class="h-12 w-12 md:h-16 md:w-16 bg-magenta/20 border border-magenta flex items-center justify-center title-font text-2xl md:text-3xl font-bold text-magenta shadow-[0_0_15px_rgba(214,47,127,0.3)]">S</div>
+                        <div>
+                            <span class="tech-font text-magenta text-[8px] md:text-[10px] tracking-[0.3em]">STRATÈGE_EN_CHEF</span>
+                            <h2 class="title-font text-3xl md:text-4xl font-bold uppercase tracking-tight">SILVADA</h2>
+                            <div class="flex flex-wrap gap-2 md:gap-3 mt-2">
+                                <span class="bg-magenta text-white text-[8px] md:text-[9px] px-2 py-0.5 tech-font">COACH OFFICIEL</span>
+                                <span class="border border-white/20 text-gray-400 text-[8px] md:text-[9px] px-2 py-0.5 tech-font italic">(Expertise: Excellence)</span>
+                            </div>
                         </div>
                     </div>
+                    <div class="absolute right-[-10px] top-[-5px] opacity-10 rotate-12 pointer-events-none select-none">
+                        <span class="title-font text-6xl md:text-7xl font-bold">HEAD</span>
+                    </div>
                 </div>
-                <div class="absolute right-[-20px] top-[-10px] opacity-10 rotate-12 pointer-events-none select-none">
-                    <span class="title-font text-8xl font-bold">COACH</span>
+
+                <div class="coach-banner p-6 md:p-8 rounded-sm relative overflow-hidden border-white/20">
+                    <div class="flex items-center gap-4 md:gap-6">
+                        <div class="h-12 w-12 md:h-16 md:w-16 bg-white/5 border border-white/30 flex items-center justify-center title-font text-2xl md:text-3xl font-bold text-white">N</div>
+                        <div>
+                            <span class="tech-font text-gray-400 text-[8px] md:text-[10px] tracking-[0.3em]">DÉLÉGUÉ_UNITÉ_ACADEMY</span>
+                            <h2 class="title-font text-3xl md:text-4xl font-bold uppercase tracking-tight">NENE</h2>
+                            <div class="flex flex-wrap gap-2 md:gap-3 mt-2">
+                                <span class="border border-magenta text-magenta text-[8px] md:text-[9px] px-2 py-0.5 tech-font">CO-COACH</span>
+                                <span class="bg-white/10 text-white text-[8px] md:text-[9px] px-2 py-0.5 tech-font italic">SUPERVISEUR</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute right-[-10px] top-[-5px] opacity-10 rotate-12 pointer-events-none select-none">
+                        <span class="title-font text-6xl md:text-7xl font-bold">ACAD</span>
+                    </div>
                 </div>
             </div>
         </section>
 
-        <section class="mb-20">
-            <div class="flex items-center gap-4 mb-8">
-                <h2 class="tech-font text-magenta text-sm tracking-widest uppercase">// Escouade_Élite (Rang: ASC+)</h2>
+        <section class="mb-12 md:mb-20">
+            <div class="flex items-center gap-4 mb-6 md:mb-8">
+                <h2 class="tech-font text-magenta text-xs md:text-sm tracking-widest uppercase">// Escouade_Élite</h2>
                 <div class="h-px flex-1 bg-magenta/10"></div>
-                <span class="tech-font text-[10px] text-gray-600 uppercase">02 / 10 Slots Occupés</span>
+                <span class="tech-font text-[8px] md:text-[10px] text-gray-600 uppercase">03 / 10 Slots</span>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
-                <div class="slot-card slot-filled p-6">
-                    <span class="tech-font text-[9px] text-gray-500 uppercase">Id_01</span>
-                    <h3 class="title-font text-2xl font-bold mt-2">NENE</h3>
-                    <p class="accent-font text-magenta text-[10px] mt-2">Opérateur Élite</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+                <div class="slot-card slot-filled p-4 md:p-6">
+                    <span class="tech-font text-[8px] md:text-[9px] text-gray-500 uppercase">Id_01</span>
+                    <h3 class="title-font text-xl md:text-2xl font-bold mt-1">NENE</h3>
+                    <p class="accent-font text-magenta text-[9px] md:text-[10px] mt-2">Opérateur Élite</p>
                 </div>
-                <div class="slot-card slot-filled p-6">
-                    <span class="tech-font text-[9px] text-gray-500 uppercase">Id_02</span>
-                    <h3 class="title-font text-2xl font-bold mt-2">NATI</h3>
-                    <p class="accent-font text-magenta text-[10px] mt-2">Unité de Choc</p>
+                <div class="slot-card slot-filled p-4 md:p-6">
+                    <span class="tech-font text-[8px] md:text-[9px] text-gray-500 uppercase">Id_02</span>
+                    <h3 class="title-font text-xl md:text-2xl font-bold mt-1">NATI</h3>
+                    <p class="accent-font text-magenta text-[9px] md:text-[10px] mt-2">Unité de Choc</p>
                 </div>
-                                <div class="slot-card slot-filled p-6">
-                    <span class="tech-font text-[9px] text-gray-500 uppercase">Id_03</span>
-                    <h3 class="title-font text-2xl font-bold mt-2">Adri</h3>
-                    <p class="accent-font text-magenta text-[10px] mt-2">Speedrunner</p>
+                <div class="slot-card slot-filled p-4 md:p-6">
+                    <span class="tech-font text-[8px] md:text-[9px] text-gray-500 uppercase">Id_03</span>
+                    <h3 class="title-font text-xl md:text-2xl font-bold mt-1">ADRI</h3>
+                    <p class="accent-font text-magenta text-[9px] md:text-[10px] mt-2">Speedrunner</p>
                 </div>
-                <div class="slot-card slot-empty p-6 flex flex-col justify-center items-center recruiting-blink">
+                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
                     <span class="tech-font text-[9px] text-magenta tracking-tighter">SLOT_VACANT</span>
                 </div>
-                <div class="slot-card slot-empty p-6 flex flex-col justify-center items-center recruiting-blink">
+                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
                     <span class="tech-font text-[9px] text-magenta tracking-tighter">SLOT_VACANT</span>
                 </div>
             </div>
         </section>
 
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-16">
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
             <section>
-                <h3 class="tech-font text-magenta text-xs mb-6 uppercase tracking-widest">// Unités_de_Front (Tryhardeurs)</h3>
+                <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Unités_de_Front</h3>
                 <div class="space-y-4">
-                    <div class="slot-card slot-gold p-5 relative overflow-hidden">
+                    <div class="slot-card slot-gold p-4 md:p-5 relative overflow-hidden">
                         <span class="tech-font text-gold text-[8px] tracking-[0.3em] uppercase block mb-1">FOUNDER_TRYHARDEUSE</span>
-                        <h4 class="title-font text-2xl font-bold text-gold uppercase tracking-tighter">PTITEGOW</h4>
+                        <h4 class="title-font text-xl md:text-2xl font-bold text-gold uppercase tracking-tighter">PTITEGOW</h4>
                         <a href="https://twitch.tv/ptitegow" target="_blank" class="stream-btn tech-font uppercase tracking-tighter">
                             <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Stream
                         </a>
-                        <div class="absolute right-[-10px] bottom-[-10px] opacity-5 pointer-events-none">
-                            <span class="title-font text-6xl font-bold">CEO</span>
+                        <div class="absolute right-[-5px] bottom-[-5px] opacity-5 pointer-events-none">
+                            <span class="title-font text-5xl md:text-6xl font-bold">CEO</span>
                         </div>
                     </div>
-                    <div class="space-y-4">
-                    <div class="slot-card slot-gold p-5 relative overflow-hidden">
+                    
+                    <div class="slot-card slot-gold p-4 md:p-5 relative overflow-hidden">
                         <span class="tech-font text-gold text-[8px] tracking-[0.3em] uppercase block mb-1">FOUNDER_TRYHARDEUR</span>
-                        <h4 class="title-font text-2xl font-bold text-gold uppercase tracking-tighter">FILOUXX</h4>
+                        <h4 class="title-font text-xl md:text-2xl font-bold text-gold uppercase tracking-tighter">FILOUXX</h4>
                         <a href="https://twitch.tv/filouxx_" target="_blank" class="stream-btn tech-font uppercase tracking-tighter">
                             <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Stream
                         </a>
-                        <div class="absolute right-[-10px] bottom-[-10px] opacity-5 pointer-events-none">
-                            <span class="title-font text-6xl font-bold">CEO</span>
+                        <div class="absolute right-[-5px] bottom-[-5px] opacity-5 pointer-events-none">
+                            <span class="title-font text-5xl md:text-6xl font-bold">CEO</span>
                         </div>
                     </div>
+
                     <div class="slot-card slot-filled p-4 flex justify-between items-center">
-                        <h4 class="title-font text-xl font-bold uppercase">PASTEK</h4>
-                        <span class="tech-font text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase">Opérationnel</span>
+                        <h4 class="title-font text-lg md:text-xl font-bold uppercase">PASTEK</h4>
+                        <span class="tech-font text-[8px] md:text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase">Opérationnel</span>
                     </div>
-                        <div class="slot-card slot-filled p-4 flex justify-between items-center">
-                        <h4 class="title-font text-xl font-bold uppercase">BLACKOUTZ</h4>
-                        <span class="tech-font text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Stratège</span>
+                    <div class="slot-card slot-filled p-4 flex justify-between items-center">
+                        <h4 class="title-font text-lg md:text-xl font-bold uppercase">BLACKOUTZ</h4>
+                        <span class="tech-font text-[8px] md:text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Stratège</span>
                     </div>
-                     <div class="slot-card slot-filled p-4 flex justify-between items-center">
-                        <h4 class="title-font text-xl font-bold uppercase">KOKOOER44</h4>
-                        <span class="tech-font text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Analyste</span>
+                    <div class="slot-card slot-filled p-4 flex justify-between items-center">
+                        <h4 class="title-font text-lg md:text-xl font-bold uppercase">KOKOOER44</h4>
+                        <span class="tech-font text-[8px] md:text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Analyste</span>
                     </div>
                     <div class="slot-card slot-empty p-4 border-dashed text-center recruiting-blink">
-                        <span class="tech-font text-[10px] text-magenta italic uppercase tracking-widest">Candidatures Ouvertes_</span>
+                        <span class="tech-font text-[9px] md:text-[10px] text-magenta italic uppercase tracking-widest">Candidatures Ouvertes_</span>
                     </div>
                 </div>
             </section>
 
-            <section class="space-y-12">
+            <section class="space-y-8 md:space-y-12">
                 <div>
-                    <h3 class="tech-font text-magenta text-xs mb-6 uppercase tracking-widest">// Programme_Academy</h3>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">PINPIN7850</h4></div>
-                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">Kopoxx</h4></div>
-                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">T3tsu</h4></div>
-                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">SuKu</h4></div>
-                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">Metaphyse</h4></div>
-                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase">Kopoxx</h4></div>
-                        <div class="slot-card slot-filled p-4 col-span-1 md:col-span-2"><h4 class="title-font text-lg font-bold uppercase text-center">Just1gars_fan2cookie</h4></div>
+                    <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Programme_Academy</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">PINPIN7850</h4></div>
+                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">Kopoxx</h4></div>
+                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">T3tsu</h4></div>
+                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">SuKu</h4></div>
+                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">Metaphyse</h4></div>
+                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">Just1gars_fan2cookie</h4></div>
                     </div>
                 </div>
 
                 <div>
-                    <h3 class="tech-font text-magenta text-xs mb-6 uppercase tracking-widest">// Unités_de_Réserve (Chill)</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase text-center">GRIMACE-NRV</h4></div>
-                        <div class="slot-card slot-filled p-4"><h4 class="title-font text-lg font-bold uppercase text-center">MR.MEGA</h4></div>
-                        <div class="slot-card slot-filled p-4 col-span-1 md:col-span-2"><h4 class="title-font text-lg font-bold uppercase text-center">Dragon</h4></div>
+                    <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Unités_de_Réserve</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="slot-card slot-filled p-4 text-center"><h4 class="title-font text-lg font-bold uppercase">GRIMACE-NRV</h4></div>
+                        <div class="slot-card slot-filled p-4 text-center"><h4 class="title-font text-lg font-bold uppercase">MR.MEGA</h4></div>
+                        <div class="slot-card slot-filled p-4 text-center sm:col-span-2"><h4 class="title-font text-lg font-bold uppercase">Dragon</h4></div>
                     </div>
                 </div>
             </section>
         </div>
     </div>
 
-    <footer class="mt-20 p-8 border-t border-white/5 tech-font text-[9px] text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4 bg-black/50 backdrop-blur-md">
-        <div class="flex gap-4 items-center">
+    <footer class="mt-20 p-6 md:p-8 border-t border-white/5 tech-font text-[8px] md:text-[9px] text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4 bg-black/50 backdrop-blur-md">
+        <div class="flex flex-col md:flex-row gap-2 md:gap-4 items-center text-center">
             <span>© 2026 GOWRAX_ESPORT. // DESIGNED_BY_CRAZZYNEL</span>
-            <span class="text-magenta/40">//</span>
+            <span class="hidden md:inline text-magenta/40">//</span>
             <div id="audio-terminal" class="flex items-center gap-3 cursor-pointer group" onclick="toggleAudio()">
                 <div class="flex gap-0.5 items-end h-3">
                     <div class="bar"></div><div class="bar"></div><div class="bar"></div>
@@ -250,7 +275,6 @@
         const cursor = document.getElementById('custom-cursor');
         window.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
 
-        // --- AUDIO ENGINE ---
         var player;
         var audioStarted = false;
         var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
@@ -268,12 +292,9 @@
             });
         }
 
-        function onPlayerReady(event) {
-            // Prépare le shuffle mais YouTube est capricieux, on force manuellement au clic
-        }
+        function onPlayerReady(event) {}
 
         function toggleAudio() {
-            // Fonction de contrôle manuel via le footer
             if (audioStarted) {
                 const statusText = document.getElementById('audio-status');
                 const bars = document.querySelectorAll('.bar');
@@ -293,13 +314,11 @@
 
         function startTacticalAudio() {
             if (!audioStarted && player) {
-                // TRUE SHUFFLE: On choisit un index au hasard entre 0 et 20 (ou taille playlist)
                 const randomIndex = Math.floor(Math.random() * 15); 
                 player.unMute();
                 player.setVolume(15);
                 player.setShuffle(true);
                 player.playVideoAt(randomIndex);
-                
                 document.getElementById('audio-status').innerText = "[ AMBIANCE: ACTIVE ]";
                 document.querySelectorAll('.bar').forEach(b => b.classList.add('active'));
                 document.getElementById('audio-init-prompt').style.display = 'none';
@@ -307,12 +326,10 @@
             }
         }
 
-        // LANCE L'AUDIO AU PREMIER CLIC N'IMPORTE OU
         document.addEventListener('click', function() {
             startTacticalAudio();
-        }, { once: true }); // S'exécute une seule fois
+        }, { once: true });
 
-        // --- CANVAS ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let stars = []; let shootingStars = [];

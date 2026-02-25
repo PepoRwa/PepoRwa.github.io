@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX | Dossiers du Personnel Élite</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --abyss: #050508; --magenta: #D62F7F; --gold: #D4AF37; }
+        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+
+        /* Effet Holographique Logo */
+        .hero-logo {
+            width: 120px; /* Réduit pour mobile par défaut */
+            filter: drop-shadow(0 0 20px rgba(214, 47, 127, 0.4));
+            animation: float 6s ease-in-out infinite;
+        }
+        @media (min-width: 768px) { .hero-logo { width: 180px; } }
+        
+        @keyframes float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+
+        /* Cartes de Profil Reworked */
+        .profile-card {
+            background: rgba(11, 12, 21, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(12px);
+            position: relative;
+            transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            border-radius: 2px;
+        }
+        
+        @media (min-width: 1024px) {
+            .profile-card:hover { 
+                border-color: var(--magenta); 
+                transform: translateY(-8px);
+                background: rgba(214, 47, 127, 0.05);
+            }
+        }
+        
+        .gold-border { border: 1px solid var(--gold) !important; box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
+
+        .card-avatar {
+            width: 60px; height: 60px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            object-fit: cover;
+            clip-path: polygon(10% 0, 100% 0, 90% 100%, 0 100%);
+            transition: 0.3s;
+        }
+        @media (min-width: 768px) { .card-avatar { width: 80px; height: 80px; } }
+        
+        .profile-card:hover .card-avatar { border-color: var(--magenta); transform: scale(1.05); }
+
+        .btn-view {
+            font-size: 8px;
+            letter-spacing: 2px;
+            color: var(--magenta);
+            border-bottom: 1px solid transparent;
+            transition: 0.3s;
+        }
+        .profile-card:hover .btn-view { border-color: var(--magenta); padding-right: 10px; }
+
+        .scanline {
+            width: 100%; height: 1px;
+            background: linear-gradient(90deg, transparent, var(--magenta), transparent);
+            position: absolute; top: 0; left: 0;
+            opacity: 0.3; animation: scan 4s linear infinite;
+        }
+        @keyframes scan { 0% { top: 0; } 100% { top: 100%; } }
+        
+        .loading-pulse { animation: pulse 1.5s infinite; background: rgba(255,255,255,0.05); height: 250px; }
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 0.7; } }
+    </style>
+    <script src="../global.js"></script>
+</head>
+<body class="p-4 md:p-12">
+
+    <canvas id="starCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
+
+    <div class="relative z-10 max-w-6xl mx-auto">
+        <header class="flex flex-col items-center text-center mb-16 md:mb-24">
+            <a href="/" class="tech-font text-magenta text-[8px] md:text-[9px] tracking-[0.5em] uppercase mb-8 md:mb-12 block hover:text-white transition opacity-50">[ INTERFACE_PRINCIPALE ]</a>
+            
+            <img src="https://gowrax.me/assets/img/logo-team-esport.png" class="hero-logo mb-6 md:mb-8" alt="GOWRAX LOGO">
+            
+            <h1 class="title-font text-4xl md:text-7xl font-bold italic tracking-tighter uppercase leading-none">
+                Personnel_<span class="text-magenta">Database</span>
+            </h1>
+            <p class="tech-font text-gray-600 text-[8px] md:text-[10px] uppercase mt-4 tracking-[0.2em] md:tracking-[0.3em] px-4">Accès de niveau 4 requis // Synchronisation temps réel</p>
+        </header>
+
+        <section class="mb-20 md:mb-32">
+            <div class="flex items-center gap-3 md:gap-6 mb-8 md:mb-12">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent to-magenta/20"></div>
+                <h2 class="tech-font text-magenta text-[10px] md:text-xs tracking-[0.4em] md:tracking-[0.6em] uppercase font-bold">Command_Unit</h2>
+                <div class="h-px flex-1 bg-gradient-to-l from-transparent to-magenta/20"></div>
+            </div>
+            <div id="staff-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-10 text-center md:text-left">
+                <div class="loading-pulse"></div>
+                <div class="loading-pulse"></div>
+            </div>
+        </section>
+
+        <section class="mb-16 md:mb-20">
+            <div class="flex items-center gap-3 md:gap-6 mb-8 md:mb-12">
+                <div class="h-px flex-1 bg-gradient-to-r from-transparent to-gold/20"></div>
+                <h2 class="tech-font text-gold text-[10px] md:text-xs tracking-[0.4em] md:tracking-[0.6em] uppercase font-bold">Elite_Field_Agents</h2>
+                <div class="h-px flex-1 bg-gradient-to-l from-transparent to-gold/20"></div>
+            </div>
+            <div id="roster-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                <div class="loading-pulse"></div>
+                <div class="loading-pulse"></div>
+            </div>
+        </section>
+
+        <footer class="mt-20 md:mt-32 p-8 md:p-12 text-center border-t border-white/5 opacity-30">
+            <p class="tech-font text-[8px] md:text-[9px] text-gray-700 tracking-[0.5em] md:tracking-[1em] uppercase">GOWRAX_ENCRYPTED_FILES_2026</p>
+        </footer>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function fetchProfiles() {
+            try {
+                const { data: members, error } = await _supabase
+                    .from('members')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('priority_level', { ascending: false });
+
+                if (!error) renderProfiles(members);
+            } catch(e) { console.error("Database connection failed."); }
+        }
+
+        function renderProfiles(members) {
+            const containers = { staff: document.getElementById('staff-container'), roster: document.getElementById('roster-container') };
+            containers.staff.innerHTML = ''; containers.roster.innerHTML = '';
+
+            members.forEach(m => {
+                const avatar = m.photo_url || 'https://via.placeholder.com/150/0b0c15/d62f7f?text=GRX';
+                
+                // Correction du lien vers member.html?slug=...
+                const card = `
+                    <div class="profile-card p-6 md:p-8 ${m.priority_level >= 50 ? 'gold-border' : ''}" 
+                         onclick="window.location.href='./member.html?slug=${m.slug}'">
+                        <div class="scanline"></div>
+                        
+                        <div class="flex items-center gap-4 md:gap-6 mb-6 md:mb-8">
+                            <img src="${avatar}" class="card-avatar" alt="Agent">
+                            <div class="flex-1 text-left">
+                                <span class="tech-font ${m.priority_level >= 50 ? 'text-gold' : 'text-magenta'} text-[7px] md:text-[8px] uppercase tracking-[0.3em] md:tracking-[0.4em] block mb-1">
+                                    ${m.main_role}
+                                </span>
+                                <h3 class="title-font text-xl md:text-3xl font-bold uppercase leading-tight ${m.priority_level >= 50 ? 'text-gold' : ''}">
+                                    ${m.nickname}
+                                </h3>
+                            </div>
+                        </div>
+
+                        <p class="text-gray-500 text-[10px] md:text-[11px] leading-relaxed line-clamp-2 mb-6 font-medium text-left">
+                            ${m.description || 'Dossier confidentiel en attente de déclassification.'}
+                        </p>
+                        
+                        <div class="flex justify-between items-center">
+                            <span class="tech-font text-[7px] md:text-[8px] text-white/20 uppercase tracking-widest italic">
+                                ${m.team_number ? 'Unit_' + m.team_number : 'Class_S'}
+                            </span>
+                            <span class="btn-view tech-font uppercase">DOSSIER →</span>
+                        </div>
+                    </div>
+                `;
+
+                if (m.category === 'staff') containers.staff.innerHTML += card;
+                else containers.roster.innerHTML += card;
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', fetchProfiles);
+
+        // --- STARS ANIMATION ---
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = []; let shootingStars = [];
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<80; i++) { // Réduit pour mobile perf
+                stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.2, op: Math.random(), speed: Math.random()*0.01});
+            }
+        }
+        function createShootingStar() { shootingStars.push({x: Math.random()*(canvas.width*1.5), y: -100, len: Math.random()*120+80, speed: Math.random()*12+8, opacity: 1}); }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => { s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1; ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.size, s.size); });
+            shootingStars.forEach((ss, i) => {
+                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`; ctx.lineWidth = 1; ctx.beginPath();
+                ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y + ss.len); ctx.stroke();
+                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.015;
+                if(ss.opacity <= 0) shootingStars.splice(i, 1);
+            });
+            if(Math.random() < 0.02) createShootingStar();
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initStars); initStars(); animate();
+    </script>
+</body>
+</html>

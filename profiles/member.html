@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX | DOSSIER_AGENT</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --abyss: #050508; --magenta: #D62F7F; --gold: #D4AF37; }
+        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
+        
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+
+        .glow-magenta { text-shadow: 0 0 20px rgba(214, 47, 127, 0.5); }
+        
+        /* Numéro d'unité : Adapté PC et Mobile */
+        #bg-number {
+            position: fixed; bottom: -20px; right: -10px;
+            font-size: 50vw; font-family: 'Rajdhani'; font-weight: 900;
+            color: rgba(214, 47, 127, 0.03); z-index: -1;
+            line-height: 0.8; pointer-events: none;
+        }
+
+        .agent-frame {
+            border: 1px solid rgba(214, 47, 127, 0.2);
+            background: linear-gradient(135deg, rgba(214, 47, 127, 0.05) 0%, transparent 100%);
+            position: relative;
+        }
+        .agent-photo { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; filter: grayscale(0.4) contrast(1.1); }
+
+        .social-btn {
+            border: 1px solid rgba(255,255,255,0.1);
+            transition: 0.3s; padding: 10px; display: flex; align-items: center; justify-content: center;
+        }
+        .social-btn:hover { border-color: var(--magenta); background: rgba(214, 47, 127, 0.1); color: var(--magenta); }
+
+        #loader { background: var(--abyss); position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        
+        /* Animations */
+        @keyframes scan { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+        .live-status {
+            position: absolute; top: 10px; right: 10px;
+            background: rgba(0, 0, 0, 0.8); padding: 4px 8px;
+            border: 1px solid #6441a5; display: none; z-index: 10; align-items: center; gap: 5px;
+        }
+        .live-dot { width: 6px; height: 6px; background: #ff0000; border-radius: 50%; animation: pulse-live 1s infinite; }
+        @keyframes pulse-live { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+
+        /* Progress Bars */
+        .stat-bar-container { background: rgba(255,255,255,0.05); height: 4px; width: 100%; position: relative; }
+        .stat-bar-fill { height: 100%; background: var(--magenta); box-shadow: 0 0 10px var(--magenta); width: 0%; transition: width 2s ease-out; }
+
+        /* Bio Expand */
+        #m-description { transition: max-height 0.5s ease-in-out; overflow: hidden; }
+        .collapsed { max-height: 100px; mask-image: linear-gradient(to bottom, black 50%, transparent 100%); }
+        .expanded { max-height: 2000px; mask-image: none; }
+    </style>
+    <script src="../global.js"></script>
+</head>
+<body>
+
+    <canvas id="starCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
+    <div id="bg-number"></div>
+
+    <div id="loader">
+        <div class="w-20 h-0.5 bg-white/10 mb-4 overflow-hidden relative">
+            <div class="absolute inset-0 bg-magenta w-full animate-[scan_2s_infinite]"></div>
+        </div>
+        <span class="tech-font text-[10px] text-magenta tracking-[0.5em] uppercase">Synchronizing_Agent...</span>
+    </div>
+
+    <div class="relative z-10 max-w-6xl mx-auto p-4 md:p-12 min-h-screen flex flex-col">
+        
+        <header class="mb-8 md:mb-12">
+            <a href="./index.html" class="tech-font text-magenta text-[10px] tracking-[0.3em] uppercase block hover:text-white transition">[ <- RETOUR_ARCHIVES ]</a>
+        </header>
+
+        <main class="grid grid-cols-1 lg:grid-cols-12 gap-8 md:gap-12 flex-1">
+            
+            <div class="lg:col-span-5 space-y-6 md:space-y-8">
+                <div class="agent-frame aspect-[4/5] w-full max-w-[320px] md:max-w-md mx-auto overflow-hidden shadow-2xl">
+                    <div id="live-badge" class="live-status tech-font text-[8px] text-[#9146FF]">
+                        <div class="live-dot"></div> EN_DIRECT
+                    </div>
+                    <img id="m-photo" src="https://via.placeholder.com/800x1000/0b0c15/d62f7f?text=RECHERCHE..." class="agent-photo" alt="Agent Photo">
+                </div>
+                
+                <div class="space-y-2 text-center md:text-left">
+                    <div class="flex items-center gap-4 justify-center md:justify-start">
+                        <span class="tech-font text-magenta text-[10px] md:text-xs tracking-widest uppercase" id="m-category-label">// CHARGEMENT...</span>
+                        <div class="h-px flex-1 bg-magenta/20 hidden md:block"></div>
+                    </div>
+                    <h1 id="m-nickname" class="title-font text-5xl md:text-8xl font-bold uppercase italic glow-magenta leading-none">---</h1>
+                    <p id="m-role" class="tech-font text-gray-400 tracking-[0.3em] uppercase text-xs md:text-sm"></p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 border-y border-white/5 py-4 md:border-none md:py-0">
+                    <div class="text-center md:text-left">
+                        <span class="tech-font text-gray-600 text-[8px] uppercase block mb-1">Unité_Affectée</span>
+                        <span id="m-roster" class="tech-font text-white text-xs md:text-base uppercase tracking-wider">---</span>
+                    </div>
+                    <div class="text-center md:text-left">
+                        <span class="tech-font text-gray-600 text-[8px] uppercase block mb-1">Status</span>
+                        <span class="tech-font text-green-500 text-xs md:text-base uppercase tracking-wider">OPÉRATIONNEL</span>
+                    </div>
+                </div>
+
+                <div class="space-y-4 pt-2">
+                    <div class="space-y-1">
+                        <div class="flex justify-between tech-font text-[8px] uppercase text-gray-500"><span>Aptitude_Combat</span><span id="stat-aim">85%</span></div>
+                        <div class="stat-bar-container"><div class="stat-bar-fill" style="width: 85%"></div></div>
+                    </div>
+                    <div class="space-y-1">
+                        <div class="flex justify-between tech-font text-[8px] uppercase text-gray-500"><span>Analyse_Tactique</span><span id="stat-tactic">92%</span></div>
+                        <div class="stat-bar-container"><div class="stat-bar-fill" style="width: 92%"></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7 space-y-10 md:space-y-12">
+                
+                <div id="m-additional-container" class="flex flex-wrap gap-2 justify-center md:justify-start"></div>
+
+                <div class="space-y-6">
+                    <div id="m-quote-container" class="border-l-2 border-magenta pl-6 py-2 hidden">
+                        <p id="m-quote" class="title-font text-xl md:text-3xl text-white font-bold uppercase italic tracking-tight leading-tight"></p>
+                    </div>
+
+                    <div class="space-y-4">
+                        <h3 class="tech-font text-magenta text-[10px] uppercase tracking-[0.4em] text-center md:text-left">// DOSSIER_BIO</h3>
+                        <div id="m-description-wrapper" class="relative">
+                            <p id="m-description" class="text-gray-400 leading-relaxed text-sm md:text-lg italic font-light collapsed"></p>
+                            <button id="toggle-bio" class="tech-font text-magenta text-[9px] mt-4 uppercase tracking-widest hover:text-white transition block mx-auto md:mx-0">
+                                [ VOIR_PLUS + ]
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="space-y-6">
+                    <h3 class="tech-font text-magenta text-[10px] uppercase tracking-[0.4em] text-center md:text-left">// ACCÈS_RÉSEAUX</h3>
+                    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                        <a id="link-tracker" href="#" target="_blank" class="social-btn tech-font text-[9px] hidden">TRACKER.GG</a>
+                        <a id="link-twitch" href="#" target="_blank" class="social-btn tech-font text-[9px] hidden">TWITCH</a>
+                        <a id="link-twitter" href="#" target="_blank" class="social-btn tech-font text-[9px] hidden">X_TWITTER</a>
+                        <a id="link-insta" href="#" target="_blank" class="social-btn tech-font text-[9px] hidden">INSTAGRAM</a>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+
+        <footer class="mt-20 pt-8 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-4 tech-font text-[8px] text-gray-700 uppercase tracking-widest">
+            <span>Gowrax_Internal_Secure_Database // 2026</span>
+            <span id="m-id-hex">ID: ---</span>
+        </footer>
+    </div>
+
+    <script>
+        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
+        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        async function loadAgent() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const slug = urlParams.get('slug');
+            if (!slug) { window.location.replace('./index.html'); return; }
+
+            const { data: m, error } = await _supabase.from('members').select('*').eq('slug', slug).single();
+            if (error || !m) return;
+
+            // DATA INJECTION
+            document.title = `GRX | AGENT_${m.nickname.toUpperCase()}`;
+            document.getElementById('m-nickname').innerText = m.nickname;
+            document.getElementById('m-role').innerText = m.main_role;
+            document.getElementById('m-description').innerText = m.description || "Aucune donnée biographique dans les archives.";
+            document.getElementById('m-category-label').innerText = m.category === 'staff' ? '// COMMAND_UNIT' : '// ELITE_OPERATIVE';
+            document.getElementById('m-id-hex').innerText = `DATA_REF: ${m.id.substring(0,8).toUpperCase()}`;
+            
+            const num = m.team_number || "";
+            document.getElementById('bg-number').innerText = num;
+
+            if (m.photo_url) document.getElementById('m-photo').src = m.photo_url;
+            if (m.roster) document.getElementById('m-roster').innerText = m.roster;
+
+            if (m.quote) {
+                document.getElementById('m-quote-container').classList.remove('hidden');
+                document.getElementById('m-quote').innerText = `"${m.quote}"`;
+            }
+
+            // Gestion "Voir Plus"
+            const desc = document.getElementById('m-description');
+            const toggleBtn = document.getElementById('toggle-bio');
+            if (desc.innerText.length < 150) {
+                toggleBtn.style.display = 'none';
+                desc.classList.remove('collapsed');
+            }
+
+            toggleBtn.addEventListener('click', () => {
+                if (desc.classList.contains('collapsed')) {
+                    desc.classList.replace('collapsed', 'expanded');
+                    toggleBtn.innerText = '[ VOIR_MOINS - ]';
+                } else {
+                    desc.classList.replace('expanded', 'collapsed');
+                    toggleBtn.innerText = '[ VOIR_PLUS + ]';
+                }
+            });
+
+            // ADDITIONAL ROLES
+            const roleContainer = document.getElementById('m-additional-container');
+            if (m.additional_roles) {
+                m.additional_roles.forEach(role => {
+                    roleContainer.innerHTML += `<span class="bg-magenta/5 border border-magenta/20 text-magenta text-[7px] px-3 py-1 tech-font uppercase tracking-tighter">${role}</span>`;
+                });
+            }
+
+            // SOCIALS CLEANER
+            const setLink = (id, val, base) => {
+                if (val) {
+                    const el = document.getElementById(id);
+                    el.href = val.includes('http') ? val : base + val;
+                    el.classList.remove('hidden');
+                }
+            };
+            setLink('link-tracker', m.tracker_url, '');
+            setLink('link-twitch', m.social_twitch, 'https://twitch.tv/');
+            setLink('link-twitter', m.social_twitter, 'https://x.com/');
+            setLink('link-insta', m.social_instagram, 'https://instagram.com/');
+
+            if (m.social_twitch) document.getElementById('live-badge').style.display = 'flex';
+
+            // Loader fade
+            setTimeout(() => {
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+            }, 800);
+        }
+
+        document.addEventListener('DOMContentLoaded', loadAgent);
+
+        // --- STARS ---
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = []; let shootingStars = [];
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<100; i++) { stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.2, op: Math.random(), speed: Math.random()*0.01}); }
+        }
+        function createShootingStar() { shootingStars.push({x: Math.random()*(canvas.width*1.5), y: -100, len: Math.random()*120+80, speed: Math.random()*12+8, opacity: 1}); }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => { s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1; ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.size, s.size); });
+            shootingStars.forEach((ss, i) => {
+                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`; ctx.lineWidth = 1; ctx.beginPath();
+                ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y + ss.len); ctx.stroke();
+                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.015;
+                if(ss.opacity <= 0) shootingStars.splice(i, 1);
+            });
+            if(Math.random() < 0.03) createShootingStar();
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initStars); initStars(); animate();
+    </script>
+</body>
+</html>
