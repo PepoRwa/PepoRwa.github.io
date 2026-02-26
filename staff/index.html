@@ -3,133 +3,249 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRX STAFF | Direction Opérationnelle</title>
+    <title>GOWRAX STAFF // PERSONNEL_NAVIGUANT</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;700&family=Share+Tech+Mono&family=Rock+Salt&display=swap" rel="stylesheet">
     <style>
-        :root { --abyss: #0B0C15; --chrome: #C0C0C0; }
-        body { 
-            background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; 
-            cursor: none; overflow-x: hidden; -webkit-font-smoothing: antialiased;
+        :root { --chrome: #C0C0C0; --abyss: #020203; --ice: #A5D8FF; --magenta: #D62F7F; }
+        body, html { 
+            background: var(--abyss); color: white; 
+            font-family: 'Rajdhani', sans-serif;
+            overflow-x: hidden; min-height: 100vh; margin: 0;
         }
-        .tech-font { font-family: 'Share Tech Mono', monospace; }
-        .accent-font { font-family: 'Rock Salt', cursive; }
-        .title-font { font-family: 'Rajdhani', sans-serif; }
 
-        .chrome-card { 
-            background: linear-gradient(135deg, rgba(192, 192, 192, 0.05) 0%, rgba(255, 255, 255, 0.02) 100%);
-            border: 1px solid rgba(192, 192, 192, 0.2);
-            backdrop-filter: blur(10px);
-            transition: 0.4s;
+        #bg-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+        .film-grain { position: fixed; inset: 0; z-index: 100; opacity: 0.05; pointer-events: none; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
+
+        /* --- BOUTON BACK --- */
+        .btn-back {
+            position: fixed; top: 30px; left: 30px; z-index: 200;
+            font-family: 'Share Tech Mono'; font-size: 10px; color: var(--chrome);
+            letter-spacing: 3px; padding: 10px 20px; border: 1px solid rgba(192, 192, 192, 0.2);
+            transition: 0.3s; backdrop-filter: blur(10px); text-transform: uppercase; text-decoration: none;
         }
-        .chrome-card:hover { border-color: var(--chrome); transform: translateY(-5px); }
-        .slot-vacant { border: 1px dashed rgba(192, 192, 192, 0.2); opacity: 0.4; }
+        .btn-back:hover { background: var(--chrome); color: black; box-shadow: 0 0 20px var(--chrome); }
 
-        #custom-cursor { width: 24px; height: 24px; border: 1px solid var(--chrome); position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--chrome); }
-        @keyframes pulse-silver { 0%, 100% { opacity: 1; } 50% { opacity: 0.4; } }
-        .blink-silver { animation: pulse-silver 2s infinite; }
+        /* --- CARTES STAFF (SANS TILT) --- */
+        .staff-card {
+            width: 300px; height: 480px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(192, 192, 192, 0.15);
+            position: relative; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            backdrop-filter: blur(10px); flex-shrink: 0;
+            overflow: hidden;
+        }
+        .staff-card:hover { 
+            border-color: var(--ice); 
+            box-shadow: 0 0 40px rgba(165, 216, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .render-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; }
+        
+        .staff-render {
+            position: absolute; top: 0; left: 50%; transform: translateX(-50%);
+            width: 150%; height: 100%; object-fit: cover; object-position: top;
+            filter: grayscale(1) brightness(0.6); transition: all 0.6s ease;
+            opacity: 0.4; mask-image: linear-gradient(to top, transparent 15%, black 50%);
+        }
+        .staff-card:hover .staff-render { 
+            filter: grayscale(0) brightness(1); 
+            transform: translateX(-50%) scale(1.05); 
+            opacity: 1; 
+        }
+
+        .info-block {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 25px; background: linear-gradient(to top, black 90%, transparent);
+        }
+
+        .staff-name { font-weight: 800; font-size: 2.2rem; line-height: 0.8; text-transform: uppercase; margin-bottom: 8px; color: var(--chrome); }
+        .staff-role { font-family: 'Share Tech Mono'; font-size: 9px; color: var(--ice); letter-spacing: 2px; text-transform: uppercase; }
+        .staff-bio { font-size: 10.5px; color: #666; margin-top: 12px; line-height: 1.4; opacity: 0; transition: 0.4s; }
+        .staff-card:hover .staff-bio { opacity: 1; color: #ccc; }
+
+        .twitch-link {
+            display: inline-flex; align-items: center; gap: 5px;
+            color: #a970ff; font-size: 8px; font-family: 'Share Tech Mono';
+            margin-top: 8px; text-transform: uppercase;
+        }
+
+        /* --- SLIDER & SCROLLING --- */
+        .card-slider {
+            display: flex; gap: 30px; padding: 40px;
+            overflow-x: auto; scrollbar-width: none;
+            width: 100%; justify-content: center;
+        }
+        .card-slider::-webkit-scrollbar { display: none; }
+
+        .section-header { width: 100%; text-align: center; margin-top: 60px; }
+        .section-title { font-family: 'Share Tech Mono'; color: rgba(192, 192, 192, 0.2); font-size: 11px; letter-spacing: 12px; text-transform: uppercase; }
+
+        @media (max-width: 1024px) {
+            #main-content { padding-top: 60px; }
+            .card-slider { 
+                justify-content: flex-start; 
+                padding: 20px 40px; 
+                scroll-snap-type: x mandatory; 
+                -webkit-overflow-scrolling: touch;
+            }
+            .staff-card { 
+                width: 280px; 
+                height: 450px; 
+                scroll-snap-align: center; 
+                opacity: 0.8;
+                transform: scale(0.95);
+            }
+            .staff-card:active, .staff-card:focus { opacity: 1; transform: scale(1); }
+            .staff-bio { opacity: 1; color: #bbb; }
+            .btn-back { top: 20px; left: 20px; padding: 8px 15px; font-size: 8px; }
+        }
     </style>
-    <script src="../global.js"></script>
 </head>
 <body class="bg-[#050508]">
 
-    <div id="custom-cursor"></div>
-    <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
+    <div class="film-grain"></div>
+    <canvas id="bg-canvas"></canvas>
 
-    <div class="relative z-10 p-6 md:p-12 max-w-7xl mx-auto">
-        
-        <header class="mb-16 border-b border-white/10 pb-10 flex justify-between items-end">
-            <div>
-                <span class="tech-font text-chrome text-[10px] tracking-[0.6em] mb-2 block uppercase">Accès Niveau_Bêta // Personnel Naviguant</span>
-                <h1 class="title-font text-5xl md:text-6xl font-bold uppercase tracking-tighter italic">GOWRAX_<span class="text-chrome">STAFF</span></h1>
-            </div>
-            <a href="/" class="tech-font text-[10px] text-gray-500 hover:text-chrome transition uppercase underline">Retour_Base</a>
-        </header>
+    <a href="/" class="btn-back">← Back_to_Base</a>
 
-        <section class="mb-20">
-            <h3 class="tech-font text-chrome text-xs mb-8 tracking-widest uppercase flex items-center gap-4">
-                <span class="w-8 h-px bg-chrome/30"></span> STAFF_OPÉRATIONNEL
-            </h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <div class="chrome-card p-6 border-l-4 border-l-teal-500">
-                    <h4 class="title-font text-2xl font-bold">SILVADAGG</h4>
-                    <p class="tech-font text-[10px] text-teal-400 uppercase tracking-widest">GWX | Coach</p>
-                    <div class="accent-font text-chrome/30 text-[10px] mt-4 italic">Tactique</div>
-                </div>
-
-                <div class="chrome-card p-6 border-l-4 border-l-gray-400">
-                    <h4 class="title-font text-2xl font-bold">DRAGON</h4>
-                    <p class="tech-font text-[10px] text-gray-400 uppercase tracking-widest">Pôle Technique</p>
-                    <div class="accent-font text-chrome/30 text-[10px] mt-4 italic">Infrastructure</div>
-                </div>
-
-                <div class="chrome-card p-6 border-l-4 border-l-pink-500">
-                    <h4 class="title-font text-2xl font-bold">KOPOXX</h4>
-                    <p class="tech-font text-[10px] text-pink-400 uppercase tracking-widest">Creative (Graph/Vidéo)</p>
-                    <div class="accent-font text-chrome/30 text-[10px] mt-4 italic">Factory</div>
-                </div>
-
-                <div class="chrome-card p-6 border-l-4 border-l-red-600">
-                    <h4 class="title-font text-xl font-bold">PTITEGOW / FILOUXX / CRAZZYNEL / KOKOOER44</h4>
-                    <p class="tech-font text-[10px] text-red-500 uppercase tracking-widest">Casters / Streamers</p>
-                    <div class="accent-font text-chrome/30 text-[10px] mt-4 italic">Gowrax_TV</div>
-                </div>
-
-                <div class="chrome-card slot-vacant p-6 flex items-center justify-center blink-silver">
-                    <span class="tech-font text-[9px] text-chrome/60 uppercase">Team_Manager // RECRUTEMENT_OPEN</span>
-                </div>
-
-                <div class="chrome-card slot-vacant p-6 flex items-center justify-center blink-silver">
-                    <span class="tech-font text-[9px] text-chrome/60 uppercase">Community_Manager // RECRUTEMENT_OPEN</span>
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-20">
-            <h3 class="tech-font text-chrome text-xs mb-8 tracking-widest uppercase flex items-center gap-4">
-                <span class="w-8 h-px bg-chrome/30"></span> SÉCURITÉ_&_MODÉRATION
-            </h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="chrome-card slot-vacant p-8 flex flex-col items-center justify-center blink-silver">
-                    <h4 class="tech-font text-[10px] text-blue-400 uppercase tracking-widest mb-2">🛡️ Modérateur_Base</h4>
-                    <span class="tech-font text-[9px] text-chrome/40 italic">Candidatures_En_Attente</span>
-                </div>
-                <div class="chrome-card slot-vacant p-8 flex flex-col items-center justify-center blink-silver">
-                    <h4 class="tech-font text-[10px] text-purple-400 uppercase tracking-widest mb-2">👾 Twitch_Operator</h4>
-                    <span class="tech-font text-[9px] text-chrome/40 italic">Candidatures_En_Attente</span>
-                </div>
-            </div>
-        </section>
-
+    <div id="boot-sequence" style="position: fixed; inset: 0; background: black; z-index: 1000; display: flex; flex-direction: column; justify-content: center; padding: 10%; font-family: 'Share Tech Mono', monospace; color: var(--chrome);">
+        <div id="boot-logs" class="space-y-1 text-[10px]"></div>
+        <div class="mt-8 h-[1px] w-64 bg-white/5 relative overflow-hidden">
+            <div id="boot-bar" class="absolute inset-0 bg-white/20 w-0 transition-all duration-300"></div>
+        </div>
     </div>
 
-    <footer class="mt-32 p-12 text-center tech-font text-[8px] text-gray-600 border-t border-white/5">
-        <p>© 2026 GOWRAX OPERATIONAL COMMAND // DESIGN BY CRAZZYNEL</p>
-        <p class="mt-2 text-chrome tracking-[0.5em] uppercase italic opacity-50">Support et Structure au service de l'élite.</p>
-    </footer>
+    <main id="main-content" class="relative z-10 opacity-0 transition-opacity duration-1000">
+        
+        <div class="section-header">
+            <h2 class="section-title">Logistique_&_Stratégie</h2>
+        </div>
+
+        <div class="card-slider">
+            
+            <div class="staff-card">
+                <div class="render-container">
+                    <img src="../assets/img/graffiti_valo.png" class="staff-render">
+                </div>
+                <div class="info-block">
+                    <span class="staff-role">Architecture_Technique</span>
+                    <h3 class="staff-name">LerDragon</h3>
+                    <div class="h-[1px] w-full bg-white/10 my-3"></div>
+                    <p class="staff-bio">Maître d'œuvre de l'infrastructure réseau. Il assure la fluidité des serveurs et la protection des données stratégiques de l'empire contre toute intrusion externe.</p>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="render-container">
+                    <img src="../assets/img/sage_render.png" class="staff-render">
+                </div>
+                <div class="info-block">
+                    <span class="staff-role">Creative_Lead // Graphisme</span>
+                    <h3 class="staff-name">Kopoxx</h3>
+                    <div class="h-[1px] w-full bg-white/10 my-3"></div>
+                    <p class="staff-bio">Architecte de l'identité visuelle GOWRAX. Kopoxx transforme les concepts abstraits en réalités graphiques percutantes, définissant l'image de marque de la structure.</p>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="render-container">
+                    <img src="../assets/img/K.webp" class="staff-render">
+                </div>
+                <div class="info-block">
+                    <span class="staff-role">Coach // Caster_Tactique</span>
+                    <h3 class="staff-name">Buisson</h3>
+                    <a href="https://www.twitch.tv/buisson_suspect" target="_blank" class="twitch-link">● buisson_suspect</a>
+                    <div class="h-[1px] w-full bg-white/10 my-3"></div>
+                    <p class="staff-bio">Expert en analyse comportementale et tactique. Il supervise la progression des unités et commente les déploiements avec une précision chirurgicale.</p>
+                </div>
+            </div>
+
+            <div class="staff-card">
+                <div class="render-container">
+                    <img src="../assets/img/waylay_render.png" class="staff-render">
+                </div>
+                <div class="info-block">
+                    <span class="staff-role">Content // Stream // Caster</span>
+                    <h3 class="staff-name">Kokooer44</h3>
+                    <a href="https://twitch.tv/kokooer44" target="_blank" class="twitch-link">● kokooer44</a>
+                    <div class="h-[1px] w-full bg-white/10 my-3"></div>
+                    <p class="staff-bio">Le porte-parole médiatique. À travers ses lives et contenus, il fédère la communauté autour des exploits de l'équipe et maintient la hype au niveau maximal.</p>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="section-header">
+            <h2 class="section-title">Sécurité_&_Révolte</h2>
+        </div>
+
+        <div class="card-slider">
+            
+            <div class="staff-card">
+                <div class="render-container">
+                    <img src="../assets/img/jett_render.png" class="staff-render">
+                </div>
+                <div class="info-block">
+                    <span class="staff-role">Modérateur_Base_Générale</span>
+                    <h3 class="staff-name">Just1fan</h3>
+                    <div class="h-[1px] w-full bg-white/10 my-3"></div>
+                    <p class="staff-bio">Sentinelle de l'ordre public. Il applique les protocoles de communication et neutralise les éléments perturbateurs pour garantir un environnement sain à nos recrues.</p>
+                </div>
+            </div>
+
+            <div class="staff-card border-dashed opacity-50 flex items-center justify-center">
+                <div class="text-center p-8">
+                    <span class="staff-role text-magenta">OFFRE_D'EMPLOI</span>
+                    <h3 class="title-font text-2xl font-bold mt-4 uppercase">Manager / Community</h3>
+                    <p class="tech-font text-[10px] text-gray-400 mt-2 mb-6">Nous recherchons des profils capables de structurer nos réseaux et de gérer le bien-être de nos joueurs.</p>
+                    <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="px-5 py-2 border border-magenta text-magenta hover:bg-magenta hover:text-white transition inline-block text-[10px] tech-font uppercase">Rejoindre les rangs</a>
+                </div>
+            </div>
+
+        </div>
+
+        <footer class="mt-20 p-12 text-center border-t border-white/5 bg-black/40">
+            <p class="tech-font text-[9px] text-gray-600 tracking-[0.5em] uppercase">GOWRAX PERSONNEL RECORDS © 2026</p>
+        </footer>
+    </main>
 
     <script>
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => { if (e.key === "F12" || ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'i' || e.key === 's'))) e.preventDefault(); });
-        
-        const cursor = document.getElementById('custom-cursor');
-        window.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+        // --- BOOT LOGS ---
+        const logs = ["> Identifying Staff_ID...", "> Syncing Neural_Profiles...", "> Optimizing Mobile_Interface...", "> ACCESS GRANTED."];
+        const logContainer = document.getElementById('boot-logs');
+        const bootBar = document.getElementById('boot-bar');
+        let l = 0;
+        function showLogs() {
+            if (l < logs.length) {
+                const p = document.createElement('p'); p.textContent = logs[l];
+                logContainer.appendChild(p); l++;
+                bootBar.style.width = (l / logs.length) * 100 + "%";
+                setTimeout(showLogs, 300);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('boot-sequence').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('boot-sequence').style.display = 'none';
+                        document.getElementById('main-content').style.opacity = '1';
+                    }, 500);
+                }, 500);
+            }
+        }
+        window.onload = showLogs;
 
-        const canvas = document.getElementById('starCanvas');
+        // --- STARS ENGINE ---
+        const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let stars = []; let shootingStars = [];
-        
         function initStars() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             stars = []; for(let i=0; i<150; i++) stars.push({x:Math.random()*canvas.width, y:Math.random()*canvas.height, s:Math.random()*1.2, op:Math.random(), speed:Math.random()*0.005});
         }
-
         function createShootingStar() {
             shootingStars.push({x: Math.random()*(canvas.width+200), y: -100, speed: Math.random()*12+8, len: Math.random()*120+80, op: 1});
         }
-
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             stars.forEach(s => {
