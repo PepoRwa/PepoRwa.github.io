@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOWRAX // ORBITAL_COMMAND</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/global.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;700&family=Share+Tech+Mono&family=Rock+Salt&display=swap" rel="stylesheet">
     <style>
         :root { --gold: #D4AF37; --abyss: #020203; --magenta: #D62F7F; }
@@ -13,6 +14,29 @@
             font-family: 'Rajdhani', sans-serif;
             overflow: hidden; height: 100vh; margin: 0;
         }
+
+        /* --- NAVIGATION CEO UNIQUE --- */
+        header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 500;
+            padding: 25px 50px; display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(2,2,5,0.8), transparent);
+            backdrop-filter: blur(5px);
+        }
+        .nav-ceo a {
+            font-family: 'Share Tech Mono'; font-size: 10px; color: var(--gold);
+            letter-spacing: 3px; text-transform: uppercase; margin-left: 30px;
+            transition: 0.3s; opacity: 0.6;
+        }
+        .nav-ceo a:hover { opacity: 1; text-shadow: 0 0 10px var(--gold); }
+        .nav-ceo a.active { opacity: 1; border-bottom: 1px solid var(--gold); padding-bottom: 5px; }
+
+        /* --- MOBILE NAV --- */
+        #mobile-nav-ceo {
+            position: fixed; inset: 0; background: rgba(2,2,5,0.98); z-index: 10000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            gap: 30px; opacity: 0; transition: 0.5s;
+        }
+        #mobile-nav-ceo.active { display: flex; opacity: 1; }
 
         /* --- BACKGROUND CELESTIAL --- */
         #bg-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
@@ -23,20 +47,6 @@
         }
 
         .film-grain { position: fixed; inset: 0; z-index: 100; opacity: 0.05; pointer-events: none; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
-
-        /* --- BOUTON RETOUR --- */
-        .btn-back {
-            position: fixed; top: 30px; left: 30px; z-index: 200;
-            font-family: 'Share Tech Mono'; font-size: 10px; color: var(--gold);
-            letter-spacing: 3px; padding: 10px 20px; 
-            border: 1px solid rgba(212, 175, 55, 0.2);
-            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
-            transition: all 0.3s; text-transform: uppercase;
-        }
-        .btn-back:hover { 
-            background: var(--gold); color: black; 
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); 
-        }
 
         /* --- BOOT SEQUENCE --- */
         #boot-sequence {
@@ -54,7 +64,7 @@
 
         /* --- TITRE DE PAGE --- */
         .page-header {
-            position: absolute; top: 40px; text-align: center; width: 100%;
+            position: absolute; top: 100px; text-align: center; width: 100%;
             letter-spacing: 1rem; color: rgba(255,255,255,0.2);
             font-family: 'Share Tech Mono'; font-size: 12px; text-transform: uppercase;
         }
@@ -127,8 +137,8 @@
 
         /* --- MOBILE --- */
         @media (max-width: 768px) {
-            #main-interface { height: auto; min-height: 100vh; justify-content: flex-start; padding-top: 100px; }
-            .btn-back { top: 15px; left: 15px; font-size: 8px; padding: 8px 15px; }
+            header { padding: 20px; }
+            #main-interface { height: auto; min-height: 100vh; justify-content: flex-start; padding-top: 150px; }
             .card-slider {
                 display: flex; overflow-x: scroll; width: 100vw;
                 padding: 0 10vw; scroll-snap-type: x mandatory; gap: 20px; scrollbar-width: none;
@@ -144,7 +154,32 @@
     <div id="bg-video-blur"></div>
     <canvas id="bg-canvas"></canvas>
 
-    <a href="/" class="btn-back">← Back to Base</a>
+    <header>
+        <div class="font-bold text-xl tracking-tighter uppercase italic" style="color: var(--gold)">Gowrax_<span class="text-white">CEO</span></div>
+        <nav class="hidden lg:flex nav-ceo">
+            <a href="/">INDEX</a>
+            <a href="/news">NEWS</a>
+            <a href="/staff">STAFF</a>
+            <a href="/ceo" class="active">COMMAND</a>
+            <a href="/profiles">DATABASE</a>
+            <a href="/roster">UNITS</a>
+            <a href="/contact">SIGNAL</a>
+        </nav>
+        <button onclick="toggleCEOMenu(true)" class="lg:hidden" style="color: var(--gold)">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+        </button>
+    </header>
+
+    <div id="mobile-nav-ceo">
+        <button onclick="toggleCEOMenu(false)" class="absolute top-10 right-10 text-gold font-mono uppercase tracking-widest border border-gold/20 px-6 py-2">Close_X</button>
+        <a href="/" class="text-3xl font-bold italic text-gold" onclick="toggleCEOMenu(false)">INDEX</a>
+        <a href="/news" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">NEWS</a>
+        <a href="/staff" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">STAFF</a>
+        <a href="/ceo" class="text-2xl tracking-widest text-gold border-b border-gold" onclick="toggleCEOMenu(false)">COMMAND</a>
+        <a href="/profiles" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">DATABASE</a>
+        <a href="/roster" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">ROSTERS</a>
+        <a href="/contact" class="text-2xl tracking-widest text-gold border border-gold/40 px-10 py-3" onclick="toggleCEOMenu(false)">SIGNAL</a>
+    </div>
 
     <div id="boot-sequence">
         <div id="boot-logs" class="space-y-1 text-[10px]"></div>
@@ -203,6 +238,17 @@
     </main>
 
     <script>
+        function toggleCEOMenu(state) {
+            const nav = document.getElementById('mobile-nav-ceo');
+            if(state) {
+                nav.style.display = 'flex';
+                setTimeout(() => nav.classList.add('active'), 10);
+            } else {
+                nav.classList.remove('active');
+                setTimeout(() => nav.style.display = 'none', 500);
+            }
+        }
+
         function typeIntro() {
             const text = "DÉCOUVREZ LES FONDATEURS DE NOTRE EQUIPE";
             const container = document.getElementById('intro-text');
@@ -215,7 +261,7 @@
             }, 50);
         }
 
-        const logs = [
+        const bootMessages = [
             "> Initializing GRX_Orbital_Kernel...",
             "> Mapping Celestial_Data...",
             "> ACCESS GRANTED."
@@ -225,10 +271,10 @@
         let i = 0;
         
         function showLogs() {
-            if (i < logs.length) {
+            if (i < bootMessages.length) {
                 const p = document.createElement('p');
-                p.textContent = logs[i]; logContainer.appendChild(p); i++;
-                bootBar.style.width = (i / logs.length) * 100 + "%";
+                p.textContent = bootMessages[i]; logContainer.appendChild(p); i++;
+                bootBar.style.width = (i / bootMessages.length) * 100 + "%";
                 setTimeout(showLogs, 300);
             } else {
                 setTimeout(() => {
@@ -303,11 +349,8 @@
         function handleTilt(e, card) {
             if (window.innerWidth <= 768) return; 
             const rect = card.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5; // De -0.5 à 0.5
-            const y = (e.clientY - rect.top) / rect.height - 0.5; // De -0.5 à 0.5
-            
-            // X et Y sont inversés pour la rotation CSS (Y fait pivoter horizontalement, X verticalement)
-            // Si la souris descend (Y augmente), la carte penche vers le bas (rotateX négatif)
+            const x = (e.clientX - rect.left) / rect.width - 0.5;
+            const y = (e.clientY - rect.top) / rect.height - 0.5;
             card.style.transform = `rotateY(${x * 30}deg) rotateX(${y * -30}deg)`;
         }
 

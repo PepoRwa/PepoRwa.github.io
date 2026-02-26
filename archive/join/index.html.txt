@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRX | Dossier de Recrutement</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/global.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
     <style>
         :root { --abyss: #0B0C15; --magenta: #D62F7F; --gold: #D4AF37; }
@@ -14,6 +15,17 @@
         .accent-font { font-family: 'Rock Salt', cursive; }
         
         canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        /* Navigation Standard */
+        .nav-link { transition: 0.4s; letter-spacing: 0.2em; position: relative; opacity: 0.6; }
+        .nav-link:hover { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); opacity: 1 !important; }
+        
+        #mobile-nav { 
+            display: none;
+            background: rgba(2, 2, 5, 0.98);
+            backdrop-filter: blur(20px);
+        }
+        #mobile-nav.active { display: flex; }
 
         .input-grx {
             background: rgba(214, 47, 127, 0.05); border: 1px solid rgba(214, 47, 127, 0.2);
@@ -29,12 +41,52 @@
         .btn-join:hover { background: #fff; color: var(--magenta); box-shadow: 0 0 30px rgba(214, 47, 127, 0.4); }
 
         .warning-strip { background: repeating-linear-gradient(45deg, #d62f7f, #d62f7f 10px, #b02669 10px, #b02669 20px); }
+
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
+        @media (min-width: 1024px) { body { cursor: none; } #custom-cursor { display: block; } }
     </style>
-    <script src="../../global.js"></script>
 </head>
 <body class="bg-[#050508]">
 
+    <div id="custom-cursor"></div>
     <canvas id="starCanvas"></canvas>
+
+    <header class="relative z-[100] p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 border border-magenta rotate-45 flex items-center justify-center">
+                <div class="w-4 h-4 bg-magenta animate-pulse rotate-[-45deg]"></div>
+            </div>
+            <div class="font-rajdhani font-bold text-2xl text-white tracking-tighter uppercase leading-none">
+                GOWRAX<span class="text-magenta italic">_RECRUIT</span>
+            </div>
+        </div>
+        
+        <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em] tech-font">
+            <a href="/" class="nav-link">INDEX</a>
+            <a href="/news/index.html" class="nav-link">NEWS</a>
+            <a href="/ceo/index.html" class="nav-link">COMMAND</a>
+            <a href="/profiles/index.html" class="nav-link">DATABASE</a>
+            <a href="/roster/index.html" class="nav-link">UNITS</a>
+            <a href="/contact/index.html" class="text-magenta underline underline-offset-8 decoration-2">SIGNAL</a>
+        </nav>
+
+        <div class="flex items-center">
+            <button onclick="toggleNav(true)" class="lg:hidden text-magenta border border-magenta/40 p-2 hover:bg-magenta hover:text-white transition-all">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div id="mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500">
+        <button onclick="toggleNav(false)" class="absolute top-10 right-10 text-magenta font-mono text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto">Close_X</button>
+        <a href="/" class="text-4xl font-rajdhani font-bold text-magenta italic pointer-events-auto" onclick="toggleNav(false)">INDEX</a>
+        <a href="/news/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">NEWS</a>
+        <a href="/ceo/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">COMMAND</a>
+        <a href="/profiles/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">DATABASE</a>
+        <a href="/roster/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">ROSTERS</a>
+        <a href="/contact/index.html" class="text-2xl font-rajdhani tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" onclick="toggleNav(false)">SIGNAL</a>
+    </div>
 
     <div class="relative z-10 min-h-screen flex flex-col items-center py-12 px-4">
         
@@ -118,12 +170,29 @@
         </div>
 
         <footer class="mt-12">
-            <a href="/" class="tech-font text-[10px] text-gray-600 hover:text-white transition uppercase tracking-[0.5em] underline underline-offset-8">Retour_Hub</a>
+            <p class="tech-font text-[9px] text-gray-600 tracking-[0.5em] uppercase text-center">
+                GOWRAX PERSONNEL DEPARTMENT // HQ // 2026
+            </p>
         </footer>
     </div>
 
     <script>
         const WEBHOOK_URL = "https://discord.com/api/webhooks/1475184242253365311/ShciSnxixoFMhHpCppfZlRp-Jo_nJmuchlQZh2dVm2s99H-jcTlqMy8CjbnatvyfZdGG";
+
+        function toggleNav(state) { 
+            const nav = document.getElementById('mobile-nav');
+            if(state) {
+                nav.classList.add('active');
+                setTimeout(() => {
+                    nav.style.opacity = '1';
+                    nav.style.pointerEvents = 'auto';
+                }, 10);
+            } else {
+                nav.style.opacity = '0';
+                nav.style.pointerEvents = 'none';
+                setTimeout(() => nav.classList.remove('active'), 500);
+            }
+        }
 
         const form = document.getElementById('recruitmentForm');
         const submitBtn = document.getElementById('submitBtn');
@@ -136,7 +205,7 @@
 
             const payload = {
                 username: "GRX RECRUITMENT SYSTEM",
-                avatar_url: "https://gowrax.me/assets/img/logo-team-esport.png", // À vérifier
+                avatar_url: "https://gowrax.me/assets/img/logo-team-esport.png", 
                 embeds: [{
                     title: "🎖️ NOUVEAU DOSSIER DE RECRUTEMENT",
                     color: 14036863, // Magenta
@@ -172,7 +241,7 @@
             }
         });
 
-        // CANVAS STARS (Simplifié pour la page join)
+        // CANVAS STARS
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
@@ -186,6 +255,12 @@
             requestAnimationFrame(animate);
         }
         window.addEventListener('resize', initStars); initStars(); animate();
+
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px'; 
+            cursor.style.top = e.clientY + 'px'; 
+        });
     </script>
 </body>
 </html>

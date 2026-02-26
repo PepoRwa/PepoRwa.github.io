@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX CS2 | Dossiers Tactiques</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/global.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    <style>
+        :root { --abyss: #0B0C15; --void: #1A1C2E; --magenta: #D62F7F; --gold: #D4AF37; }
+        body { 
+            background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; 
+            overflow-x: hidden; -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        /* Navigation Standard */
+        .nav-link { transition: 0.4s; letter-spacing: 0.2em; position: relative; opacity: 0.6; }
+        .nav-link:hover { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); opacity: 1 !important; }
+        
+        #mobile-nav { 
+            display: none;
+            background: rgba(2, 2, 5, 0.98);
+            backdrop-filter: blur(20px);
+        }
+        #mobile-nav.active { display: flex; }
+
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .accent-font { font-family: 'Rock Salt', cursive; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+
+        .slot-card { 
+            border: 1px solid rgba(214, 47, 127, 0.1); 
+            background: rgba(26, 28, 46, 0.4); 
+            transition: all 0.3s ease;
+            position: relative;
+            z-index: 10;
+        }
+        .slot-filled { border-left: 3px solid var(--magenta); background: linear-gradient(90deg, rgba(214, 47, 127, 0.05) 0%, transparent 100%); }
+        .slot-empty { border: 1px dashed rgba(214, 47, 127, 0.2); opacity: 0.5; }
+        .slot-empty:hover { opacity: 1; border-color: var(--magenta); }
+
+        .coach-banner {
+            background: linear-gradient(45deg, var(--void), var(--abyss));
+            border: 1px solid var(--magenta);
+            box-shadow: 0 0 15px rgba(214, 47, 127, 0.1);
+        }
+
+        /* CURSEUR HAUTE PRIORITÉ */
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
+        
+        @keyframes pulse-neon { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
+        .recruiting-blink { animation: pulse-neon 2s infinite; }
+
+        .note-tactique {
+            background: rgba(214, 47, 127, 0.05);
+            border-left: 1px solid var(--magenta);
+            padding: 8px;
+            margin-top: 10px;
+            font-size: 9px;
+            line-height: 1.4;
+            color: rgba(255, 255, 255, 0.6);
+        }
+    </style>
+</head>
+<body class="bg-[#050508]">
+
+    <div id="custom-cursor"></div>
+    <canvas id="starCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
+
+    <header class="relative z-[100] p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 border border-magenta rotate-45 flex items-center justify-center">
+                <div class="w-4 h-4 bg-magenta animate-pulse rotate-[-45deg]"></div>
+            </div>
+            <div class="font-rajdhani font-bold text-2xl text-white tracking-tighter uppercase leading-none">
+                GOWRAX<span class="text-magenta italic">_TACTICAL</span>
+            </div>
+        </div>
+        
+        <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em] tech-font">
+            <a href="/" class="nav-link">INDEX</a>
+            <a href="/news/index.html" class="nav-link">NEWS</a>
+            <a href="/staff/index.html" class="nav-link">STAFF</a>
+            <a href="/ceo/index.html" class="nav-link">COMMAND</a>
+            <a href="/profiles/index.html" class="nav-link">DATABASE</a>
+            <a href="/roster/index.html" class="text-magenta underline underline-offset-8 decoration-2">UNITS</a>
+            <a href="/contact/index.html" class="nav-link">SIGNAL</a>
+        </nav>
+
+        <div class="flex items-center">
+            <button onclick="toggleNav(true)" class="lg:hidden text-magenta border border-magenta/40 p-2 hover:bg-magenta hover:text-white transition-all">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div id="mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500">
+        <button onclick="toggleNav(false)" class="absolute top-10 right-10 text-magenta font-mono text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto">Close_X</button>
+        <a href="/" class="text-4xl font-rajdhani font-bold text-magenta italic pointer-events-auto" onclick="toggleNav(false)">INDEX</a>
+        <a href="/news/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">NEWS</a>
+        <a href="/staff/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">STAFF</a>
+        <a href="/ceo/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">COMMAND</a>
+        <a href="/profiles/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">DATABASE</a>
+        <a href="/roster/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">ROSTERS</a>
+        <a href="/contact/index.html" class="text-2xl font-rajdhani tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" onclick="toggleNav(false)">SIGNAL</a>
+    </div>
+
+    <div class="relative z-10 p-4 md:p-12 max-w-7xl mx-auto pb-32">
+        
+        <header class="mb-8 md:mb-12 border-b border-magenta/20 pb-6 md:pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
+            <div>
+                <span class="tech-font text-magenta text-[8px] md:text-[10px] tracking-[0.5em] mb-2 block uppercase">Alerte // Déploiement Tactique CS2</span>
+                <h1 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter italic leading-none">Counter_Strike_<span class="text-magenta">Unit</span></h1>
+            </div>
+        </header>
+
+        <section class="mb-12 md:mb-20">
+            <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 tracking-widest uppercase">// Commandement_Global</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
+                <div class="coach-banner p-6 md:p-8 rounded-sm relative overflow-hidden">
+                    <div class="flex items-center gap-4 md:gap-6">
+                        <div class="h-12 w-12 md:h-16 md:w-16 bg-magenta/20 border border-magenta flex items-center justify-center title-font text-2xl md:text-3xl font-bold text-magenta shadow-[0_0_15px_rgba(214,47,127,0.3)]">BE</div>
+                        <div>
+                            <span class="tech-font text-magenta text-[8px] md:text-[10px] tracking-[0.3em]">STRATÈGE_HEAD_CS2</span>
+                            <h2 class="title-font text-3xl md:text-4xl font-bold uppercase tracking-tight">Buisson Enragé</h2>
+                            <div class="flex flex-wrap gap-2 md:gap-3 mt-2">
+                                <span class="bg-magenta text-white text-[8px] md:text-[9px] px-2 py-0.5 tech-font uppercase">Directeur Technique</span>
+                                <span class="border border-white/20 text-gray-400 text-[8px] md:text-[9px] px-2 py-0.5 tech-font italic">(Analyse: Rush B Expert)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute right-[-10px] top-[-5px] opacity-10 rotate-12 pointer-events-none select-none">
+                        <span class="title-font text-6xl md:text-7xl font-bold uppercase">Head</span>
+                    </div>
+                </div>
+
+                <div class="coach-banner p-6 md:p-8 rounded-sm relative overflow-hidden border-white/10">
+                    <div class="flex items-start gap-4 md:gap-6">
+                        <div class="h-12 w-12 md:h-16 md:w-16 bg-white/5 border border-white/20 flex items-center justify-center title-font text-2xl md:text-3xl font-bold text-white shrink-0">S</div>
+                        <div>
+                            <span class="tech-font text-gray-400 text-[8px] md:text-[10px] tracking-[0.3em] uppercase">Consultant Stratégique</span>
+                            <h2 class="title-font text-3xl md:text-4xl font-bold uppercase tracking-tight text-gray-200">SILVADA</h2>
+                            
+                            <div class="note-tactique tech-font">
+                                <span class="text-magenta font-bold">[NOTE_DÉTACHÉE]</span> : Étant dans une autre division, il assiste les formateurs dans l'entraînement et l'interprétation des statistiques avancées.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="absolute right-[-10px] top-[-5px] opacity-5 rotate-12 pointer-events-none select-none">
+                        <span class="title-font text-6xl md:text-7xl font-bold uppercase">Extern</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="mb-12 md:mb-20">
+            <div class="flex items-center gap-4 mb-6 md:mb-8">
+                <h2 class="tech-font text-magenta text-xs md:text-sm tracking-widest uppercase">// Escouade_Principale</h2>
+                <div class="h-px flex-1 bg-magenta/10"></div>
+                <span class="tech-font text-[8px] md:text-[10px] text-gray-600 uppercase">00 / 05 Slots</span>
+            </div>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
+                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
+                    <span class="tech-font text-[9px] text-magenta tracking-tighter uppercase">Slot_Classifié</span>
+                </div>
+                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
+                    <span class="tech-font text-[9px] text-magenta tracking-tighter uppercase">Slot_Classifié</span>
+                </div>
+                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
+                    <span class="tech-font text-[9px] text-magenta tracking-tighter uppercase">Slot_Classifié</span>
+                </div>
+                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
+                    <span class="tech-font text-[9px] text-magenta tracking-tighter uppercase">Slot_Classifié</span>
+                </div>
+                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
+                    <span class="tech-font text-[9px] text-magenta tracking-tighter uppercase">Slot_Classifié</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
+            <section>
+                <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Unités_de_Front</h3>
+                <div class="space-y-4">
+                    <div class="slot-card slot-empty p-4 text-center border-dashed opacity-40">
+                        <h4 class="tech-font text-[9px] uppercase tracking-widest">Poste_Libre</h4>
+                    </div>
+                    <div class="slot-card slot-empty p-4 border-dashed text-center recruiting-blink">
+                        <span class="tech-font text-[9px] md:text-[10px] text-magenta italic uppercase tracking-widest">En attente de déploiement_</span>
+                    </div>
+                </div>
+            </section>
+
+            <section class="space-y-8 md:space-y-12">
+                <div>
+                    <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Programme_Academy_CS2</h3>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div class="slot-card slot-empty p-4 text-center border-dashed opacity-40">
+                            <h4 class="tech-font text-[9px] uppercase tracking-widest">Poste_Libre</h4>
+                        </div>
+                        <div class="slot-card slot-empty p-4 text-center border-dashed opacity-40">
+                            <h4 class="tech-font text-[9px] uppercase tracking-widest">Poste_Libre</h4>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Unités_de_Réserve</h3>
+                    <div class="grid grid-cols-1 gap-3">
+                        <div class="slot-card slot-empty p-4 text-center border-dashed opacity-40">
+                            <h4 class="tech-font text-[9px] uppercase tracking-widest">Poste_Libre</h4>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer class="mt-20 p-6 md:p-8 border-t border-white/5 tech-font text-[8px] md:text-[9px] text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4 bg-black/50 backdrop-blur-md">
+        <div class="flex flex-col md:flex-row gap-2 md:gap-4 items-center text-center">
+            <span>© 2026 GOWRAX_ESPORT. // DESIGNED_BY_CRAZZYNEL</span>
+            <span class="hidden md:inline text-magenta/40">//</span>
+            <div class="flex items-center gap-3">
+                <span class="text-magenta uppercase">[ DATABASE: CS2_READY ]</span>
+            </div>
+        </div>
+        <div class="flex gap-6 uppercase tracking-widest">
+            <span class="text-magenta animate-pulse">CS2_PROTOCOL_V4.0</span>
+        </div>
+    </footer>
+
+    <script>
+        function toggleNav(state) { 
+            const nav = document.getElementById('mobile-nav');
+            if(state) {
+                nav.classList.add('active');
+                setTimeout(() => {
+                    nav.style.opacity = '1';
+                    nav.style.pointerEvents = 'auto';
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                nav.style.opacity = '0';
+                nav.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    nav.classList.remove('active');
+                    document.body.style.overflow = '';
+                }, 500);
+            }
+        }
+
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => { 
+            cursor.style.left = e.clientX + 'px'; 
+            cursor.style.top = e.clientY + 'px'; 
+        });
+
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = []; let shootingStars = [];
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; for(let i=0; i<200; i++) { stars.push({x: Math.random()*canvas.width, y:Math.random()*canvas.height, size: Math.random()*1.5, op: Math.random(), speed: Math.random()*0.01}); }
+        }
+        function createShootingStar() {
+            shootingStars.push({x: Math.random()*(canvas.width*1.5), y: -100, len: Math.random()*120+80, speed: Math.random()*12+8, opacity: 1});
+        }
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => { s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1; ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.size, s.size); });
+            shootingStars.forEach((ss, i) => {
+                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`; ctx.lineWidth = 2; ctx.beginPath();
+                ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y + ss.len); ctx.stroke();
+                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.015;
+                if(ss.opacity <= 0) shootingStars.splice(i, 1);
+            });
+            if(Math.random() < 0.08) createShootingStar();
+            requestAnimationFrame(animate);
+        }
+        window.addEventListener('resize', initStars); initStars(); animate();
+    </script>
+</body>
+</html>

@@ -7,6 +7,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <script src="/global.js" defer></script>
+    
     <style>
         :root { --abyss: #050508; --magenta: #D62F7F; --gold: #D4AF37; }
         body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; }
@@ -14,9 +16,19 @@
         .tech-font { font-family: 'Share Tech Mono', monospace; }
         .title-font { font-family: 'Rajdhani', sans-serif; }
 
+        /* Navigation Standard */
+        .nav-link { transition: 0.4s; letter-spacing: 0.2em; position: relative; opacity: 0.6; }
+        .nav-link:hover { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); opacity: 1 !important; }
+        
+        #mobile-nav { 
+            display: none;
+            background: rgba(2, 2, 5, 0.98);
+            backdrop-filter: blur(20px);
+        }
+        #mobile-nav.active { display: flex; }
+
         .glow-magenta { text-shadow: 0 0 20px rgba(214, 47, 127, 0.5); }
         
-        /* Numéro d'unité : Adapté PC et Mobile */
         #bg-number {
             position: fixed; bottom: -20px; right: -10px;
             font-size: 50vw; font-family: 'Rajdhani'; font-weight: 900;
@@ -37,9 +49,8 @@
         }
         .social-btn:hover { border-color: var(--magenta); background: rgba(214, 47, 127, 0.1); color: var(--magenta); }
 
-        #loader { background: var(--abyss); position: fixed; inset: 0; z-index: 100; display: flex; align-items: center; justify-content: center; flex-direction: column; }
+        #loader { background: var(--abyss); position: fixed; inset: 0; z-index: 200000; display: flex; align-items: center; justify-content: center; flex-direction: column; transition: opacity 0.5s; }
         
-        /* Animations */
         @keyframes scan { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
         .live-status {
             position: absolute; top: 10px; right: 10px;
@@ -49,21 +60,61 @@
         .live-dot { width: 6px; height: 6px; background: #ff0000; border-radius: 50%; animation: pulse-live 1s infinite; }
         @keyframes pulse-live { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
 
-        /* Progress Bars */
         .stat-bar-container { background: rgba(255,255,255,0.05); height: 4px; width: 100%; position: relative; }
         .stat-bar-fill { height: 100%; background: var(--magenta); box-shadow: 0 0 10px var(--magenta); width: 0%; transition: width 2s ease-out; }
 
-        /* Bio Expand */
         #m-description { transition: max-height 0.5s ease-in-out; overflow: hidden; }
         .collapsed { max-height: 100px; mask-image: linear-gradient(to bottom, black 50%, transparent 100%); }
         .expanded { max-height: 2000px; mask-image: none; }
+
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
     </style>
-    <script src="../global.js"></script>
 </head>
 <body>
 
+    <div id="custom-cursor"></div>
     <canvas id="starCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
     <div id="bg-number"></div>
+
+    <header class="fixed top-0 left-0 w-full z-[1000] p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 border border-magenta rotate-45 flex items-center justify-center">
+                <div class="w-4 h-4 bg-magenta animate-pulse rotate-[-45deg]"></div>
+            </div>
+            <div class="font-rajdhani font-bold text-2xl text-white tracking-tighter uppercase leading-none">
+                GOWRAX<span class="text-magenta italic">_FILE</span>
+            </div>
+        </div>
+        
+        <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em] tech-font">
+            <a href="/" class="nav-link">INDEX</a>
+            <a href="/news/index.html" class="nav-link">NEWS</a>
+            <a href="/staff/index.html" class="nav-link">STAFF</a>
+            <a href="/ceo/index.html" class="nav-link">COMMAND</a>
+            <a href="/profiles/index.html" class="text-magenta underline underline-offset-8 decoration-2">DATABASE</a>
+            <a href="/roster/index.html" class="nav-link">UNITS</a>
+            <a href="/contact/index.html" class="nav-link">SIGNAL</a>
+        </nav>
+
+        <div class="flex items-center">
+            <button onclick="toggleNav(true)" class="lg:hidden text-magenta border border-magenta/40 p-2 hover:bg-magenta hover:text-white transition-all">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div id="mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500">
+        <button onclick="toggleNav(false)" class="absolute top-10 right-10 text-magenta font-mono text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto">Close_X</button>
+        <a href="/" class="text-4xl font-rajdhani font-bold text-magenta italic pointer-events-auto" onclick="toggleNav(false)">INDEX</a>
+        <a href="/news/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">NEWS</a>
+        <a href="/staff/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">STAFF</a>
+        <a href="/ceo/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">COMMAND</a>
+        <a href="/profiles/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">DATABASE</a>
+        <a href="/roster/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">ROSTERS</a>
+        <a href="/contact/index.html" class="text-2xl font-rajdhani tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" onclick="toggleNav(false)">SIGNAL</a>
+    </div>
 
     <div id="loader">
         <div class="w-20 h-0.5 bg-white/10 mb-4 overflow-hidden relative">
@@ -72,7 +123,7 @@
         <span class="tech-font text-[10px] text-magenta tracking-[0.5em] uppercase">Synchronizing_Agent...</span>
     </div>
 
-    <div class="relative z-10 max-w-6xl mx-auto p-4 md:p-12 min-h-screen flex flex-col">
+    <div class="relative z-10 max-w-6xl mx-auto p-4 md:p-12 pt-32 md:pt-40 min-h-screen flex flex-col">
         
         <header class="mb-8 md:mb-12">
             <a href="./index.html" class="tech-font text-magenta text-[10px] tracking-[0.3em] uppercase block hover:text-white transition">[ <- RETOUR_ARCHIVES ]</a>
@@ -111,11 +162,11 @@
                 <div class="space-y-4 pt-2">
                     <div class="space-y-1">
                         <div class="flex justify-between tech-font text-[8px] uppercase text-gray-500"><span>Aptitude_Combat</span><span id="stat-aim">85%</span></div>
-                        <div class="stat-bar-container"><div class="stat-bar-fill" style="width: 85%"></div></div>
+                        <div class="stat-bar-container"><div class="stat-bar-fill" id="bar-aim" style="width: 0%"></div></div>
                     </div>
                     <div class="space-y-1">
                         <div class="flex justify-between tech-font text-[8px] uppercase text-gray-500"><span>Analyse_Tactique</span><span id="stat-tactic">92%</span></div>
-                        <div class="stat-bar-container"><div class="stat-bar-fill" style="width: 92%"></div></div>
+                        <div class="stat-bar-container"><div class="stat-bar-fill" id="bar-tactic" style="width: 0%"></div></div>
                     </div>
                 </div>
             </div>
@@ -164,6 +215,25 @@
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
+        function toggleNav(state) { 
+            const nav = document.getElementById('mobile-nav');
+            if(state) {
+                nav.classList.add('active');
+                setTimeout(() => {
+                    nav.style.opacity = '1';
+                    nav.style.pointerEvents = 'auto';
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                nav.style.opacity = '0';
+                nav.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    nav.classList.remove('active');
+                    document.body.style.overflow = '';
+                }, 500);
+            }
+        }
+
         async function loadAgent() {
             const urlParams = new URLSearchParams(window.location.search);
             const slug = urlParams.get('slug');
@@ -172,7 +242,6 @@
             const { data: m, error } = await _supabase.from('members').select('*').eq('slug', slug).single();
             if (error || !m) return;
 
-            // DATA INJECTION
             document.title = `GRX | AGENT_${m.nickname.toUpperCase()}`;
             document.getElementById('m-nickname').innerText = m.nickname;
             document.getElementById('m-role').innerText = m.main_role;
@@ -191,7 +260,6 @@
                 document.getElementById('m-quote').innerText = `"${m.quote}"`;
             }
 
-            // Gestion "Voir Plus"
             const desc = document.getElementById('m-description');
             const toggleBtn = document.getElementById('toggle-bio');
             if (desc.innerText.length < 150) {
@@ -209,7 +277,6 @@
                 }
             });
 
-            // ADDITIONAL ROLES
             const roleContainer = document.getElementById('m-additional-container');
             if (m.additional_roles) {
                 m.additional_roles.forEach(role => {
@@ -217,7 +284,6 @@
                 });
             }
 
-            // SOCIALS CLEANER
             const setLink = (id, val, base) => {
                 if (val) {
                     const el = document.getElementById(id);
@@ -232,16 +298,21 @@
 
             if (m.social_twitch) document.getElementById('live-badge').style.display = 'flex';
 
-            // Loader fade
             setTimeout(() => {
                 document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').style.display = 'none', 500);
+                // Déclenchement des barres de stats après le loader
+                document.getElementById('bar-aim').style.width = '85%';
+                document.getElementById('bar-tactic').style.width = '92%';
+                setTimeout(() => {
+                    document.getElementById('loader').style.display = 'none';
+                    // Correction loader interact
+                    document.getElementById('loader').style.pointerEvents = 'none';
+                }, 500);
             }, 800);
         }
 
         document.addEventListener('DOMContentLoaded', loadAgent);
 
-        // --- STARS ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let stars = []; let shootingStars = [];
@@ -263,6 +334,12 @@
             requestAnimationFrame(animate);
         }
         window.addEventListener('resize', initStars); initStars(); animate();
+
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px'; 
+            cursor.style.top = e.clientY + 'px'; 
+        });
     </script>
 </body>
 </html>

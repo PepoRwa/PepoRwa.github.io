@@ -5,62 +5,107 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GRX ROSTER | Sélection de l'Unité</title>
     
-    <meta name="description" content="Accédez aux divisions d'élite GOWRAX. Fortnite, Rocket League, Valorant. Choisissez votre protocole.">
+    <meta name="description" content="Accédez aux divisions d'élite GOWRAX. Fortnite, Rocket League, Valorant et CS2. Choisissez votre protocole.">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/global.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
     
     <style>
         :root { --abyss: #0B0C15; --void: #1A1C2E; --purple: #6F2DBD; --magenta: #D62F7F; }
         
-        /* Modif 1: Scroll autorisé sur mobile uniquement si nécessaire */
         body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; height: 100%; }
-        @media (min-width: 1024px) { body { overflow: hidden; cursor: none; } }
+        @media (min-width: 1024px) { body { overflow: hidden; height: 100vh; } }
         
         .accent-font { font-family: 'Rock Salt', cursive; }
         .tech-font { font-family: 'Share Tech Mono', monospace; }
         .title-font { font-family: 'Rajdhani', sans-serif; }
 
+        /* Navigation Standard */
+        .nav-link { transition: 0.4s; letter-spacing: 0.2em; position: relative; opacity: 0.6; }
+        .nav-link:hover { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); opacity: 1 !important; }
+        
+        #mobile-nav { 
+            display: none;
+            background: rgba(2, 2, 5, 0.98);
+            backdrop-filter: blur(20px);
+        }
+        #mobile-nav.active { display: flex; }
+
         .scanline { width: 100%; height: 100px; z-index: 40; pointer-events: none; background: linear-gradient(0deg, rgba(214, 47, 127, 0) 0%, rgba(214, 47, 127, 0.05) 50%, rgba(214, 47, 127, 0) 100%); position: absolute; top: -100px; animation: scan 4s linear infinite; }
         @keyframes scan { 0% { top: -100px; } 100% { top: 100%; } }
 
+        /* CURSEUR HAUTE PRIORITÉ */
         #custom-cursor { 
-            width: 24px; height: 24px; border: 1px solid var(--magenta); 
-            position: fixed; pointer-events: none; z-index: 999; border-radius: 50%; 
-            transition: transform 0.05s ease-out; transform: translate(-50%, -50%); 
-            box-shadow: 0 0 10px var(--magenta); display: none; 
+            width: 30px; height: 30px; border: 1px solid var(--magenta); 
+            position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; 
+            transition: transform 0.1s ease-out; transform: translate(-50%, -50%); 
+            box-shadow: 0 0 15px var(--magenta); display: none;
         }
-        @media (min-width: 1024px) { #custom-cursor { display: block; } }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
         
-        .game-card { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); border-left: 1px solid rgba(214, 47, 127, 0.2); }
+        @media (min-width: 1024px) { 
+            body, html, * { cursor: none !important; } 
+            #custom-cursor { display: block; } 
+        }
         
-        /* Modif 2: Filtre gris uniquement sur PC. Sur mobile, on garde les couleurs pour le visuel */
+        .game-card { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); border-left: 1px solid rgba(214, 47, 127, 0.2); position: relative; z-index: 10; }
+        
         @media (min-width: 1024px) {
             .game-card { filter: grayscale(1) brightness(0.5); }
             .game-card:hover { filter: grayscale(0) brightness(1); border-left: 4px solid var(--magenta); background: rgba(111, 45, 189, 0.05); }
         }
         @media (max-width: 1023px) {
-            .game-card { border-left: 2px solid var(--magenta); margin-bottom: 2px; height: 25vh; }
+            .game-card { border-left: 2px solid var(--magenta); margin-bottom: 2px; height: 30vh; }
         }
     </style>
-    <script src="../global.js"></script>
 </head>
 <body class="bg-[#050508]">
 
     <div id="custom-cursor"></div>
-    <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
+    <canvas id="starCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
     <div class="scanline"></div>
 
     <div class="relative z-10 flex flex-col min-h-screen lg:h-screen">
-        <header class="p-4 md:p-6 flex justify-between items-center border-b border-white/5 backdrop-blur-md bg-black/40">
-            <div class="title-font text-xl md:text-2xl text-magenta font-bold tracking-tighter">GOWRAX<span class="text-white">.ME</span></div>
-            <nav class="tech-font text-[8px] md:text-[10px] space-x-4 md:space-x-8 tracking-[0.2em] md:tracking-[0.3em]">
-                <a href="/" class="hover:text-magenta transition">>> HOME</a>
-                <span class="text-white/20">|</span>
-                <span class="text-magenta">UNITS</span>
+        
+        <header class="p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 border border-magenta rotate-45 flex items-center justify-center">
+                    <div class="w-4 h-4 bg-magenta animate-pulse rotate-[-45deg]"></div>
+                </div>
+                <div class="font-rajdhani font-bold text-2xl text-white tracking-tighter uppercase leading-none">
+                    GOWRAX<span class="text-magenta italic">_DIVISIONS</span>
+                </div>
+            </div>
+            
+            <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em] tech-font">
+                <a href="/" class="nav-link">INDEX</a>
+                <a href="/news/index.html" class="nav-link">NEWS</a>
+                <a href="/staff/index.html" class="nav-link">STAFF</a>
+                <a href="/ceo/index.html" class="nav-link">COMMAND</a>
+                <a href="/profiles/index.html" class="nav-link">DATABASE</a>
+                <a href="/roster/index.html" class="text-magenta underline underline-offset-8 decoration-2">UNITS</a>
+                <a href="/contact/index.html" class="nav-link">SIGNAL</a>
             </nav>
+
+            <div class="flex items-center">
+                <button onclick="toggleNav(true)" class="lg:hidden text-magenta border border-magenta/40 p-2 hover:bg-magenta hover:text-white transition-all">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </div>
         </header>
 
-        <main class="flex-1 flex flex-col lg:flex-row">
+        <div id="mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500">
+            <button onclick="toggleNav(false)" class="absolute top-10 right-10 text-magenta font-mono text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto">Close_X</button>
+            <a href="/" class="text-4xl font-rajdhani font-bold text-magenta italic pointer-events-auto" onclick="toggleNav(false)">INDEX</a>
+            <a href="/news/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">NEWS</a>
+            <a href="/staff/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">STAFF</a>
+            <a href="/ceo/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">COMMAND</a>
+            <a href="/profiles/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">DATABASE</a>
+            <a href="/roster/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">ROSTERS</a>
+            <a href="/contact/index.html" class="text-2xl font-rajdhani tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" onclick="toggleNav(false)">SIGNAL</a>
+        </div>
+
+        <main class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
             
             <a href="/roster/fortnite" class="game-card flex-1 relative group flex items-end p-8 md:p-12 overflow-hidden border-r border-white/5">
                 <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589241062272-c0a000072dfa?q=80&w=1000')] bg-cover bg-center opacity-30 lg:opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
@@ -89,41 +134,55 @@
                 </div>
             </a>
 
-            <div class="game-card flex-1 relative group flex items-end p-8 md:p-12 overflow-hidden cursor-not-allowed opacity-60 lg:opacity-40 grayscale-[1]">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=1000')] bg-cover bg-center opacity-10 filter blur-sm"></div>
+            <a href="/roster/cs2" class="game-card flex-1 relative group flex items-end p-8 md:p-12 overflow-hidden border-r border-white/5">
+                <div class="absolute inset-0 bg-[url('https://news.exitlag.com/wp-content/uploads/2025/07/esl-pro-league-cs2.webp')] bg-cover bg-center opacity-30 lg:opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
                 <div class="relative z-10 w-full">
-                    <span class="tech-font text-gray-500 text-[8px] md:text-[9px] tracking-[0.5em] block mb-2">DIVISION_04 [ENCRYPTED]</span>
-                    <h2 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-2 md:mb-4 text-gray-700">CLASSIFIED</h2>
+                    <span class="tech-font text-magenta text-[10px] tracking-[0.5em] block mb-2">DIVISION_04</span>
+                    <h2 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-2 md:mb-4">CS2</h2>
                     
-                    <div class="absolute top-0 right-0 border border-red-900/50 px-2 py-1 bg-red-950/20">
-                        <span class="tech-font text-red-500 text-[7px] md:text-[8px] animate-pulse">LACK_OF_PERMISSIONS</span>
+                    <div class="absolute top-0 right-0 border border-magenta/50 px-2 py-1 bg-magenta/10">
+                        <span class="tech-font text-magenta text-[7px] md:text-[8px] animate-pulse">UNIT_DEPLOYED</span>
                     </div>
 
-                    <p class="accent-font text-red-700 text-lg md:text-xl opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 shadow-sm">
-                        7355608 Detected
+                    <p class="accent-font text-magenta text-lg md:text-xl opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 shadow-sm">
+                        Tactical Supremacy
                     </p>
                 </div>
-                <div class="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
-            </div>
+            </a>
 
         </main>
 
-        <footer class="p-3 md:p-4 bg-black border-t border-white/5 tech-font text-[8px] md:text-[9px] flex justify-between text-gray-600">
+        <footer class="p-4 bg-black border-t border-white/5 tech-font text-[8px] md:text-[9px] flex justify-between text-gray-500 z-[100]">
             <div class="flex gap-4 md:gap-6">
-                <span class="hidden xs:inline">DATABASE: GRANTED</span>
-                <span>UNITS: 03_ACT | 01_ENC</span>
+                <span class="hidden xs:inline text-green-500">DATABASE: 100% DECRYPTED</span>
+                <span>DIVISIONS: 04_OPERATIONAL</span>
             </div>
-            <div class="animate-pulse text-magenta text-right">SELECT A DIVISION TO VIEW FILES</div>
+            <div class="animate-pulse text-magenta text-right">ALL SYSTEMS ONLINE // READY FOR DEPLOYMENT</div>
         </footer>
     </div>
 
     <script>
+        function toggleNav(state) { 
+            const nav = document.getElementById('mobile-nav');
+            if(state) {
+                nav.classList.add('active');
+                setTimeout(() => {
+                    nav.style.opacity = '1';
+                    nav.style.pointerEvents = 'auto';
+                }, 10);
+            } else {
+                nav.style.opacity = '0';
+                nav.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    nav.classList.remove('active');
+                }, 500);
+            }
+        }
+
         const cursor = document.getElementById('custom-cursor');
         window.addEventListener('mousemove', e => {
-            if(window.innerWidth >= 1024) {
-                cursor.style.left = e.clientX + 'px';
-                cursor.style.top = e.clientY + 'px';
-            }
+            cursor.style.left = e.clientX + 'px'; 
+            cursor.style.top = e.clientY + 'px'; 
         });
 
         const canvas = document.getElementById('starCanvas');
@@ -133,7 +192,7 @@
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             stars = [];
             const count = window.innerWidth < 1024 ? 80 : 150;
-            for(let i=0; i<count; i++) stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.2, op: Math.random(), s: Math.random()*0.01});
+            for(let i=0; i<count; i++) stars.push({x: Math.random()*canvas.width, y:Math.random()*canvas.height, size: Math.random()*1.2, op: Math.random(), s: Math.random()*0.01});
         }
         function animateStars() {
             ctx.clearRect(0,0,canvas.width, canvas.height);

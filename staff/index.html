@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOWRAX STAFF // PERSONNEL_NAVIGUANT</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/global.js" defer></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;700&family=Share+Tech+Mono&family=Rock+Salt&display=swap" rel="stylesheet">
     <style>
         :root { --chrome: #C0C0C0; --abyss: #020203; --ice: #A5D8FF; --magenta: #D62F7F; }
@@ -14,19 +15,21 @@
             overflow-x: hidden; min-height: 100vh; margin: 0;
         }
 
+        /* Navigation Standard */
+        .nav-link { transition: 0.4s; letter-spacing: 0.2em; position: relative; opacity: 0.6; font-family: 'Share Tech Mono'; font-size: 10px; }
+        .nav-link:hover { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); opacity: 1 !important; }
+        
+        #mobile-nav { 
+            display: none;
+            background: rgba(2, 2, 5, 0.98);
+            backdrop-filter: blur(20px);
+        }
+        #mobile-nav.active { display: flex; }
+
         #bg-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
         .film-grain { position: fixed; inset: 0; z-index: 100; opacity: 0.05; pointer-events: none; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
 
-        /* --- BOUTON BACK --- */
-        .btn-back {
-            position: fixed; top: 30px; left: 30px; z-index: 200;
-            font-family: 'Share Tech Mono'; font-size: 10px; color: var(--chrome);
-            letter-spacing: 3px; padding: 10px 20px; border: 1px solid rgba(192, 192, 192, 0.2);
-            transition: 0.3s; backdrop-filter: blur(10px); text-transform: uppercase; text-decoration: none;
-        }
-        .btn-back:hover { background: var(--chrome); color: black; box-shadow: 0 0 20px var(--chrome); }
-
-        /* --- CARTES STAFF (SANS TILT) --- */
+        /* --- CARTES STAFF --- */
         .staff-card {
             width: 300px; height: 480px;
             background: rgba(255, 255, 255, 0.02);
@@ -34,6 +37,7 @@
             position: relative; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
             backdrop-filter: blur(10px); flex-shrink: 0;
             overflow: hidden;
+            z-index: 10;
         }
         .staff-card:hover { 
             border-color: var(--ice); 
@@ -82,8 +86,13 @@
         .section-header { width: 100%; text-align: center; margin-top: 60px; }
         .section-title { font-family: 'Share Tech Mono'; color: rgba(192, 192, 192, 0.2); font-size: 11px; letter-spacing: 12px; text-transform: uppercase; }
 
+        /* CURSEUR HAUTE PRIORITÉ */
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
+
         @media (max-width: 1024px) {
-            #main-content { padding-top: 60px; }
+            #main-content { padding-top: 100px; }
             .card-slider { 
                 justify-content: flex-start; 
                 padding: 20px 40px; 
@@ -99,32 +108,67 @@
             }
             .staff-card:active, .staff-card:focus { opacity: 1; transform: scale(1); }
             .staff-bio { opacity: 1; color: #bbb; }
-            .btn-back { top: 20px; left: 20px; padding: 8px 15px; font-size: 8px; }
         }
     </style>
 </head>
 <body class="bg-[#050508]">
 
+    <div id="custom-cursor"></div>
     <div class="film-grain"></div>
-    <canvas id="bg-canvas"></canvas>
+    <canvas id="bg-canvas" class="pointer-events-none"></canvas>
 
-    <a href="/" class="btn-back">← Back_to_Base</a>
+    <header class="fixed top-0 left-0 w-full z-[1000] p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 border border-magenta rotate-45 flex items-center justify-center">
+                <div class="w-4 h-4 bg-magenta animate-pulse rotate-[-45deg]"></div>
+            </div>
+            <div class="font-rajdhani font-bold text-2xl text-white tracking-tighter uppercase leading-none">
+                GOWRAX<span class="text-magenta italic">_PERSONNEL</span>
+            </div>
+        </div>
+        
+        <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em]">
+            <a href="/" class="nav-link">INDEX</a>
+            <a href="/news/index.html" class="nav-link">NEWS</a>
+            <a href="/ceo/index.html" class="nav-link">COMMAND</a>
+            <a href="/staff/index.html" class="nav-link active">STAFF</a>
+            <a href="/profiles/index.html" class="nav-link">DATABASE</a>
+            <a href="/roster/index.html" class="nav-link">UNITS</a>
+            <a href="/contact/index.html" class="nav-link">SIGNAL</a>
+        </nav>
 
-    <div id="boot-sequence" style="position: fixed; inset: 0; background: black; z-index: 1000; display: flex; flex-direction: column; justify-content: center; padding: 10%; font-family: 'Share Tech Mono', monospace; color: var(--chrome);">
+        <div class="flex items-center">
+            <button onclick="toggleNav(true)" class="lg:hidden text-magenta border border-magenta/40 p-2 hover:bg-magenta hover:text-white transition-all">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div id="mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500">
+        <button onclick="toggleNav(false)" class="absolute top-10 right-10 text-magenta font-mono text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto">Close_X</button>
+        <a href="/" class="text-4xl font-rajdhani font-bold text-magenta italic pointer-events-auto" onclick="toggleNav(false)">INDEX</a>
+        <a href="/news/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">NEWS</a>
+        <a href="/staff/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">STAFF</a>
+        <a href="/ceo/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">COMMAND</a>
+        <a href="/profiles/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">DATABASE</a>
+        <a href="/roster/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">ROSTERS</a>
+        <a href="/contact/index.html" class="text-2xl font-rajdhani tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" onclick="toggleNav(false)">SIGNAL</a>
+    </div>
+
+    <div id="boot-sequence" style="position: fixed; inset: 0; background: black; z-index: 10000; display: flex; flex-direction: column; justify-content: center; padding: 10%; font-family: 'Share Tech Mono', monospace; color: var(--chrome); transition: opacity 0.5s;">
         <div id="boot-logs" class="space-y-1 text-[10px]"></div>
         <div class="mt-8 h-[1px] w-64 bg-white/5 relative overflow-hidden">
             <div id="boot-bar" class="absolute inset-0 bg-white/20 w-0 transition-all duration-300"></div>
         </div>
     </div>
 
-    <main id="main-content" class="relative z-10 opacity-0 transition-opacity duration-1000">
+    <main id="main-content" class="relative z-10 opacity-0 transition-opacity duration-1000 pt-20">
         
         <div class="section-header">
             <h2 class="section-title">Logistique_&_Stratégie</h2>
         </div>
 
         <div class="card-slider">
-            
             <div class="staff-card">
                 <div class="render-container">
                     <img src="../assets/img/graffiti_valo.png" class="staff-render">
@@ -133,7 +177,7 @@
                     <span class="staff-role">Architecture_Technique</span>
                     <h3 class="staff-name">LerDragon</h3>
                     <div class="h-[1px] w-full bg-white/10 my-3"></div>
-                    <p class="staff-bio">Maître d'œuvre de l'infrastructure réseau. Il assure la fluidité des serveurs et la protection des données stratégiques de l'empire contre toute intrusion externe.</p>
+                    <p class="staff-bio">Maître d'œuvre de l'infrastructure réseau. Il assure la fluidité des serveurs et la protection des données stratégiques.</p>
                 </div>
             </div>
 
@@ -145,7 +189,7 @@
                     <span class="staff-role">Creative_Lead // Graphisme</span>
                     <h3 class="staff-name">Kopoxx</h3>
                     <div class="h-[1px] w-full bg-white/10 my-3"></div>
-                    <p class="staff-bio">Architecte de l'identité visuelle GOWRAX. Kopoxx transforme les concepts abstraits en réalités graphiques percutantes, définissant l'image de marque de la structure.</p>
+                    <p class="staff-bio">Architecte de l'identité visuelle GOWRAX. Kopoxx transforme les concepts abstraits en réalités graphiques percutantes.</p>
                 </div>
             </div>
 
@@ -158,7 +202,7 @@
                     <h3 class="staff-name">Buisson</h3>
                     <a href="https://www.twitch.tv/buisson_suspect" target="_blank" class="twitch-link">● buisson_suspect</a>
                     <div class="h-[1px] w-full bg-white/10 my-3"></div>
-                    <p class="staff-bio">Expert en analyse comportementale et tactique. Il supervise la progression des unités et commente les déploiements avec une précision chirurgicale.</p>
+                    <p class="staff-bio">Expert en analyse comportementale et tactique. Il supervise la progression des unités avec une précision chirurgicale.</p>
                 </div>
             </div>
 
@@ -171,10 +215,9 @@
                     <h3 class="staff-name">Kokooer44</h3>
                     <a href="https://twitch.tv/kokooer44" target="_blank" class="twitch-link">● kokooer44</a>
                     <div class="h-[1px] w-full bg-white/10 my-3"></div>
-                    <p class="staff-bio">Le porte-parole médiatique. À travers ses lives et contenus, il fédère la communauté autour des exploits de l'équipe et maintient la hype au niveau maximal.</p>
+                    <p class="staff-bio">Le porte-parole médiatique. Il fédère la communauté autour des exploits de l'équipe et maintient la hype au niveau maximal.</p>
                 </div>
             </div>
-
         </div>
 
         <div class="section-header">
@@ -182,7 +225,6 @@
         </div>
 
         <div class="card-slider">
-            
             <div class="staff-card">
                 <div class="render-container">
                     <img src="../assets/img/jett_render.png" class="staff-render">
@@ -191,7 +233,7 @@
                     <span class="staff-role">Modérateur_Base_Générale</span>
                     <h3 class="staff-name">Just1fan</h3>
                     <div class="h-[1px] w-full bg-white/10 my-3"></div>
-                    <p class="staff-bio">Sentinelle de l'ordre public. Il applique les protocoles de communication et neutralise les éléments perturbateurs pour garantir un environnement sain à nos recrues.</p>
+                    <p class="staff-bio">Sentinelle de l'ordre public. Il neutralise les éléments perturbateurs pour garantir un environnement sain à nos recrues.</p>
                 </div>
             </div>
 
@@ -199,11 +241,9 @@
                 <div class="text-center p-8">
                     <span class="staff-role text-magenta">OFFRE_D'EMPLOI</span>
                     <h3 class="title-font text-2xl font-bold mt-4 uppercase">Manager / Community</h3>
-                    <p class="tech-font text-[10px] text-gray-400 mt-2 mb-6">Nous recherchons des profils capables de structurer nos réseaux et de gérer le bien-être de nos joueurs.</p>
-                    <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="px-5 py-2 border border-magenta text-magenta hover:bg-magenta hover:text-white transition inline-block text-[10px] tech-font uppercase">Rejoindre les rangs</a>
+                    <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="px-5 py-2 border border-magenta text-magenta hover:bg-magenta hover:text-white transition inline-block text-[10px] tech-font uppercase mt-6">Rejoindre les rangs</a>
                 </div>
             </div>
-
         </div>
 
         <footer class="mt-20 p-12 text-center border-t border-white/5 bg-black/40">
@@ -212,6 +252,31 @@
     </main>
 
     <script>
+        function toggleNav(state) { 
+            const nav = document.getElementById('mobile-nav');
+            if(state) {
+                nav.classList.add('active');
+                setTimeout(() => {
+                    nav.style.opacity = '1';
+                    nav.style.pointerEvents = 'auto';
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                nav.style.opacity = '0';
+                nav.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    nav.classList.remove('active');
+                    document.body.style.overflow = '';
+                }, 500);
+            }
+        }
+
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => { 
+            cursor.style.left = e.clientX + 'px'; 
+            cursor.style.top = e.clientY + 'px'; 
+        });
+
         // --- BOOT LOGS ---
         const logs = ["> Identifying Staff_ID...", "> Syncing Neural_Profiles...", "> Optimizing Mobile_Interface...", "> ACCESS GRANTED."];
         const logContainer = document.getElementById('boot-logs');
@@ -225,9 +290,10 @@
                 setTimeout(showLogs, 300);
             } else {
                 setTimeout(() => {
-                    document.getElementById('boot-sequence').style.opacity = '0';
+                    const boot = document.getElementById('boot-sequence');
+                    boot.style.opacity = '0';
                     setTimeout(() => {
-                        document.getElementById('boot-sequence').style.display = 'none';
+                        boot.style.display = 'none';
                         document.getElementById('main-content').style.opacity = '1';
                     }, 500);
                 }, 500);

@@ -20,11 +20,22 @@
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    <script src="/global.js" defer></script>
     
     <style>
         :root { --magenta: #D62F7F; --abyss: #0B0C15; }
         body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; scroll-behavior: smooth; }
         
+        /* CORRECTIF TITRE : Fluide, pas de coupure de mot sauvage, équilibré sur PC */
+        #post-title { 
+            font-size: clamp(1.8rem, 6vw, 4rem); 
+            line-height: 1.1;
+            word-break: keep-all; /* Empêche de couper les mots au milieu */
+            overflow-wrap: break-word; /* Ne casse que si vraiment nécessaire (mot plus long que l'écran) */
+            hyphens: none;
+            max-width: 100%;
+        }
+
         /* Hiérarchie Markdown Améliorée */
         .markdown-content h1 { font-family: 'Rajdhani'; font-size: 2.5rem; font-weight: bold; text-transform: uppercase; color: var(--magenta); margin: 3rem 0 1.5rem; border-left: 4px solid var(--magenta); padding-left: 1rem; line-height: 1; }
         .markdown-content h2 { font-family: 'Rajdhani'; font-size: 1.8rem; font-weight: bold; text-transform: uppercase; color: #fff; margin: 2.5rem 0 1rem; border-bottom: 1px solid rgba(214, 47, 127, 0.2); padding-bottom: 0.5rem; }
@@ -38,7 +49,7 @@
         .markdown-content blockquote { border-left: 2px solid var(--magenta); background: rgba(214, 47, 127, 0.05); padding: 1rem 1.5rem; margin: 2rem 0; font-style: italic; color: #aaa; }
         
         /* Sommaire Étendu */
-        #toc { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); width: 220px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 1.5rem; display: none; max-height: 80vh; overflow-y: auto; }
+        #toc { position: fixed; right: 2rem; top: 50%; transform: translateY(-50%); width: 220px; border-left: 1px solid rgba(255,255,255,0.1); padding-left: 1.5rem; display: none; max-height: 80vh; overflow-y: auto; z-index: 40; }
         @media (min-width: 1280px) { #toc { display: block; } }
         #toc ul { list-style: none; font-family: 'Share Tech Mono'; font-size: 10px; }
         #toc li { margin-bottom: 8px; }
@@ -55,11 +66,67 @@
         .post-banner { position: absolute; top: 0; left: 0; width: 100%; height: 500px; z-index: -1; overflow: hidden; }
         .post-banner img { width: 100%; height: 100%; object-fit: cover; opacity: 0.4; }
         .post-banner::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 0%, var(--abyss) 100%); }
-        #header-post { position: relative; padding-top: 150px; }
+        
+        /* Navigation Standard Style */
+        .nav-link { transition: 0.4s; letter-spacing: 0.2em; position: relative; opacity: 0.6; }
+        .nav-link:hover { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); opacity: 1 !important; }
+        
+        #mobile-nav { 
+            display: none;
+            background: rgba(2, 2, 5, 0.98);
+            backdrop-filter: blur(20px);
+        }
+        #mobile-nav.active { display: flex; }
+
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
+
+        #header-post { position: relative; padding-top: 50px; }
     </style>
-    <script src="../global.js"></script>
 </head>
-<body class="bg-[#050508] p-4 md:p-6">
+<body class="bg-[#050508]">
+    
+    <div id="custom-cursor"></div>
+
+    <header class="relative z-[100] p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
+        <div class="flex items-center gap-4">
+            <div class="w-8 h-8 border border-magenta rotate-45 flex items-center justify-center">
+                <div class="w-4 h-4 bg-magenta animate-pulse rotate-[-45deg]"></div>
+            </div>
+            <div class="font-rajdhani font-bold text-2xl text-white tracking-tighter uppercase leading-none">
+                GOWRAX<span class="text-magenta italic">_REPORTS</span>
+            </div>
+        </div>
+        
+        <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em] tech-font">
+            <a href="/" class="nav-link">INDEX</a>
+            <a href="/news/index.html" class="text-magenta underline underline-offset-8 decoration-2">NEWS</a>
+            <a href="/staff/index.html" class="nav-link">STAFF</a>
+            <a href="/ceo/index.html" class="nav-link">COMMAND</a>
+            <a href="/profiles/index.html" class="nav-link">DATABASE</a>
+            <a href="/roster/index.html" class="nav-link">UNITS</a>
+            <a href="/contact/index.html" class="nav-link">SIGNAL</a>
+        </nav>
+
+        <div class="flex items-center">
+            <button onclick="toggleNav(true)" class="lg:hidden text-magenta border border-magenta/40 p-2 hover:bg-magenta hover:text-white transition-all">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            </button>
+        </div>
+    </header>
+
+    <div id="mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500">
+        <button onclick="toggleNav(false)" class="absolute top-10 right-10 text-magenta font-mono text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto">Close_X</button>
+        <a href="/" class="text-4xl font-rajdhani font-bold text-magenta italic pointer-events-auto" onclick="toggleNav(false)">INDEX</a>
+        <a href="/news/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">NEWS</a>
+        <a href="/staff/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">STAFF</a>
+        <a href="/ceo/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">COMMAND</a>
+        <a href="/profiles/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">DATABASE</a>
+        <a href="/roster/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">ROSTERS</a>
+        <a href="/contact/index.html" class="text-2xl font-rajdhani tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" onclick="toggleNav(false)">SIGNAL</a>
+    </div>
+
     <div id="banner-container" class="post-banner hidden">
         <img id="post-image" src="" alt="Banner">
     </div>
@@ -69,14 +136,14 @@
         <ul id="toc-list"></ul>
     </nav>
 
-    <div class="max-w-3xl mx-auto py-10 md:py-20">
+    <div class="max-w-3xl mx-auto py-10 md:py-20 px-4">
         <a href="./index.html" class="tech-font text-magenta text-[10px] uppercase tracking-[0.3em] hover:text-white transition block mb-12 italic underline underline-offset-8">
             [<- RETOUR_ARCHIVES]
         </a>
         
         <header id="header-post" class="mb-12 border-b border-white/10 pb-12 opacity-0 transition-all duration-1000 transform translate-y-4">
             <div id="post-tags" class="flex flex-wrap gap-2 mb-6"></div>
-            <h1 id="post-title" class="text-4xl md:text-7xl font-bold uppercase italic tracking-tighter mb-4 glow-text leading-none"></h1>
+            <h1 id="post-title" class="font-bold uppercase italic tracking-tighter mb-4 glow-text"></h1>
             <div class="flex justify-between items-center text-gray-600 tech-font text-[10px] uppercase tracking-widest">
                 <span id="post-date"></span>
                 <span>Security: Public_Access</span>
@@ -85,7 +152,7 @@
 
         <article id="post-content" class="markdown-content tech-font opacity-0 transition-all duration-1000 delay-300 transform translate-y-4"></article>
         
-        <div id="loader" class="fixed inset-0 flex flex-col items-center justify-center bg-[#050508] z-50">
+        <div id="loader" class="fixed inset-0 flex flex-col items-center justify-center bg-[#050508] z-[500]">
             <div class="w-12 h-1 bg-white/10 mb-4 relative overflow-hidden">
                 <div class="absolute inset-0 bg-magenta decrypt-anim" style="width: 100%;"></div>
             </div>
@@ -97,6 +164,25 @@
         const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+        function toggleNav(state) { 
+            const nav = document.getElementById('mobile-nav');
+            if(state) {
+                nav.classList.add('active');
+                setTimeout(() => {
+                    nav.style.opacity = '1';
+                    nav.style.pointerEvents = 'auto';
+                }, 10);
+                document.body.style.overflow = 'hidden';
+            } else {
+                nav.style.opacity = '0';
+                nav.style.pointerEvents = 'none';
+                setTimeout(() => {
+                    nav.classList.remove('active');
+                    document.body.style.overflow = '';
+                }, 500);
+            }
+        }
 
         const renderer = {
             heading(item) {
@@ -119,27 +205,21 @@
                 
                 if (error || !post) throw new Error("POST_NOT_FOUND");
 
-                // UPDATE SEO & OPEN GRAPH
                 const cleanExcerpt = post.content.replace(/[#*`_]/g, '').substring(0, 160) + '...';
                 document.title = `GRX | ${post.title.toUpperCase()}`;
                 
-                // Injection dynamique pour les réseaux (Fonctionne si partagé via certains outils ou indexé)
                 document.getElementById('og-title').setAttribute('content', post.title);
                 document.getElementById('og-desc').setAttribute('content', cleanExcerpt);
                 document.getElementById('twitter-title').setAttribute('content', post.title);
 
-                // GESTION DE LA BANNIÈRE
                 if (post.image_url) {
                     const bannerImg = document.getElementById('post-image');
                     bannerImg.src = post.image_url;
                     document.getElementById('banner-container').classList.remove('hidden');
-                    
-                    // Update image meta tags
                     document.getElementById('og-image').setAttribute('content', post.image_url);
                     document.getElementById('twitter-image').setAttribute('content', post.image_url);
                 }
 
-                // DATA INJECTION
                 document.getElementById('post-title').innerText = post.title;
                 document.getElementById('post-date').innerText = `DÉCRYPTÉ_LE: ${new Date(post.created_at).toLocaleDateString('fr-FR')}`;
                 
@@ -153,7 +233,6 @@
 
                 document.getElementById('post-content').innerHTML = marked.parse(post.content, { breaks: true });
 
-                // SOMMAIRE ÉTENDU (H1 à H4)
                 const tocList = document.getElementById('toc-list');
                 tocList.innerHTML = '';
                 const headings = document.getElementById('post-content').querySelectorAll('h1, h2, h3, h4');
@@ -164,12 +243,9 @@
                         const a = document.createElement('a');
                         a.href = `#${h.id}`;
                         a.innerText = h.innerText;
-                        
-                        // Indentation selon le niveau
                         if (h.tagName === 'H2') li.classList.add('pl-2', 'opacity-80');
                         if (h.tagName === 'H3') li.classList.add('toc-h3');
                         if (h.tagName === 'H4') li.classList.add('toc-h4');
-                        
                         li.appendChild(a);
                         tocList.appendChild(li);
                     });
@@ -192,6 +268,12 @@
             }
         }
         document.addEventListener('DOMContentLoaded', loadPost);
+
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px'; 
+            cursor.style.top = e.clientY + 'px'; 
+        });
     </script>
 </body>
 </html>
