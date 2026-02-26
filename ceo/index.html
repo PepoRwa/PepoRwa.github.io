@@ -2,164 +2,334 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>GRX COMMAND | Haut Commandement GOWRAX</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOWRAX // ORBITAL_COMMAND</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;700&family=Share+Tech+Mono&family=Rock+Salt&display=swap" rel="stylesheet">
     <style>
-        :root { --abyss: #0B0C15; --void: #1A1C2E; --magenta: #D62F7F; --gold: #D4AF37; }
-        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; cursor: none; -webkit-font-smoothing: antialiased; }
-        
-        .tech-font { font-family: 'Share Tech Mono', monospace; }
-        .accent-font { font-family: 'Rock Salt', cursive; }
-        .title-font { font-family: 'Rajdhani', sans-serif; }
+        :root { --gold: #D4AF37; --abyss: #020203; --magenta: #D62F7F; }
+        body, html { 
+            background: var(--abyss); color: white; 
+            font-family: 'Rajdhani', sans-serif;
+            overflow: hidden; height: 100vh; margin: 0;
+        }
 
-        .ceo-card { background: rgba(26, 28, 46, 0.4); border: 1px solid rgba(212, 175, 55, 0.1); backdrop-filter: blur(10px); transition: 0.4s; }
-        .ceo-card:hover { border-color: var(--gold); transform: translateY(-5px); box-shadow: 0 0 30px rgba(212, 175, 55, 0.1); }
+        /* --- BACKGROUND CELESTIAL --- */
+        #bg-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
+        #bg-video-blur {
+            position: fixed; inset: 0; 
+            background: radial-gradient(circle at 50% 50%, #0d0d12 0%, #020203 100%);
+            z-index: -2;
+        }
 
-        /* Skill Bars */
-        .skill-bar-bg { background: rgba(255,255,255,0.05); height: 4px; width: 100%; margin-top: 4px; }
-        .skill-bar-fill { background: var(--gold); height: 100%; box-shadow: 0 0 10px var(--gold); }
+        .film-grain { position: fixed; inset: 0; z-index: 100; opacity: 0.05; pointer-events: none; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
 
-        .gold-gradient { background: linear-gradient(to right, var(--gold), #f3e5ab); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent; }
-        
-        #custom-cursor { width: 24px; height: 24px; border: 1px solid var(--gold); position: fixed; pointer-events: none; z-index: 9999; border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--gold); }
+        /* --- BOUTON RETOUR --- */
+        .btn-back {
+            position: fixed; top: 30px; left: 30px; z-index: 200;
+            font-family: 'Share Tech Mono'; font-size: 10px; color: var(--gold);
+            letter-spacing: 3px; padding: 10px 20px; 
+            border: 1px solid rgba(212, 175, 55, 0.2);
+            background: rgba(0,0,0,0.5); backdrop-filter: blur(5px);
+            transition: all 0.3s; text-transform: uppercase;
+        }
+        .btn-back:hover { 
+            background: var(--gold); color: black; 
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.4); 
+        }
+
+        /* --- BOOT SEQUENCE --- */
+        #boot-sequence {
+            position: fixed; inset: 0; background: black; z-index: 1000;
+            display: flex; flex-direction: column; justify-content: center; padding: 10%;
+            font-family: 'Share Tech Mono', monospace; color: var(--gold);
+        }
+
+        /* --- MAIN INTERFACE --- */
+        #main-interface {
+            display: none; opacity: 0; 
+            perspective: 2000px; height: 100vh;
+            flex-direction: column; align-items: center; justify-content: center; z-index: 10;
+        }
+
+        /* --- TITRE DE PAGE --- */
+        .page-header {
+            position: absolute; top: 40px; text-align: center; width: 100%;
+            letter-spacing: 1rem; color: rgba(255,255,255,0.2);
+            font-family: 'Share Tech Mono'; font-size: 12px; text-transform: uppercase;
+        }
+
+        /* --- CARTE AAA SUPREME --- */
+        .ceo-card {
+            width: 380px; height: 620px;
+            background: rgba(255, 255, 255, 0.01);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            margin: 0 20px; position: relative;
+            transition: transform 0.1s ease-out, box-shadow 0.7s, border-color 0.7s;
+            transform-style: preserve-3d; cursor: pointer;
+            backdrop-filter: blur(10px);
+            flex-shrink: 0;
+        }
+
+        .ceo-card:hover, .ceo-card.active-mobile {
+            border-color: var(--gold);
+            background: rgba(212, 175, 55, 0.02);
+            box-shadow: 0 0 100px rgba(0, 0, 0, 0.9), 0 0 40px rgba(212, 175, 55, 0.1);
+        }
+
+        .signature-quote {
+            position: absolute; top: 15%; left: 50%;
+            transform: translateX(-50%) translateZ(-30px);
+            font-family: 'Rock Salt', cursive; font-size: 1rem;
+            color: rgba(212, 175, 55, 0.25);
+            width: 85%; text-align: center; pointer-events: none; transition: 0.8s;
+        }
+        .ceo-card:hover .signature-quote, .ceo-card.active-mobile .signature-quote {
+            color: var(--gold); text-shadow: 0 0 15px var(--gold);
+            transform: translateX(-50%) translateZ(10px) rotate(-1deg);
+        }
+
+        .agent-render {
+            position: absolute; top: 5%; left: 50%;
+            transform: translateX(-50%) translateZ(0);
+            width: 170%; height: auto; pointer-events: none;
+            filter: drop-shadow(0 30px 50px black) grayscale(0.8);
+            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0.15;
+        }
+        .ceo-card:hover .agent-render, .ceo-card.active-mobile .agent-render { opacity: 1; filter: grayscale(0); transform: translateX(-50%) translateZ(180px) translateY(-30px); }
+
+        .info-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%;
+            padding: 50px 35px; transform: translateZ(60px);
+            background: linear-gradient(to top, black 70%, transparent);
+        }
+
+        .glitch-title { font-weight: 800; font-size: 3.5rem; text-transform: uppercase; line-height: 0.8; letter-spacing: -3px; margin-bottom: 20px; transition: 0.3s; }
+        .ceo-card:hover .glitch-title, .ceo-card.active-mobile .glitch-title { color: var(--gold); }
+
+        .bio-text { font-size: 11px; color: #555; line-height: 1.6; opacity: 0; transform: translateY(20px); transition: 0.6s 0.3s; }
+        .ceo-card:hover .bio-text, .ceo-card.active-mobile .bio-text { opacity: 1; transform: translateY(0); color: #ccc; }
+
+        /* OBJECTIF */
+        .obj-box {
+            margin-top: 20px; border-left: 2px solid var(--magenta); padding-left: 12px;
+            opacity: 0; transform: translateX(-10px); transition: 0.5s 0.4s;
+        }
+        .ceo-card:hover .obj-box, .ceo-card.active-mobile .obj-box { opacity: 1; transform: translateX(0); }
+        .obj-label { font-family: 'Share Tech Mono'; font-size: 7px; color: var(--magenta); text-transform: uppercase; letter-spacing: 2px; }
+        .obj-value { font-weight: 700; font-size: 11px; color: white; text-transform: uppercase; }
+
+        .bar-load { width: 0%; height: 2px; background: var(--gold); box-shadow: 0 0 15px var(--gold); transition: 1s ease; }
+        .ceo-card:hover .bar-load, .ceo-card.active-mobile .bar-load { width: 100%; }
+
+        #intro-text { font-family: 'Share Tech Mono'; color: var(--gold); font-size: 11px; margin-bottom: 40px; letter-spacing: 5px; text-transform: uppercase; height: 1em; text-align: center; }
+
+        /* --- MOBILE --- */
+        @media (max-width: 768px) {
+            #main-interface { height: auto; min-height: 100vh; justify-content: flex-start; padding-top: 100px; }
+            .btn-back { top: 15px; left: 15px; font-size: 8px; padding: 8px 15px; }
+            .card-slider {
+                display: flex; overflow-x: scroll; width: 100vw;
+                padding: 0 10vw; scroll-snap-type: x mandatory; gap: 20px; scrollbar-width: none;
+            }
+            .ceo-card { width: 80vw; height: 70vh; margin: 0; scroll-snap-align: center; }
+            .glitch-title { font-size: 2.5rem; }
+        }
     </style>
-    <script src="../global.js"></script>
 </head>
-<body class="bg-[#020205]">
+<body>
 
-    <div id="custom-cursor"></div>
-    <canvas id="starCanvas" class="fixed inset-0 z-0"></canvas>
+    <div class="film-grain"></div>
+    <div id="bg-video-blur"></div>
+    <canvas id="bg-canvas"></canvas>
 
-    <div class="relative z-10 p-6 md:p-12 max-w-7xl mx-auto">
-        
-        <header class="mb-20 border-b border-gold/20 pb-10 flex flex-col md:flex-row justify-between items-start md:items-end">
-            <div>
-                <span class="tech-font text-gold text-[10px] tracking-[0.6em] mb-2 block">NIVEAU_ALPHA // DOSSIER_FONDATION</span>
-                <h1 class="title-font text-6xl font-bold uppercase gold-gradient italic">Haut_Commandement</h1>
-            </div>
-            <a href="/" class="tech-font text-[10px] text-gray-500 hover:text-gold transition uppercase tracking-widest mt-4 md:mt-0 underline">Accès_Terminal_Principal</a>
-        </header>
+    <a href="/" class="btn-back">← Back to Base</a>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-10">
-            
-            <article class="ceo-card p-8 flex flex-col h-full">
-                <div class="mb-6">
-                    <span class="tech-font text-gold text-[9px] uppercase tracking-widest">Unité: L'Étincelle (CEO)</span>
-                    <h2 class="title-font text-4xl font-bold mt-1 uppercase">Ptitegow</h2>
-                </div>
-                
-                <div class="flex-grow space-y-4 text-sm text-gray-400 leading-relaxed">
-                    <p>Symbole de la <span class="text-white font-bold uppercase tracking-tighter">Détermination Absolue</span>. Après une pause, elle revient au sommet avec 2,2k followers, prouvant que tout est possible par la volonté.</p>
-                    <p class="accent-font text-gold text-[10px] -rotate-2">"C'est pas parce qu'on est p'tit qu'on doit se laisser faire."</p>
-                </div>
-
-                <div class="mt-8 space-y-4">
-                    <div>
-                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Influence_Sociale</span><span>95%</span></div>
-                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 95%"></div></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Résilience_Alpha</span><span>100%</span></div>
-                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 100%"></div></div>
-                    </div>
-                </div>
-                <span class="accent-font text-gold/40 text-xs mt-8 self-end">Ptitegow</span>
-            </article>
-
-            <article class="ceo-card p-8 flex flex-col h-full border-t-gold border-t-2">
-                <div class="mb-6">
-                    <span class="tech-font text-gold text-[9px] uppercase tracking-widest">Unité: L'Architecte (CTO)</span>
-                    <h2 class="title-font text-4xl font-bold mt-1 uppercase">Filouxx</h2>
-                </div>
-                
-                <div class="flex-grow space-y-4 text-sm text-gray-400 leading-relaxed">
-                    <p>Garant de la <span class="text-white font-bold uppercase tracking-tighter">Puissance de Feu</span>. Il définit l'arsenal technique et ne recrute que l'élite. Son objectif : porter chaque pôle au sommet.</p>
-                    <p class="accent-font text-gold text-[10px] -rotate-2">"Il n'y a pas de petite victoire, ni de grande defaite. L'important : rester debout et avancer"</p>
-
-                </div>
-
-                <div class="mt-8 space-y-4">
-                    <div>
-                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Expertise_Technique</span><span>100%</span></div>
-                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 100%"></div></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Recrutement_Elite</span><span>90%</span></div>
-                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 90%"></div></div>
-                    </div>
-                </div>
-                <span class="accent-font text-gold/40 text-xs mt-8 self-end">Filouxx</span>
-            </article>
-
-            <article class="ceo-card p-8 flex flex-col h-full">
-                <div class="mb-6">
-                    <span class="tech-font text-gold text-[9px] uppercase tracking-widest">Unité: Le Bâtisseur (COO)</span>
-                    <h2 class="title-font text-4xl font-bold mt-1 uppercase">Crazzynel</h2>
-                </div>
-                
-                <div class="flex-grow space-y-4 text-sm text-gray-400 leading-relaxed">
-                    <p>Le <span class="text-white font-bold uppercase tracking-tighter">Pivot Stratégique</span>. Il convertit la théorie académique en infrastructure réelle (Web, Admin, Discord) pour forger une base indestructible.</p>
-                    <p class="accent-font text-gold text-[10px] -rotate-2">"Ensemble, il y aura toujours une place pour briller."</p>
-                </div>
-
-                <div class="mt-8 space-y-4">
-                    <div>
-                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Infrasctructure_Core</span><span>100%</span></div>
-                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 100%"></div></div>
-                    </div>
-                    <div>
-                        <div class="flex justify-between tech-font text-[8px] text-gold uppercase"><span>Communication_Tactique</span><span>95%</span></div>
-                        <div class="skill-bar-bg"><div class="skill-bar-fill" style="width: 95%"></div></div>
-                    </div>
-                </div>
-                <span class="accent-font text-gold/40 text-xs mt-8 self-end">Crazzynel</span>
-            </article>
-
+    <div id="boot-sequence">
+        <div id="boot-logs" class="space-y-1 text-[10px]"></div>
+        <div class="mt-8 h-[1px] w-64 bg-white/5 relative overflow-hidden">
+            <div id="boot-bar" class="absolute inset-0 bg-gold w-0 transition-all duration-300"></div>
         </div>
-
-        <section class="mt-32">
-            <h3 class="tech-font text-gold text-xs tracking-[1em] mb-12 text-center uppercase">// Chronologie_Genèse</h3>
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 tech-font text-[10px]">
-                <div class="border-l border-gold/30 pl-4 py-2 hover:bg-gold/5 transition">
-                    <span class="text-gold">PHASE_01</span>
-                    <p class="text-white mt-1">L'ÉVEIL : Convergence des trois fondateurs et naissance du protocole GOWRAX.</p>
-                </div>
-                <div class="border-l border-gold/30 pl-4 py-2 hover:bg-gold/5 transition">
-                    <span class="text-gold">PHASE_02</span>
-                    <p class="text-white mt-1">L'INFRASTRUCTURE : Déploiement du terminal web et sécurisation du pôle recrutement.</p>
-                </div>
-                <div class="border-l border-gold/30 pl-4 py-2 hover:bg-gold/5 transition">
-                    <span class="text-gold">PHASE_03</span>
-                    <p class="text-white mt-1">L'EXPANSION : Activation des divisions Valorant, Fortnite et Rocket League.</p>
-                </div>
-            </div>
-        </section>
-
     </div>
 
-    <script>
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('keydown', e => { if (e.key === "F12" || ((e.ctrlKey || e.metaKey) && (e.key === 'u' || e.key === 'i' || e.key === 's'))) e.preventDefault(); });
+    <main id="main-interface">
+        <div class="page-header">// HAUT_COMMANDEMENT_GOWRAX //</div>
+        <h3 id="intro-text"></h3>
         
-        const cursor = document.getElementById('custom-cursor');
-        window.addEventListener('mousemove', e => { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; });
+        <div class="card-slider flex flex-row">
+            <div class="ceo-card group" onmouseenter="playSwoosh()" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                <div class="signature-quote">"C'est pas parce qu'on est p'tit qu'on doit se laisser faire"</div>
+                <img src="../assets/img/killjoy_render.png" class="agent-render">
+                <div class="info-overlay">
+                    <h2 class="glitch-title">PTITE<br>GOW</h2>
+                    <div class="bar-load"></div>
+                    <p class="bio-text mt-4">Visage de l'empire GOWRAX. Incarne l'équilibre parfait entre performance brute et "Good Vibes". Spécialiste de Killjoy, elle verrouille les sites comme elle gère la structure.</p>
+                    <div class="obj-box">
+                        <div class="obj-label">Objectif_Tactique</div>
+                        <div class="obj-value">Remporter le plus de compétitions possible</div>
+                    </div>
+                </div>
+            </div>
 
-        const canvas = document.getElementById('starCanvas'); const ctx = canvas.getContext('2d');
-        let stars = [];
-        function initStars() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            stars = []; for(let i=0; i<300; i++) stars.push({x: Math.random()*canvas.width, y: Math.random()*canvas.height, size: Math.random()*1.5, op: Math.random(), speed: Math.random()*0.005});
+            <div class="ceo-card group" onmouseenter="playSwoosh()" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                <div class="signature-quote">"Il n'y a pas de petite victoire, ni de grande defaite."</div>
+                <img src="../assets/img/reyna_render.png" class="agent-render">
+                <div class="info-overlay">
+                    <h2 class="glitch-title">FILOU<br>XX</h2>
+                    <div class="bar-load"></div>
+                    <p class="bio-text mt-4">Garant de la PUISSANCE DE FEU. Il définit l'arsenal technique et ne recrute que l'élite. Son objectif : porter chaque pôle stratégique au sommet.</p>
+                    <div class="obj-box">
+                        <div class="obj-label">Objectif_Tactique</div>
+                        <div class="obj-value">Domination Multigaming</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ceo-card group" onmouseenter="playSwoosh()" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
+                <div class="signature-quote">"Ensemble, il y aura toujours une place pour briller."</div>
+                <img src="../assets/img/clove_render.png" class="agent-render">
+                <div class="info-overlay">
+                    <h2 class="glitch-title">CRAZZY<br>NEL</h2>
+                    <div class="bar-load"></div>
+                    <p class="bio-text mt-4">L'architecte de la pénombre. Pilier technique garantissant la stabilité de l'empire. Leader IGL capable de guider ses troupes vers la victoire.</p>
+                    <div class="obj-box">
+                        <div class="obj-label">Objectif_Tactique</div>
+                        <div class="obj-value">Qualification Challengers (VCL)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        function typeIntro() {
+            const text = "DÉCOUVREZ LES FONDATEURS DE NOTRE EQUIPE";
+            const container = document.getElementById('intro-text');
+            if(!container) return;
+            let charIdx = 0;
+            const interval = setInterval(() => {
+                container.textContent += text[charIdx];
+                charIdx++;
+                if(charIdx === text.length) clearInterval(interval);
+            }, 50);
         }
+
+        const logs = [
+            "> Initializing GRX_Orbital_Kernel...",
+            "> Mapping Celestial_Data...",
+            "> ACCESS GRANTED."
+        ];
+        const logContainer = document.getElementById('boot-logs');
+        const bootBar = document.getElementById('boot-bar');
+        let i = 0;
+        
+        function showLogs() {
+            if (i < logs.length) {
+                const p = document.createElement('p');
+                p.textContent = logs[i]; logContainer.appendChild(p); i++;
+                bootBar.style.width = (i / logs.length) * 100 + "%";
+                setTimeout(showLogs, 300);
+            } else {
+                setTimeout(() => {
+                    document.getElementById('boot-sequence').style.opacity = '0';
+                    setTimeout(() => {
+                        document.getElementById('boot-sequence').style.display = 'none';
+                        const main = document.getElementById('main-interface');
+                        main.style.display = 'flex';
+                        setTimeout(() => { main.style.opacity = '1'; typeIntro(); }, 50);
+                    }, 800);
+                }, 400);
+            }
+        }
+        window.onload = showLogs;
+
+        const canvas = document.getElementById('bg-canvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let meteors = [];
+
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.onresize = resize; resize();
+
+        class Star {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5;
+                this.speed = Math.random() * 0.2;
+                this.alpha = Math.random();
+            }
+            update() { this.y += this.speed; if (this.y > canvas.height) this.y = 0; }
+            draw() { ctx.fillStyle = `rgba(212, 175, 55, ${this.alpha})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+        }
+
+        class Meteor {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = -100;
+                this.length = Math.random() * 80 + 20;
+                this.speed = Math.random() * 10 + 5;
+            }
+            update() {
+                this.x -= this.speed;
+                this.y += this.speed;
+                if (this.y > canvas.height || this.x < -100) this.reset();
+            }
+            draw() {
+                ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
+                ctx.lineWidth = 1;
+                ctx.beginPath();
+                ctx.moveTo(this.x, this.y);
+                ctx.lineTo(this.x + this.length, this.y - this.length);
+                ctx.stroke();
+            }
+        }
+
+        for (let i = 0; i < 200; i++) stars.push(new Star());
+        for (let i = 0; i < 3; i++) meteors.push(new Meteor());
+
         function animate() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
-            stars.forEach(s => {
-                s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1;
-                ctx.fillStyle = `rgba(212, 175, 55, ${s.op * 0.3})`; ctx.fillRect(s.x, s.y, s.size, s.size);
-            });
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => { s.update(); s.draw(); });
+            meteors.forEach(m => { m.update(); m.draw(); });
             requestAnimationFrame(animate);
         }
-        initStars(); animate();
+        animate();
+
+        // --- STABLE TILT ENGINE ---
+        function handleTilt(e, card) {
+            if (window.innerWidth <= 768) return; 
+            const rect = card.getBoundingClientRect();
+            const x = (e.clientX - rect.left) / rect.width - 0.5; // De -0.5 à 0.5
+            const y = (e.clientY - rect.top) / rect.height - 0.5; // De -0.5 à 0.5
+            
+            // X et Y sont inversés pour la rotation CSS (Y fait pivoter horizontalement, X verticalement)
+            // Si la souris descend (Y augmente), la carte penche vers le bas (rotateX négatif)
+            card.style.transform = `rotateY(${x * 30}deg) rotateX(${y * -30}deg)`;
+        }
+
+        function resetTilt(card) {
+            if (window.innerWidth <= 768) return;
+            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
+        }
+
+        function playSwoosh() {
+            try {
+                const context = new (window.AudioContext || window.webkitAudioContext)();
+                const osc = context.createOscillator();
+                const gain = context.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(60, context.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(0.01, context.currentTime + 0.4);
+                gain.gain.setValueAtTime(0.1, context.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.4);
+                osc.connect(gain); gain.connect(context.destination);
+                osc.start(); osc.stop(context.currentTime + 0.4);
+            } catch(e) {}
+        }
     </script>
 </body>
 </html>

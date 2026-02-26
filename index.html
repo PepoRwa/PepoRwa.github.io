@@ -60,9 +60,10 @@
             <nav class="hidden md:flex space-x-8 text-[9px] tracking-[0.3em] font-mono font-bold">
                 <a href="/" class="text-magenta">ACCUEIL</a>
                 <a href="./news/index.html" class="nav-link opacity-50">ARCHIVES</a>
+                <a href="./ceo/index.html" class="nav-link opacity-50">COMMAND_UNIT (CEO)</a>
                 <a href="./profiles/index.html" class="nav-link opacity-50">DOSSIERS_ELITE</a>
                 <a href="./roster/index.html" class="nav-link opacity-50">ROSTERS</a>
-                <a href="./contact/index.html" class="nav-link opacity-50">RECRUTEMENT</a>
+                <a href="./contact/index.html" class="nav-link opacity-50">CONTACT</a>
             </nav>
 
             <button onclick="toggleNav(true)" class="md:hidden text-magenta font-mono text-[10px] border border-magenta/40 px-3 py-1 uppercase tracking-widest">Menu_</button>
@@ -131,9 +132,10 @@
         <a href="/" class="text-3xl text-magenta font-bold italic tracking-tighter" onclick="toggleNav(false)">ACCUEIL</a>
         <div class="w-full h-px bg-white/10"></div>
         <a href="./news/index.html" class="text-xl tracking-widest" onclick="toggleNav(false)">ARCHIVES</a>
+        <a href="./ceo/index.html" class="text-xl tracking-widest" onclick="toggleNav(false)">COMMAND_UNIT (CEO)</a>
         <a href="./profiles/index.html" class="text-xl tracking-widest" onclick="toggleNav(false)">DOSSIERS_ELITE</a>
         <a href="./roster/index.html" class="text-xl tracking-widest" onclick="toggleNav(false)">ROSTERS</a>
-        <a href="./contact/index.html" class="text-xl tracking-widest text-magenta border border-magenta/40 px-8 py-3" onclick="toggleNav(false)">RECRUTEMENT</a>
+        <a href="./contact/index.html" class="text-xl tracking-widest text-magenta border border-magenta/40 px-8 py-3" onclick="toggleNav(false)">CONTACT</a>
     </div>
 
     <script>
@@ -170,7 +172,6 @@
                     document.getElementById('main-ui').classList.remove('opacity-0');
                     fetchLastNews();
                     
-                    // Activation du modal avec un léger délai après le boot
                     setTimeout(() => {
                         const overlay = document.getElementById('status-overlay');
                         overlay.style.opacity = '1';
@@ -181,7 +182,6 @@
         }
         window.onload = runBios;
 
-        // --- YOUTUBE ENGINE ---
         var player; var audioStarted = false;
         function onYouTubeIframeAPIReady() { player = new YT.Player('yt-player', { height: '0', width: '0', videoId: '4xDzrJKXOOY', playerVars: { 'autoplay': 1, 'loop': 1, 'playlist': '4xDzrJKXOOY', 'mute': 1 } }); }
         function unlockAudio() { if (player && !audioStarted) { player.unMute(); player.setVolume(15); audioStarted = true; } }
@@ -189,7 +189,6 @@
         var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
         document.head.appendChild(tag);
 
-        // --- STARS CANVAS ---
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         let stars = []; let shootingStars = [];
@@ -216,7 +215,8 @@
         window.addEventListener('mousemove', e => {
             if(window.innerWidth >= 1024) { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
             const x = (window.innerWidth/2 - e.pageX)/60; const y = (window.innerHeight/2 - e.pageY)/60;
-            document.getElementById('hero-card').style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+            const heroCard = document.getElementById('hero-card');
+            if(heroCard) heroCard.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
         });
         setInterval(() => { document.getElementById('live-clock').innerText = new Date().toLocaleTimeString(); }, 1000);
     </script>
