@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOWRAX | 404_LIAISON_PERDUE</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/global.js" defer></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    <style>
+        :root { 
+            --abyss: #020205; 
+            --jett: #A5D8FF; 
+            --clove: #B066FF; 
+            --magenta: #D62F7F; 
+        }
+        body, html { 
+            background: var(--abyss); color: #fff; margin: 0; 
+            font-family: 'Rajdhani', sans-serif; height: 100vh; width: 100vw;
+            overflow: hidden; display: flex; align-items: center; justify-content: center;
+        }
+
+        canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+
+        .content-box { position: relative; z-index: 10; text-align: center; padding: 0 20px; width: 100%; max-width: 600px; }
+
+        .glitch-404 {
+            font-size: clamp(5rem, 20vw, 12rem); font-weight: 900; line-height: 0.8;
+            background: linear-gradient(135deg, var(--jett), var(--clove));
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 0 20px rgba(176, 102, 255, 0.4));
+            margin-bottom: 20px;
+        }
+
+        .btn-grx {
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            color: #fff;
+            padding: 12px 24px;
+            font-family: 'Share Tech Mono', monospace;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s;
+            font-size: 0.75rem;
+            backdrop-filter: blur(5px);
+            width: 100%;
+        }
+        @media (min-width: 640px) { .btn-grx { width: auto; } }
+
+        .btn-grx:hover {
+            border-color: var(--magenta);
+            background: rgba(214, 47, 127, 0.1);
+            box-shadow: 0 0 20px rgba(214, 47, 127, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .status-link {
+            display: inline-flex; align-items: center; gap: 8px;
+            font-size: 10px; font-family: 'Share Tech Mono';
+            color: #555; margin-top: 40px; transition: 0.3s;
+        }
+        .status-link:hover { color: var(--jett); }
+
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000; border-radius: 50%; transition: transform 0.08s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
+        @media (min-width: 1024px) { body { cursor: none; } #custom-cursor { display: block; } }
+    </style>
+</head>
+<body>
+
+    <div id="custom-cursor"></div>
+    <canvas id="starCanvas"></canvas>
+
+    <div class="content-box">
+        <div class="font-mono text-[var(--jett)] text-[10px] tracking-[0.4em] uppercase mb-4 opacity-70">
+            Error_Protocol: Connection_Failed
+        </div>
+        
+        <h1 class="glitch-404 italic">404</h1>
+        
+        <div class="mb-10">
+            <h2 class="text-xl md:text-3xl font-bold uppercase tracking-tighter mb-4 italic">Zone de Silence</h2>
+            <p class="font-mono text-[10px] md:text-xs text-gray-500 uppercase leading-relaxed">
+                Le signal a été perdu entre deux mondes. <br> 
+                Accès au secteur impossible ou données corrompues.
+            </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row justify-center gap-3 md:gap-4">
+            <a href="/" class="btn-grx">Base_Accueil</a>
+            <a href="/roster/index.html" class="btn-grx">Rosters</a>
+            <a href="/contact/index.html" class="btn-grx">Signal_HQ</a>
+        </div>
+
+        <a href="https://x.com/teamgowrax" target="_blank" class="status-link">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+            STATUT DES SYSTÈMES
+        </a>
+    </div>
+
+    <script>
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        const cursor = document.getElementById('custom-cursor');
+        
+        let stars = [];
+        let shootingStars = [];
+
+        function init() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            stars = [];
+            for (let i = 0; i < 150; i++) {
+                stars.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    size: Math.random() * 1.5,
+                    opacity: Math.random(),
+                    speed: Math.random() * 0.005
+                });
+            }
+        }
+
+        function drawStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = "#fff";
+            stars.forEach(s => {
+                s.opacity += s.speed;
+                if (s.opacity > 1 || s.opacity < 0) s.speed *= -1;
+                ctx.globalAlpha = s.opacity;
+                ctx.fillRect(s.x, s.y, s.size, s.size);
+            });
+            ctx.globalAlpha = 1;
+        }
+
+        function createShootingStar() {
+            if (Math.random() < 0.02) {
+                shootingStars.push({
+                    x: Math.random() * canvas.width,
+                    y: 0,
+                    len: Math.random() * 80 + 20,
+                    speed: Math.random() * 10 + 5,
+                    opacity: 1
+                });
+            }
+        }
+
+        function drawShootingStars() {
+            shootingStars.forEach((s, i) => {
+                ctx.strokeStyle = `rgba(214, 47, 127, ${s.opacity})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(s.x, s.y);
+                ctx.lineTo(s.x - s.len, s.y + s.len);
+                ctx.stroke();
+                
+                s.x -= s.speed;
+                s.y += s.speed;
+                s.opacity -= 0.02;
+
+                if (s.opacity <= 0) shootingStars.splice(i, 1);
+            });
+        }
+
+        function animate() {
+            drawStars();
+            createShootingStar();
+            drawShootingStars();
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('mousemove', e => {
+            if(cursor) {
+                cursor.style.left = e.clientX + 'px';
+                cursor.style.top = e.clientY + 'px';
+            }
+        });
+
+        window.addEventListener('resize', init);
+        init();
+        animate();
+    </script>
+</body>
+</html>
