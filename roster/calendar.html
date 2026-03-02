@@ -218,46 +218,57 @@
         let activeTierFilter = 'ALL';
 
         async function initMatchCenter() {
-            const { data, error } = await window._supabaseGlobal.from('events').select('*').order('date', { ascending: false });
-            
-            if (error) {
-                document.getElementById('match-grid').innerHTML = `<div class="col-span-full mono text-red-500">ERREUR SYSTEME: ${error.message}</div>`;
+            // 🛡️ CORRECTION : On attend que Supabase soit prêt
+            if (typeof window._supabaseGlobal === 'undefined') {
+                setTimeout(initMatchCenter, 50); // Attend 50ms et réessaie
                 return;
             }
 
-            // --- GESTION DE LA TABLE 100% VIDE ---
-            if (data.length === 0) {
-                // On cache les filtres qui ne servent à rien
-                document.getElementById('game-filters').innerHTML = '';
-                document.getElementById('sub-filters-container').style.display = 'none';
+            try {
+                const { data, error } = await window._supabaseGlobal.from('events').select('*').order('date', { ascending: false });
                 
-                // On affiche le message d'alerte rouge
-                document.getElementById('match-grid').innerHTML = `
-                    <div class="col-span-full flex flex-col items-center justify-center py-16 px-6 border border-red-500/30 bg-red-500/5 text-center relative overflow-hidden val-card">
-                        <div class="absolute top-0 left-0 w-full h-1 bg-red-500/50"></div>
-                        <svg class="w-16 h-16 text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                        </svg>
-                        <h2 class="text-3xl md:text-4xl font-black italic tracking-widest text-red-500 uppercase mb-4 leading-none">
-                            AUCUN DÉPLOIEMENT PROGRAMMÉ
-                        </h2>
-                        <p class="mono text-gray-400 text-xs md:text-sm max-w-2xl leading-relaxed uppercase tracking-widest">
-                            L'équipe n'est pas encore officiellement inscrite à des tournois.<br><br>
-                            Dès que les premiers tournois seront ouverts,<br>ils seront publiés ici.
-                        </p>
-                    </div>
-                `;
-                return; // On arrête l'exécution ici
+                if (error) {
+                    document.getElementById('match-grid').innerHTML = `<div class="col-span-full mono text-red-500">ERREUR SYSTEME: ${error.message}</div>`;
+                    return;
+                }
+
+                // --- GESTION DE LA TABLE 100% VIDE ---
+                if (data.length === 0) {
+                    // On cache les filtres qui ne servent à rien
+                    document.getElementById('game-filters').innerHTML = '';
+                    document.getElementById('sub-filters-container').style.display = 'none';
+                    
+                    // On affiche le message d'alerte rouge
+                    document.getElementById('match-grid').innerHTML = `
+                        <div class="col-span-full flex flex-col items-center justify-center py-16 px-6 border border-red-500/30 bg-red-500/5 text-center relative overflow-hidden val-card">
+                            <div class="absolute top-0 left-0 w-full h-1 bg-red-500/50"></div>
+                            <svg class="w-16 h-16 text-red-500 mb-6 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                            </svg>
+                            <h2 class="text-3xl md:text-4xl font-black italic tracking-widest text-red-500 uppercase mb-4 leading-none">
+                                AUCUN DÉPLOIEMENT PROGRAMMÉ
+                            </h2>
+                            <p class="mono text-gray-400 text-xs md:text-sm max-w-2xl leading-relaxed uppercase tracking-widest">
+                                L'équipe n'est pas encore officiellement inscrite à des tournois.<br><br>
+                                Dès que les premiers tournois seront ouverts,<br>ils seront publiés ici.
+                            </p>
+                        </div>
+                    `;
+                    return; // On arrête l'exécution ici
+                }
+
+                allMatches = data.map(m => ({
+                    ...m,
+                    game: m.game.trim().toUpperCase(),
+                    tournament_tier: (m.tournament_tier || 'COMMUNAUTAIRE').trim().toUpperCase()
+                }));
+
+                buildFilters();
+                applyFilters();
+
+            } catch (err) {
+                console.error("Erreur critique:", err);
             }
-
-            allMatches = data.map(m => ({
-                ...m,
-                game: m.game.trim().toUpperCase(),
-                tournament_tier: (m.tournament_tier || 'COMMUNAUTAIRE').trim().toUpperCase()
-            }));
-
-            buildFilters();
-            applyFilters();
         }
 
         function buildFilters() {
