@@ -220,9 +220,6 @@
     </div>
 
     <script>
-        // Configuration Supabase Edge Function
-        const FUNCTION_URL = `${window.SUPABASE_URL}/functions/v1/send-recruit-message`;
-
         function toggleNav(state) { 
             const nav = document.getElementById('mobile-nav');
             if(state) {
@@ -246,6 +243,10 @@
 
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // 🛡️ CORRECTION : Déclaration à l'intérieur de l'événement !
+            const FUNCTION_URL = `${window.SUPABASE_URL}/functions/v1/send-recruit-message`;
+
             submitBtn.disabled = true;
             submitBtn.innerHTML = "<span class='relative z-10'>CRYPTAGE ET ENVOI...</span>";
 
@@ -273,8 +274,8 @@
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${window.SUPABASE_ANON_KEY}`,
-                        'apikey': window.SUPABASE_ANON_KEY 
+                        'Authorization': `Bearer ${window.SUPABASE_KEY}`, // 🛡️ CORRECTION CLÉ GOBALE
+                        'apikey': window.SUPABASE_KEY // 🛡️ CORRECTION CLÉ GOBALE
                     },
                     body: JSON.stringify(payload)
                 });

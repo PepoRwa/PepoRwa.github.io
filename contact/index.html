@@ -232,10 +232,6 @@
     </div>
 
     <script>
-        // 1. On remplace le Webhook par l'URL de ta fonction Supabase
-        // (Remplace par ta clé publique anon et l'URL de ton projet)
-
-        const FUNCTION_URL = `${window.SUPABASE_URL}/functions/v1/send-contact-message`;
         let ticketID = "GRX-" + Math.floor(Math.random() * 90000 + 10000);
 
         function toggleNav(state) { 
@@ -260,24 +256,24 @@
         }
 
         function goToStep(s) {
-    // 🛡️ NOUVEAU : On vérifie l'étape 1 avant de passer à l'étape 2
-    if (s === 2) {
-        const nameInput = document.getElementById('name');
-        const emailInput = document.getElementById('email');
-        
-        // Si l'un des deux n'est pas valide (vide ou mauvais format email)
-        if (!nameInput.checkValidity() || !emailInput.checkValidity()) {
-            nameInput.reportValidity(); // Affiche la bulle native d'erreur
-            emailInput.reportValidity();
-            return; // On bloque la fonction, on ne passe pas à l'étape 2
-        }
-    }
+            // 🛡️ NOUVEAU : On vérifie l'étape 1 avant de passer à l'étape 2
+            if (s === 2) {
+                const nameInput = document.getElementById('name');
+                const emailInput = document.getElementById('email');
+                
+                // Si l'un des deux n'est pas valide (vide ou mauvais format email)
+                if (!nameInput.checkValidity() || !emailInput.checkValidity()) {
+                    nameInput.reportValidity(); // Affiche la bulle native d'erreur
+                    emailInput.reportValidity();
+                    return; // On bloque la fonction, on ne passe pas à l'étape 2
+                }
+            }
 
-    // Le comportement normal
-    document.querySelectorAll('.step-container').forEach(el => el.classList.remove('step-active'));
-    document.getElementById('step'+s).classList.add('step-active');
-    document.getElementById('progress-bar').style.width = (s * 33.33) + '%';
-}
+            // Le comportement normal
+            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('step-active'));
+            document.getElementById('step'+s).classList.add('step-active');
+            document.getElementById('progress-bar').style.width = (s * 33.33) + '%';
+        }
 
         function buildDynamicForm(val) {
             const nextBtn = document.getElementById('nextTo3');
@@ -308,6 +304,9 @@
         document.getElementById('contactForm').addEventListener('submit', async (e) => {
             e.preventDefault();
 
+            // 🛡️ CORRECTION : Déclaration à l'intérieur de l'événement !
+            const FUNCTION_URL = `${window.SUPABASE_URL}/functions/v1/send-contact-message`;
+
             // 🛡️ PATCH ANTI-CRASH (Touche Entrée prématurée)
             const msgInput = document.getElementById('p-msg');
             if (!msgInput) {
@@ -326,7 +325,6 @@
                     fields: [
                         { name: "👤 Expéditeur", value: `\`${document.getElementById('name').value}\``, inline: true },
                         { name: "📧 Email", value: `\`${document.getElementById('email').value}\``, inline: true },
-                        // On est maintenant sûr que msgInput existe, donc on peut lire sa valeur en toute sécurité
                         { name: "📝 Rapport", value: msgInput.value },
                         { name: "📂 Catégorie", value: sub },
                         { name: "⚙️ OS/Device", value: `\`${navigator.platform}\`` }
@@ -336,15 +334,13 @@
                 }]
             };
 
-            // On envoie à Supabase au lieu d'envoyer à Discord directement
             const resp = await fetch(FUNCTION_URL, { 
                 method: 'POST', 
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${window.SUPABASE_ANON_KEY}`,
-                    'apikey': window.SUPABASE_ANON_KEY
+                    'Authorization': `Bearer ${window.SUPABASE_KEY}`, // 🛡️ CORRECTION CLÉ GOBALE
+                    'apikey': window.SUPABASE_KEY // 🛡️ CORRECTION CLÉ GOBALE
                 }, 
-                // ... 
                 body: JSON.stringify(payload) 
             });
 
@@ -357,7 +353,6 @@
                     document.getElementById('mailto-link').href = `mailto:teamgowrax@gmail.com?subject=DOSSIER PARTENARIAT - ${ticketID}&body=Référence Ticket : ${ticketID}\n\nDécrivez ici votre projet et joignez vos documents.`;
                 }
             } else {
-                // Optionnel : remet le bouton à la normale si ça échoue
                 btn.disabled = false;
                 btn.innerText = "Transmettre";
                 alert("Erreur de transmission. Vérifiez la console (F12).");
