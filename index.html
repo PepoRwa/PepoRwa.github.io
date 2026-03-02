@@ -61,7 +61,6 @@
         }
         .news-flash-card:hover { border-left-color: var(--magenta); transform: scale(1.02) translateX(5px); background: linear-gradient(90deg, rgba(214, 47, 127, 0.15) 0%, transparent 100%); }
 
-        /* Styles des coins colorés restaurés */
         .hud-corner { position: absolute; width: 20px; height: 20px; border: 1px solid var(--magenta); pointer-events: none; opacity: 0.5; }
         .decoration-layer { pointer-events: none !important; }
 
@@ -182,29 +181,50 @@
         </div>
     </div>
 
-<div id="status-overlay" class="fixed inset-0 z-[15000] flex items-center justify-center bg-black/90 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-700">
-        <div id="status-modal" class="max-w-lg w-full mx-4 bg-[#050508] border-t-2 border-magenta p-10 shadow-[0_30px_100px_rgba(214,47,127,0.3)] relative pointer-events-auto">
-            <div class="text-[10px] font-mono text-magenta mb-8 tracking-[0.8em] uppercase italic">Priority_Transmission // GOWRAX_V4</div>
+    <div id="status-overlay" class="fixed inset-0 z-[15000] flex items-center justify-center bg-black/90 backdrop-blur-xl opacity-0 pointer-events-none transition-all duration-700">
+        <div id="status-modal" class="max-w-xl w-full mx-4 bg-[#050508] border-t-2 border-magenta p-8 md:p-10 shadow-[0_30px_100px_rgba(214,47,127,0.3)] relative pointer-events-auto">
             
-            <div class="space-y-8">
-                <h3 class="text-3xl font-rajdhani font-bold leading-tight uppercase italic underline decoration-magenta/40">Système mis à jour.</h3>
-                <p class="text-sm text-gray-400 font-mono leading-relaxed italic">
-                    "La nouvelle interface GOWRAX est désormais opérationnelle. Visuels épurés, graphismes haute fidélité et performances accrues : nous passons au niveau supérieur. <br><br>
-                    <span class="text-magenta font-bold">INFO TACTIQUE :</span> Le nouveau roster <span class="text-white">Counter-Strike 2</span> a été déployé dans la base de données. Bonne navigation."
-                </p>
+            <button onclick="closePopup()" class="absolute top-4 right-4 text-gray-500 hover:text-white font-mono text-[10px] md:text-xs uppercase tracking-widest transition-colors flex items-center gap-1">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                Ignorer
+            </button>
+
+            <div class="text-[10px] font-mono text-magenta mb-6 tracking-[0.8em] uppercase italic">Priority_Transmission</div>
+            
+            <div class="space-y-6">
+                <h3 class="text-2xl md:text-3xl font-rajdhani font-bold leading-tight uppercase italic underline decoration-magenta/40">Mise à jour Réseau :<br>Calendrier & Recrutement</h3>
                 
-                <div class="flex justify-between items-center pt-8 border-t border-white/5">
+                <div class="text-sm text-gray-400 font-mono leading-relaxed space-y-4">
+                    <p>
+                        <span class="text-magenta font-bold">INFO CALENDRIER :</span> Le calendrier opérationnel est désormais en ligne. <span class="italic text-gray-500">(Aucun événement n'est programmé actuellement).</span>
+                    </p>
+                    <p>
+                        <span class="text-magenta font-bold">APPEL AUX ARMES :</span> L'unité GOWRAX a besoin de renforts. Nous recrutons activement de nouveaux membres pour nos rosters compétitifs ainsi que pour intégrer l'État-Major (Staff).
+                    </p>
+                </div>
+
+                <div class="pt-4 pb-2 border-b border-white/5">
+                    <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="block w-full text-center bg-white/5 border border-magenta text-white px-6 py-3 text-xs font-bold font-rajdhani uppercase tracking-[0.2em] hover:bg-magenta transition-all duration-300">
+                        >> Rejoindre le Serveur Discord <<
+                    </a>
+                </div>
+                
+                <div class="flex justify-between items-center pt-4">
                     <div class="font-mono">
-                        <span class="block text-xs text-magenta font-bold uppercase tracking-tighter">Crazzynel</span>
-                        <span class="block text-[9px] text-gray-600 uppercase italic">Commanding Officer</span>
+                        <span class="block text-xs text-magenta font-bold uppercase tracking-tighter">Crazzynel - CEO</span>
                     </div>
-                    <button onclick="closePopup()" class="bg-transparent border border-magenta text-magenta px-8 py-3 text-[10px] font-bold uppercase tracking-[0.3em] hover:bg-magenta hover:text-white transition-all duration-500 pointer-events-auto">Accéder à la V4</button>
+                    <button onclick="markAsReadAndClose()" class="bg-magenta text-white px-6 py-2 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-white hover:text-magenta transition-all duration-500 border border-magenta">
+                        Marquer comme lu
+                    </button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
+        // VARIABLE MAGIQUE : Si tu changes cette phrase, le pop-up s'affichera à nouveau pour tout le monde !
+        const CURRENT_POPUP_VERSION = "v1-calendrier-recruit";
+
         const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
         const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
@@ -237,11 +257,34 @@
             }
         }
         
+        // Fonction 1 : Ferme juste (Ignorer)
         function closePopup() { 
             const overlay = document.getElementById('status-overlay'); 
             overlay.style.opacity = '0'; 
             overlay.style.pointerEvents = 'none'; 
             setTimeout(() => { overlay.style.display = 'none'; }, 700);
+        }
+
+        // Fonction 2 : Enregistre le cache + Ferme (Lu)
+        function markAsReadAndClose() {
+            localStorage.setItem('gowrax_popup_status', CURRENT_POPUP_VERSION);
+            closePopup();
+        }
+
+        // Fonction 3 : Vérifie si on doit afficher
+        function showPopupIfNeeded() {
+            const savedData = localStorage.getItem('gowrax_popup_status');
+            const overlay = document.getElementById('status-overlay');
+            
+            if (savedData !== CURRENT_POPUP_VERSION) {
+                overlay.style.display = 'flex'; // S'assure qu'il est dans le flux
+                setTimeout(() => {
+                    overlay.style.opacity = '1';
+                    overlay.style.pointerEvents = 'auto';
+                }, 100);
+            } else {
+                overlay.style.display = 'none'; // Le cache parfaitement si déjà lu
+            }
         }
 
         const bootMessages = ["> GOWRAX_OS v4.0.1", "> CORE: INITIALIZED", "> STARMAP: MAPPED", "> DATABASE: SYNCED", "> READY FOR DEPLOYMENT"];
@@ -259,10 +302,10 @@
                     setTimeout(() => bios.style.display = 'none', 500);
                     document.getElementById('main-ui').style.opacity = '1';
                     fetchLastNews();
+                    
+                    // On appelle la fonction de vérification au lieu d'afficher bêtement
                     setTimeout(() => {
-                        const status = document.getElementById('status-overlay');
-                        status.style.opacity = '1';
-                        status.style.pointerEvents = 'auto';
+                        showPopupIfNeeded();
                     }, 1200); 
                 }, 500);
             }

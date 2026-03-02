@@ -232,7 +232,12 @@
     </div>
 
     <script>
-        const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1475184242253365311/ShciSnxixoFMhHpCppfZlRp-Jo_nJmuchlQZh2dVm2s99H-jcTlqMy8CjbnatvyfZdGG";
+        // 1. On remplace le Webhook par l'URL de ta fonction Supabase
+        // (Remplace par ta clé publique anon et l'URL de ton projet)
+        const SUPABASE_URL = "https://nvtcjaallxoweujbyhng.supabase.co"; 
+        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik";
+
+        const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/send-contact-message`;
         let ticketID = "GRX-" + Math.floor(Math.random() * 90000 + 10000);
 
         function toggleNav(state) { 
@@ -257,10 +262,24 @@
         }
 
         function goToStep(s) {
-            document.querySelectorAll('.step-container').forEach(el => el.classList.remove('step-active'));
-            document.getElementById('step'+s).classList.add('step-active');
-            document.getElementById('progress-bar').style.width = (s * 33.33) + '%';
+    // 🛡️ NOUVEAU : On vérifie l'étape 1 avant de passer à l'étape 2
+    if (s === 2) {
+        const nameInput = document.getElementById('name');
+        const emailInput = document.getElementById('email');
+        
+        // Si l'un des deux n'est pas valide (vide ou mauvais format email)
+        if (!nameInput.checkValidity() || !emailInput.checkValidity()) {
+            nameInput.reportValidity(); // Affiche la bulle native d'erreur
+            emailInput.reportValidity();
+            return; // On bloque la fonction, on ne passe pas à l'étape 2
         }
+    }
+
+    // Le comportement normal
+    document.querySelectorAll('.step-container').forEach(el => el.classList.remove('step-active'));
+    document.getElementById('step'+s).classList.add('step-active');
+    document.getElementById('progress-bar').style.width = (s * 33.33) + '%';
+}
 
         function buildDynamicForm(val) {
             const nextBtn = document.getElementById('nextTo3');
@@ -290,6 +309,13 @@
 
         document.getElementById('contactForm').addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // 🛡️ PATCH ANTI-CRASH (Touche Entrée prématurée)
+            const msgInput = document.getElementById('p-msg');
+            if (!msgInput) {
+                return; // Si le champ message n'existe pas encore, on stoppe l'envoi !
+            }
+
             const btn = document.getElementById('submitBtn');
             btn.disabled = true;
             btn.innerText = "TRANSFERT EN COURS...";
@@ -302,7 +328,8 @@
                     fields: [
                         { name: "👤 Expéditeur", value: `\`${document.getElementById('name').value}\``, inline: true },
                         { name: "📧 Email", value: `\`${document.getElementById('email').value}\``, inline: true },
-                        { name: "📝 Rapport", value: document.getElementById('p-msg').value },
+                        // On est maintenant sûr que msgInput existe, donc on peut lire sa valeur en toute sécurité
+                        { name: "📝 Rapport", value: msgInput.value },
                         { name: "📂 Catégorie", value: sub },
                         { name: "⚙️ OS/Device", value: `\`${navigator.platform}\`` }
                     ],
@@ -311,7 +338,16 @@
                 }]
             };
 
-            const resp = await fetch(DISCORD_WEBHOOK, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+            // On envoie à Supabase au lieu d'envoyer à Discord directement
+            const resp = await fetch(FUNCTION_URL, { 
+                method: 'POST', 
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
+                    'apikey': SUPABASE_ANON_KEY
+                }, 
+                body: JSON.stringify(payload) 
+            });
 
             if(resp.ok) {
                 document.getElementById('contactForm').style.display = "none";
@@ -321,6 +357,11 @@
                     document.getElementById('partnership-next-step').classList.remove('hidden');
                     document.getElementById('mailto-link').href = `mailto:teamgowrax@gmail.com?subject=DOSSIER PARTENARIAT - ${ticketID}&body=Référence Ticket : ${ticketID}\n\nDécrivez ici votre projet et joignez vos documents.`;
                 }
+            } else {
+                // Optionnel : remet le bouton à la normale si ça échoue
+                btn.disabled = false;
+                btn.innerText = "Transmettre";
+                alert("Erreur de transmission. Vérifiez la console (F12).");
             }
         });
 
