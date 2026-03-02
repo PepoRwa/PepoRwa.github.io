@@ -213,9 +213,6 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function toggleNav(state) { 
             const nav = document.getElementById('mobile-nav');
@@ -241,7 +238,7 @@
             const slug = urlParams.get('slug');
             if (!slug) { window.location.replace('./index.html'); return; }
 
-            const { data: m, error } = await _supabase.from('members').select('*').eq('slug', slug).single();
+            const { data: m, error } = await window._supabaseGlobal.from('members').select('*').eq('slug', slug).single();
             if (error || !m) return;
 
             document.title = `GRX | AGENT_${m.nickname.toUpperCase()}`;

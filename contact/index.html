@@ -234,10 +234,8 @@
     <script>
         // 1. On remplace le Webhook par l'URL de ta fonction Supabase
         // (Remplace par ta clé publique anon et l'URL de ton projet)
-        const SUPABASE_URL = "https://nvtcjaallxoweujbyhng.supabase.co"; 
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik";
 
-        const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/send-contact-message`;
+        const FUNCTION_URL = `${window.SUPABASE_URL}/functions/v1/send-contact-message`;
         let ticketID = "GRX-" + Math.floor(Math.random() * 90000 + 10000);
 
         function toggleNav(state) { 
@@ -343,9 +341,10 @@
                 method: 'POST', 
                 headers: { 
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                    'apikey': SUPABASE_ANON_KEY
+                    'Authorization': `Bearer ${window.SUPABASE_ANON_KEY}`,
+                    'apikey': window.SUPABASE_ANON_KEY
                 }, 
+                // ... 
                 body: JSON.stringify(payload) 
             });
 

@@ -142,9 +142,6 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         marked.setOptions({ breaks: true, gfm: true });
 
@@ -167,12 +164,18 @@
         }
 
         async function fetchNews() {
-            const { data: posts, error } = await _supabase
+            // Sécurité : on attend que global.js ait fini de charger Supabase
+            if (typeof window._supabaseGlobal === 'undefined') {
+                setTimeout(fetchNews, 50);
+                return;
+            }
+
+            const { data: posts, error } = await window._supabaseGlobal
                 .from('posts')
                 .select('*')
                 .order('created_at', { ascending: false });
 
-            if (error) return console.error("Erreur de liaison satellite.");
+            if (error) return console.error("Erreur de liaison satellite.", error);
             renderNews(posts);
         }
 
@@ -215,10 +218,13 @@
 
         document.getElementById('search').addEventListener('input', async (e) => {
             const term = e.target.value.toLowerCase();
-            const { data: posts } = await _supabase.from('posts').select('*').ilike('title', `%${term}%`);
+            if (typeof window._supabaseGlobal === 'undefined') return;
+            
+            const { data: posts } = await window._supabaseGlobal.from('posts').select('*').ilike('title', `%${term}%`);
             renderNews(posts);
         });
 
+        // Lance le premier fetch
         fetchNews();
 
         // CANVAS

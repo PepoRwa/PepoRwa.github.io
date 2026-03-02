@@ -225,12 +225,8 @@
         // VARIABLE MAGIQUE : Si tu changes cette phrase, le pop-up s'affichera à nouveau pour tout le monde !
         const CURRENT_POPUP_VERSION = "v1-calendrier-recruit";
 
-        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
         async function fetchLastNews() {
-            const { data: posts, error } = await _supabase.from('posts').select('*').order('created_at', { ascending: false }).limit(3);
+            const { data: posts, error } = await window._supabaseGlobal.from('posts').select('*').order('created_at', { ascending: false }).limit(3);
             if (!error && posts) {
                 document.getElementById('news-feed').innerHTML = posts.map(post => `
                     <a href="./news/post.html?slug=${post.slug}" class="news-flash-card p-6 group flex flex-col justify-between h-40 pointer-events-auto">

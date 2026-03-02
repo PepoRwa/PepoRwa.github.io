@@ -221,9 +221,7 @@
 
     <script>
         // Configuration Supabase Edge Function
-        const SUPABASE_URL = "https://nvtcjaallxoweujbyhng.supabase.co"; 
-        const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik"; // TA CLE EST LA
-        const FUNCTION_URL = `${SUPABASE_URL}/functions/v1/send-recruit-message`;
+        const FUNCTION_URL = `${window.SUPABASE_URL}/functions/v1/send-recruit-message`;
 
         function toggleNav(state) { 
             const nav = document.getElementById('mobile-nav');
@@ -275,8 +273,8 @@
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${SUPABASE_ANON_KEY}`,
-                        'apikey': SUPABASE_ANON_KEY 
+                        'Authorization': `Bearer ${window.SUPABASE_ANON_KEY}`,
+                        'apikey': window.SUPABASE_ANON_KEY 
                     },
                     body: JSON.stringify(payload)
                 });

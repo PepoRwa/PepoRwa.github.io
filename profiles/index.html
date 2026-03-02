@@ -176,9 +176,6 @@
     </div>
 
     <script>
-        const SUPABASE_URL = 'https://nvtcjaallxoweujbyhng.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik';
-        const _supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
         function toggleNav(state) { 
             const nav = document.getElementById('mobile-nav');
@@ -201,7 +198,7 @@
 
         async function fetchProfiles() {
             try {
-                const { data: members, error } = await _supabase
+                const { data: members, error } = await window._supabaseGlobal
                     .from('members')
                     .select('*')
                     .eq('is_active', true)
