@@ -1,10 +1,9 @@
 User-agent: *
 Allow: /
 
-# Bloquer l'indexation des scripts de template si nécessaire
-Disallow: /js/
-Disallow: /css/
-Disallow /assets/
+# Note SEO : Les dossiers /js/, /css/ et /assets/ sont volontairement autorisés.
+# Les robots (Googlebot) ont besoin d'exécuter le global.js pour générer la 
+# navigation dynamique (SPA) et crawler l'ensemble de l'infrastructure.
 
-# Lien vers le sitemap pour les moteurs de recherche
+# Lien vers la carte satellitaire (Sitemap)
 Sitemap: https://gowrax.me/sitemap.xml

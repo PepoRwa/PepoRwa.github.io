@@ -1,12 +1,8 @@
 /**
- * GOWRAX - Global System Injector V6.3
+ * GOWRAX - Global System Injector V7.0
  * --------------------------------------------------
- * INCLUS : 
- * - Auto-chargement asynchrone Supabase (Indépendance totale)
- * - Gestion RGPD : HUD de consentement des Cookies
- * - Sécurité : Désactivation du clic droit
- * - UX : Système de Broadcast dynamique (Pop-ups ciblés via DB)
- * - Legal : Ghost Link dynamique (Adaptation Roster/Desktop)
+ * NOUVEAU : Auto-Injection de la Navigation Dynamique !
+ * INCLUS : Cookies (HUD), Ghost Link, Supabase Auto-load, Broadcast
  * --------------------------------------------------
  */
 
@@ -15,12 +11,7 @@
     const LOGO_URL = "https://gowrax.me/assets/img/logo-team-esport.png";
     const GA_MEASUREMENT_ID = "G-PECF9PMWRC"; 
 
-    /**
-     * Initialisation du noyau Supabase
-     * Gère le chargement de la librairie et l'établissement de la liaison DB
-     */
     const initGowrax = async () => {
-        // Chargement dynamique de la librairie Supabase si elle n'est pas détectée
         if (typeof supabase === 'undefined') {
             await new Promise((resolve) => {
                 const script = document.createElement('script');
@@ -29,20 +20,115 @@
                 document.head.appendChild(script);
             });
         }
-
-        // Configuration de la liaison vers le cluster Supabase
         window.SUPABASE_URL = "https://nvtcjaallxoweujbyhng.supabase.co";
         window.SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im52dGNqYWFsbHhvd2V1amJ5aG5nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzE4NDc4OTEsImV4cCI6MjA4NzQyMzg5MX0.a0FkgYwG3yxu0GMXA6wV-6GqFamB9Pu-E57_z6KkHik";
-        
-        // Initialisation du client global pour les requêtes asynchrones
         window._supabaseGlobal = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
 
-        // Activation du protocole de communication Broadcast
         checkAndInjectBroadcast();
     };
 
-    // --- 2. MODULES D'INJECTION VISUELLE ET ANALYTIQUE ---
+    // --- 2. LE MOTEUR DE NAVIGATION DYNAMIQUE (V7.0) ---
+    const injectNavigation = () => {
+        const path = window.location.pathname;
 
+        // 🛡️ EXCEPTION MAJEURE : On ne touche pas à la page CEO !
+        if (path.includes('/ceo')) return;
+
+        // 1. Détermination du Titre (Logo)
+        let suffix = "HQ";
+        if (path.includes('/news/post.html')) suffix = "REPORT";
+        else if (path.includes('/news')) suffix = "ARCHIVES";
+        else if (path.includes('/staff')) suffix = "PERSONNEL";
+        else if (path.includes('/profiles/member.html')) suffix = "FILE";
+        else if (path.includes('/profiles')) suffix = "DATABASE";
+        else if (path.includes('/roster/fortnite')) suffix = "UNIT";
+        else if (path.includes('/roster/rl')) suffix = "SOCAR";
+        else if (path.includes('/roster/valorant')) suffix = "UNITS";
+        else if (path.includes('/roster/cs2')) suffix = "TACTICAL";
+        else if (path.includes('/roster/calendar')) suffix = "SCHEDULE";
+        else if (path.includes('/roster')) suffix = "UNITS";
+        else if (path.includes('join')) suffix = "RECRUIT";
+        else if (path.includes('/contact')) suffix = "SIGNAL";
+
+        // 2. Détermination de la page active (Le lien souligné)
+        const isHome = path === '/' || path === '/index.html';
+        
+        const getNavClass = (target) => {
+            const activeClass = "text-magenta underline underline-offset-8 decoration-2";
+            if (target === '/') return isHome ? activeClass : 'nav-link';
+            if (target === '/roster') return (path.includes('/roster') && !path.includes('calendar')) ? activeClass : 'nav-link';
+            return path.includes(target) ? activeClass : 'nav-link';
+        };
+
+        // 3. Construction du Header HTML
+        const headerHTML = `
+        <header class="relative z-[100] p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
+            <div class="flex items-center gap-4">
+                <div class="w-8 h-8 border border-magenta rotate-45 flex items-center justify-center">
+                    <div class="w-4 h-4 bg-magenta animate-pulse rotate-[-45deg]"></div>
+                </div>
+                <div class="font-rajdhani font-bold text-2xl text-white tracking-tighter uppercase leading-none" style="font-family: 'Rajdhani', sans-serif;">
+                    GOWRAX<span class="text-magenta italic">_${suffix}</span>
+                </div>
+            </div>
+            
+            <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em]" style="font-family: 'Share Tech Mono', monospace;">
+                <a href="/" class="${getNavClass('/')}">INDEX</a>
+                <a href="/news/index.html" class="${getNavClass('/news')}">NEWS</a>
+                <a href="/staff/index.html" class="${getNavClass('/staff')}">STAFF</a>
+                <a href="/ceo/index.html" class="nav-link">COMMAND</a>
+                <a href="/profiles/index.html" class="${getNavClass('/profiles')}">DATABASE</a>
+                <a href="/roster/index.html" class="${getNavClass('/roster')}">UNITS</a>
+                <a href="/roster/calendar.html" class="${getNavClass('/calendar')}">CALENDRIER</a>
+                <a href="/contact/index.html" class="${getNavClass('/contact')}">SIGNAL</a>
+            </nav>
+
+            <div class="flex items-center gap-6">
+                ${isHome ? `
+                <div class="hidden md:block text-right">
+                    <div class="text-[8px] text-magenta font-mono uppercase tracking-widest" style="font-family: 'Share Tech Mono', monospace;">Security_Level</div>
+                    <div class="text-[10px] font-bold font-mono" style="font-family: 'Share Tech Mono', monospace;">BETA_CLEARANCE</div>
+                </div>` : ''}
+                
+                <button onclick="window.toggleGlobalNav(true)" class="lg:hidden text-magenta border border-magenta/40 p-2 hover:bg-magenta hover:text-white transition-all z-[110] pointer-events-auto">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                </button>
+            </div>
+        </header>
+
+        <div id="global-mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500" style="display: none; background: rgba(2, 2, 5, 0.98); backdrop-filter: blur(20px);">
+            <button onclick="window.toggleGlobalNav(false)" class="absolute top-10 right-10 text-magenta text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto" style="font-family: 'Share Tech Mono', monospace;">Close_X</button>
+            <a href="/" class="text-4xl font-bold text-magenta italic pointer-events-auto" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">INDEX</a>
+            <a href="/news/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">NEWS</a>
+            <a href="/staff/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">STAFF</a>
+            <a href="/ceo/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">COMMAND</a>
+            <a href="/profiles/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">DATABASE</a>
+            <a href="/roster/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">ROSTERS</a>
+            <a href="/roster/calendar.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">CALENDRIER</a>
+            <a href="/contact/index.html" class="text-2xl tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">SIGNAL</a>
+        </div>
+        `;
+
+        // 4. Injection dans le DOM (Juste après l'ouverture du <body>)
+        document.body.insertAdjacentHTML('afterbegin', headerHTML);
+    };
+
+    // Logique globale du menu mobile
+    window.toggleGlobalNav = function(state) { 
+        const nav = document.getElementById('global-mobile-nav');
+        if(state) {
+            nav.style.display = 'flex';
+            setTimeout(() => { nav.style.opacity = '1'; nav.style.pointerEvents = 'auto'; }, 10);
+            document.body.style.overflow = 'hidden';
+        } else {
+            nav.style.opacity = '0'; nav.style.pointerEvents = 'none';
+            setTimeout(() => { nav.style.display = 'none'; }, 500);
+            document.body.style.overflow = 'auto';
+        }
+    };
+
+
+    // --- 3. MODULES VISUELS (ICONS, GA, COOKIES, GHOST LINK) ---
     const injectIcons = () => {
         try {
             const favicon = document.createElement('link');
@@ -67,10 +153,6 @@
         } catch (e) {}
     };
 
-    /**
-     * MODULE RGPD : Injecte l'alerte de consentement des cookies
-     * Nécessaire pour la conformité légale et le suivi analytique
-     */
     const injectCookieHUD = () => {
         if (localStorage.getItem('grx_cookies_accepted')) return;
         const hud = document.createElement('div');
@@ -101,10 +183,6 @@
         };
     };
 
-    /**
-     * MODULE LEGAL : Ghost Link (Mentions Légales)
-     * S'adapte dynamiquement pour ne pas gêner l'UI du Roster sur Desktop
-     */
     const injectGhostLink = () => {
         const link = document.createElement('a');
         link.href = "/privacy.html";
@@ -118,8 +196,7 @@
         document.body.appendChild(link);
     };
 
-    // --- 3. MODULE SMART BROADCAST (NOTIFICATIONS) ---
-
+    // --- 4. MODULE SMART BROADCAST ---
     const checkAndInjectBroadcast = async () => {
         try {
             const { data: notif, error } = await window._supabaseGlobal
@@ -127,7 +204,7 @@
                 .select('*')
                 .eq('is_active', true)
                 .limit(1)
-                .single();
+                .maybeSingle();
 
             if (error || !notif) return;
 
@@ -192,22 +269,22 @@
         }
     };
 
-    // --- 4. SÉCURITÉ ---
+    // --- 5. SÉCURITÉ ---
     const enforceSecurity = () => {
         document.addEventListener('contextmenu', e => e.preventDefault());
     };
 
-    // --- 5. INITIALISATION DU SYSTÈME (BOOT SEQUENCE) ---
+    // --- 6. BOOT SEQUENCE ---
     const bootSequence = () => {
+        injectNavigation(); // Injection du nouveau menu en tout premier !
         injectIcons();
         enforceSecurity();
         injectAnalytics();
-        injectCookieHUD(); // Restitution de la conformité Cookies
+        injectCookieHUD();
         injectGhostLink();
-        initGowrax();      // Liaison DB et Broadcast
+        initGowrax();      
     };
 
-    // Lancement du boot en fonction de l'état du document
     if (document.readyState === 'loading') {
         document.addEventListener('DOMContentLoaded', bootSequence);
     } else {

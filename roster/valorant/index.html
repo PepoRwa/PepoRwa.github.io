@@ -93,46 +93,6 @@
     <div id="custom-cursor"></div>
     <canvas id="starCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
 
-    <header class="relative z-[100] p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
-        <div class="flex items-center gap-4">
-            <div class="w-8 h-8 border border-magenta rotate-45 flex items-center justify-center">
-                <div class="w-4 h-4 bg-magenta animate-pulse rotate-[-45deg]"></div>
-            </div>
-            <div class="font-rajdhani font-bold text-2xl text-white tracking-tighter uppercase leading-none">
-                GOWRAX<span class="text-magenta italic">_UNITS</span>
-            </div>
-        </div>
-        
-        <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em] tech-font">
-            <a href="/" class="nav-link">INDEX</a>
-            <a href="/news/index.html" class="nav-link">NEWS</a>
-            <a href="/staff/index.html" class="nav-link">STAFF</a>
-            <a href="/ceo/index.html" class="nav-link">COMMAND</a>
-            <a href="/profiles/index.html" class="nav-link">DATABASE</a>
-            <a href="/roster/index.html" class="nav-link">UNITS</a>
-            <a href="/roster/calendar.html" class="nav-link">CALENDRIER</a>
-            <a href="/contact/index.html" class="nav-link">SIGNAL</a>
-        </nav>
-
-        <div class="flex items-center">
-            <button onclick="toggleNav(true)" class="lg:hidden text-magenta border border-magenta/40 p-2 hover:bg-magenta hover:text-white transition-all">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
-            </button>
-        </div>
-    </header>
-
-    <div id="mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500">
-        <button onclick="toggleNav(false)" class="absolute top-10 right-10 text-magenta font-mono text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto">Close_X</button>
-        <a href="/" class="text-4xl font-rajdhani font-bold text-magenta italic pointer-events-auto" onclick="toggleNav(false)">INDEX</a>
-        <a href="/news/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">NEWS</a>
-        <a href="/staff/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">STAFF</a>
-        <a href="/ceo/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">COMMAND</a>
-        <a href="/profiles/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">DATABASE</a>
-        <a href="/roster/calendar.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">CALENDRIER</a>
-        <a href="/roster/index.html" class="text-2xl font-rajdhani tracking-widest pointer-events-auto" onclick="toggleNav(false)">ROSTERS</a>
-        <a href="/contact/index.html" class="text-2xl font-rajdhani tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" onclick="toggleNav(false)">SIGNAL</a>
-    </div>
-
     <div id="audio-init-prompt" class="tech-font text-[8px] text-magenta/50 tracking-widest uppercase animate-pulse">
         [ Cliquez pour synchroniser l'audio ]
     </div>
@@ -282,24 +242,6 @@
     </footer>
 
     <script>
-        function toggleNav(state) { 
-            const nav = document.getElementById('mobile-nav');
-            if(state) {
-                nav.classList.add('active');
-                setTimeout(() => {
-                    nav.style.opacity = '1';
-                    nav.style.pointerEvents = 'auto';
-                }, 10);
-                document.body.style.overflow = 'hidden';
-            } else {
-                nav.style.opacity = '0';
-                nav.style.pointerEvents = 'none';
-                setTimeout(() => {
-                    nav.classList.remove('active');
-                    document.body.style.overflow = '';
-                }, 500);
-            }
-        }
 
         const cursor = document.getElementById('custom-cursor');
         window.addEventListener('mousemove', e => { 
