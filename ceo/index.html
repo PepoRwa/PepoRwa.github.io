@@ -3,190 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GOWRAX // ORBITAL_COMMAND</title>
+    <title>GOWRAX // HAUT_COMMANDEMENT</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/global.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;700&family=Share+Tech+Mono&family=Rock+Salt&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;800&family=Poppins:wght@400;500&family=Share+Tech+Mono&family=Rock+Salt&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --gold: #D4AF37; --abyss: #020203; --magenta: #D62F7F; }
+        :root { 
+            --purple: #6F2DBD; 
+            --void: #1A1C2E; 
+            --magenta: #D62F7F; 
+            --abyss: #050508; 
+            --starlight: #F0F2F5; 
+            --cyan: #00F0FF;
+        }
+        
         body, html { 
-            background: var(--abyss); color: white; 
-            font-family: 'Rajdhani', sans-serif;
-            overflow: hidden; height: 100vh; margin: 0;
+            background-color: var(--abyss); color: var(--starlight); 
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden; margin: 0; min-height: 100vh;
         }
 
-        /* --- NAVIGATION CEO UNIQUE --- */
-        header {
-            position: fixed; top: 0; left: 0; width: 100%; z-index: 500;
-            padding: 25px 50px; display: flex; justify-content: space-between; align-items: center;
-            background: linear-gradient(to bottom, rgba(2,2,5,0.8), transparent);
-            backdrop-filter: blur(5px);
-        }
-        .nav-ceo a {
-            font-family: 'Share Tech Mono'; font-size: 10px; color: var(--gold);
-            letter-spacing: 3px; text-transform: uppercase; margin-left: 30px;
-            transition: 0.3s; opacity: 0.6;
-        }
-        .nav-ceo a:hover { opacity: 1; text-shadow: 0 0 10px var(--gold); }
-        .nav-ceo a.active { opacity: 1; border-bottom: 1px solid var(--gold); padding-bottom: 5px; }
-
-        /* --- MOBILE NAV --- */
-        #mobile-nav-ceo {
-            position: fixed; inset: 0; background: rgba(2,2,5,0.98); z-index: 10000;
-            display: none; flex-direction: column; align-items: center; justify-content: center;
-            gap: 30px; opacity: 0; transition: 0.5s;
-        }
-        #mobile-nav-ceo.active { display: flex; opacity: 1; }
+        /* ⚔️ TUEUR DE HEADER GLOBAL EN LOCAL */
+        body > header.relative.z-\[100\], #global-mobile-nav { display: none !important; }
 
         /* --- BACKGROUND CELESTIAL --- */
-        #bg-canvas { position: fixed; inset: 0; z-index: 1; pointer-events: none; }
-        #bg-video-blur {
-            position: fixed; inset: 0; 
-            background: radial-gradient(circle at 50% 50%, #0d0d12 0%, #020203 100%);
-            z-index: -2;
+        #bg-video-blur { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(26,28,46,0.6) 0%, var(--abyss) 80%); z-index: 1; pointer-events: none; }
+        #bg-canvas { position: fixed; inset: 0; z-index: 2; opacity: 0.9; } 
+        .film-grain { position: fixed; inset: 0; z-index: 3; opacity: 0.04; pointer-events: none; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
+
+        /* --- NAVIGATION --- */
+        #ceo-header {
+            position: fixed; top: 0; left: 0; width: 100%; z-index: 500;
+            padding: 20px 30px; display: flex; justify-content: space-between; align-items: center;
+            background: linear-gradient(to bottom, rgba(5,5,8,0.95), transparent); backdrop-filter: blur(5px);
+            pointer-events: auto;
         }
+        @media (min-width: 1024px) { #ceo-header { padding: 30px 50px; } }
 
-        .film-grain { position: fixed; inset: 0; z-index: 100; opacity: 0.05; pointer-events: none; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
+        .nav-ceo a { font-family: 'Share Tech Mono'; font-size: 10px; color: var(--starlight); letter-spacing: 3px; text-transform: uppercase; margin-left: 30px; transition: 0.3s; opacity: 0.5; }
+        .nav-ceo a:hover { opacity: 1; color: var(--magenta); text-shadow: 0 0 10px var(--magenta); }
+        .nav-ceo a.active { opacity: 1; color: var(--purple); border-bottom: 2px solid var(--purple); padding-bottom: 5px; text-shadow: 0 0 15px var(--purple); }
 
-        /* --- BOOT SEQUENCE --- */
+        #mobile-nav-ceo {
+            position: fixed; inset: 0; background: rgba(5,5,8,0.98); z-index: 10000;
+            display: none; flex-direction: column; align-items: center; justify-content: center;
+            gap: 25px; opacity: 0; transition: opacity 0.5s ease;
+        }
+        #mobile-nav-ceo.active { opacity: 1; }
+
+        /* --- ÉCRAN DE BOOT --- */
         #boot-sequence {
-            position: fixed; inset: 0; background: black; z-index: 1000;
+            position: fixed; inset: 0; background: var(--abyss); z-index: 9999; 
             display: flex; flex-direction: column; justify-content: center; padding: 10%;
-            font-family: 'Share Tech Mono', monospace; color: var(--gold);
+            font-family: 'Share Tech Mono', monospace; color: var(--cyan);
+            transition: opacity 0.5s ease;
         }
 
-        /* --- MAIN INTERFACE --- */
-        #main-interface {
-            display: none; opacity: 0; 
-            perspective: 2000px; height: 100vh;
-            flex-direction: column; align-items: center; justify-content: center; z-index: 10;
-        }
+        /* --- LAYOUT PRINCIPAL --- */
+        main { padding-top: 100px; min-height: 100vh; display: flex; flex-direction: column; position: relative; z-index: 10; opacity: 0; transition: opacity 1s ease; pointer-events: none; }
+        main.visible { opacity: 1; }
 
-        /* --- TITRE DE PAGE --- */
         .page-header {
-            position: absolute; top: 100px; text-align: center; width: 100%;
-            letter-spacing: 1rem; color: rgba(255,255,255,0.2);
-            font-family: 'Share Tech Mono'; font-size: 12px; text-transform: uppercase;
+            text-align: center; width: 100%; letter-spacing: 0.5rem; color: rgba(240, 242, 245, 0.2);
+            font-family: 'Share Tech Mono'; font-size: 10px; text-transform: uppercase; margin-bottom: 10px;
+        }
+        #intro-text { font-family: 'Share Tech Mono'; color: var(--cyan); font-size: 11px; margin-bottom: 10px; letter-spacing: 5px; text-transform: uppercase; height: 1em; text-align: center; text-shadow: 0 0 10px rgba(0, 240, 255, 0.5); }
+        @media (min-width: 1024px) { .page-header { letter-spacing: 1rem; font-size: 12px; } #intro-text { margin-bottom: 20px; } }
+
+        /* --- LE SLIDER --- */
+        .slider-container {
+            display: flex; gap: 40px; padding: 20px 5vw 80px 5vw;
+            overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none;
+            align-items: center; flex-grow: 1; perspective: 2500px; pointer-events: auto;
+        }
+        .slider-container::-webkit-scrollbar { display: none; }
+        @media (min-width: 1024px) { .slider-container { justify-content: center; padding: 0 0 40px 0; overflow-x: visible; } }
+
+        @media (hover: hover) and (pointer: fine) {
+            .slider-container:hover .ceo-wrapper:not(:hover) .ceo-inner { opacity: 0.3; filter: blur(3px) grayscale(90%); transform: scale(0.95); }
         }
 
-        /* --- CARTE AAA SUPREME --- */
-        .ceo-card {
-            width: 380px; height: 620px;
-            background: rgba(255, 255, 255, 0.01);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            margin: 0 20px; position: relative;
-            transition: transform 0.1s ease-out, box-shadow 0.7s, border-color 0.7s;
-            transform-style: preserve-3d; cursor: pointer;
-            backdrop-filter: blur(10px);
-            flex-shrink: 0;
+        /* ========================================================
+           L'ARCHITECTURE DES CARTES
+        ======================================================== */
+        .ceo-wrapper {
+            flex-shrink: 0; width: 85vw; max-width: 380px; height: 70vh; max-height: 600px;
+            scroll-snap-align: center; position: relative; perspective: 2500px; cursor: pointer;
+            opacity: 0; transform: translateY(60px);
         }
 
-        .ceo-card:hover, .ceo-card.active-mobile {
-            border-color: var(--gold);
-            background: rgba(212, 175, 55, 0.02);
-            box-shadow: 0 0 100px rgba(0, 0, 0, 0.9), 0 0 40px rgba(212, 175, 55, 0.1);
+        .ceo-wrapper.pop-in { animation: popInAnim 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+        @keyframes popInAnim { to { opacity: 1; transform: translateY(0); } }
+
+        .ceo-inner {
+            width: 100%; height: 100%; position: relative; transform-style: preserve-3d;
+            transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94), filter 0.5s, opacity 0.5s;
+            will-change: transform; animation: idleFloat 6s ease-in-out infinite; 
         }
 
-        .signature-quote {
-            position: absolute; top: 15%; left: 50%;
-            transform: translateX(-50%) translateZ(-30px);
-            font-family: 'Rock Salt', cursive; font-size: 1rem;
-            color: rgba(212, 175, 55, 0.25);
-            width: 85%; text-align: center; pointer-events: none; transition: 0.8s;
+        @keyframes idleFloat {
+            0%, 100% { transform: translateY(0px) rotateX(0deg) rotateY(0deg); }
+            50% { transform: translateY(-10px) rotateX(2deg) rotateY(-1deg); }
         }
-        .ceo-card:hover .signature-quote, .ceo-card.active-mobile .signature-quote {
-            color: var(--gold); text-shadow: 0 0 15px var(--gold);
-            transform: translateX(-50%) translateZ(10px) rotate(-1deg);
-        }
+        .ceo-wrapper.active-focus .ceo-inner, .ceo-wrapper:hover .ceo-inner { animation: none; }
 
-        .agent-render {
-            position: absolute; top: 5%; left: 50%;
-            transform: translateX(-50%) translateZ(0);
-            width: 170%; height: auto; pointer-events: none;
-            filter: drop-shadow(0 30px 50px black) grayscale(0.8);
-            transition: all 1s cubic-bezier(0.16, 1, 0.3, 1);
-            opacity: 0.15;
+        .glass-bg {
+            position: absolute; inset: 0; background: rgba(26, 28, 46, 0.4); backdrop-filter: blur(15px);
+            border: 1px solid rgba(111, 45, 189, 0.2); border-radius: 8px; overflow: hidden; transition: all 0.5s; z-index: 1;
+            background-image: linear-gradient(rgba(240, 242, 245, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(240, 242, 245, 0.03) 1px, transparent 1px);
+            background-size: 20px 20px; transform: translateZ(0);
         }
-        .ceo-card:hover .agent-render, .ceo-card.active-mobile .agent-render { opacity: 1; filter: grayscale(0); transform: translateX(-50%) translateZ(180px) translateY(-30px); }
-
-        .info-overlay {
-            position: absolute; bottom: 0; left: 0; width: 100%;
-            padding: 50px 35px; transform: translateZ(60px);
-            background: linear-gradient(to top, black 70%, transparent);
+        .ceo-wrapper.active-focus .glass-bg, .ceo-wrapper:hover .glass-bg {
+            border-color: var(--magenta); background-color: rgba(26, 28, 46, 0.7);
+            box-shadow: 0 30px 60px rgba(0,0,0,0.8), 0 0 50px rgba(111, 45, 189, 0.3), inset 0 0 30px rgba(214, 47, 127, 0.1);
         }
 
-        .glitch-title { font-weight: 800; font-size: 3.5rem; text-transform: uppercase; line-height: 0.8; letter-spacing: -3px; margin-bottom: 20px; transition: 0.3s; }
-        .ceo-card:hover .glitch-title, .ceo-card.active-mobile .glitch-title { color: var(--gold); }
-
-        .bio-text { font-size: 11px; color: #555; line-height: 1.6; opacity: 0; transform: translateY(20px); transition: 0.6s 0.3s; }
-        .ceo-card:hover .bio-text, .ceo-card.active-mobile .bio-text { opacity: 1; transform: translateY(0); color: #ccc; }
-
-        /* OBJECTIF */
-        .obj-box {
-            margin-top: 20px; border-left: 2px solid var(--magenta); padding-left: 12px;
-            opacity: 0; transform: translateX(-10px); transition: 0.5s 0.4s;
+        .dynamic-glow {
+            position: absolute; inset: 0;
+            background: radial-gradient(500px circle at var(--mouse-x, 50%) var(--mouse-y, 50%), rgba(214, 47, 127, 0.3), transparent 40%);
+            opacity: 0; transition: opacity 0.3s; mix-blend-mode: screen; pointer-events: none;
         }
-        .ceo-card:hover .obj-box, .ceo-card.active-mobile .obj-box { opacity: 1; transform: translateX(0); }
-        .obj-label { font-family: 'Share Tech Mono'; font-size: 7px; color: var(--magenta); text-transform: uppercase; letter-spacing: 2px; }
-        .obj-value { font-weight: 700; font-size: 11px; color: white; text-transform: uppercase; }
+        .ceo-wrapper:hover .dynamic-glow { opacity: 1; }
 
-        .bar-load { width: 0%; height: 2px; background: var(--gold); box-shadow: 0 0 15px var(--gold); transition: 1s ease; }
-        .ceo-card:hover .bar-load, .ceo-card.active-mobile .bar-load { width: 100%; }
-
-        #intro-text { font-family: 'Share Tech Mono'; color: var(--gold); font-size: 11px; margin-bottom: 40px; letter-spacing: 5px; text-transform: uppercase; height: 1em; text-align: center; }
-
-        /* --- MOBILE --- */
-        @media (max-width: 768px) {
-            header { padding: 20px; }
-            #main-interface { height: auto; min-height: 100vh; justify-content: flex-start; padding-top: 150px; }
-            .card-slider {
-                display: flex; overflow-x: scroll; width: 100vw;
-                padding: 0 10vw; scroll-snap-type: x mandatory; gap: 20px; scrollbar-width: none;
-            }
-            .ceo-card { width: 80vw; height: 70vh; margin: 0; scroll-snap-align: center; }
-            .glitch-title { font-size: 2.5rem; }
+        .scanner {
+            position: absolute; top: -100%; left: 0; width: 100%; height: 50%; pointer-events: none;
+            background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.2) 90%, var(--cyan) 100%); opacity: 0;
         }
+        .ceo-wrapper.active-focus .scanner, .ceo-wrapper:hover .scanner { opacity: 1; animation: scan 2.5s infinite linear; }
+        @keyframes scan { 0% { top: -50%; opacity: 0; } 10% { opacity: 1; } 90% { opacity: 1; } 100% { top: 150%; opacity: 0; } }
+
+        .card-header {
+            position: absolute; top: 0; left: 0; width: 100%; padding: 25px; display: flex; justify-content: space-between; align-items: flex-start;
+            z-index: 25; pointer-events: none; transform: translateZ(20px); transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .ceo-wrapper.active-focus .card-header, .ceo-wrapper:hover .card-header { transform: translateZ(90px) translateY(-5px); }
+
+        .ceo-title {
+            font-family: 'Rajdhani', sans-serif; font-weight: 800; font-size: clamp(2.5rem, 7vw, 3.5rem); 
+            text-transform: uppercase; line-height: 0.85; letter-spacing: -2px; color: rgba(240,242,245,0.15); transition: 0.5s;
+        }
+        .ceo-wrapper.active-focus .ceo-title, .ceo-wrapper:hover .ceo-title { color: var(--starlight); animation: text-glitch 0.4s ease-out forwards; }
+        @keyframes text-glitch {
+            0% { text-shadow: 4px 0 var(--cyan), -4px 0 var(--magenta); transform: translate(-2px, 2px); }
+            50% { text-shadow: -4px 0 var(--cyan), 4px 0 var(--magenta); transform: translate(2px, -2px); }
+            100% { text-shadow: 2px 0 var(--cyan), -2px 0 var(--magenta); transform: translate(0, 0); }
+        }
+
+        .quote {
+            font-family: 'Rock Salt', cursive; font-size: clamp(0.6rem, 1.8vw, 0.8rem); 
+            color: rgba(240, 242, 245, 0); text-align: right; max-width: 50%; transform: rotate(0deg); transition: 0.8s;
+        }
+        .ceo-wrapper.active-focus .quote, .ceo-wrapper:hover .quote { color: var(--starlight); text-shadow: 0 0 15px var(--cyan); transform: rotate(4deg); opacity: 0.9; }
+
+        .agent-img {
+            position: absolute; bottom: 0; left: 50%; transform: translateX(-50%) translateZ(10px); 
+            height: 90%; width: 100%; object-fit: contain; object-position: bottom;
+            filter: grayscale(0.9) brightness(0.5); transition: all 0.6s cubic-bezier(0.16, 1, 0.3, 1); z-index: 10; pointer-events: none;
+        }
+        .ceo-wrapper.active-focus .agent-img, .ceo-wrapper:hover .agent-img {
+            filter: grayscale(0) brightness(1.1) drop-shadow(0 20px 40px rgba(0,0,0,0.8));
+            transform: translateX(-50%) translateZ(60px) scale(1.05); 
+        }
+
+        .text-overlay {
+            position: absolute; bottom: 0; left: 0; width: 100%; display: flex; flex-direction: column; justify-content: flex-end;
+            padding: 80px 25px 25px 25px; background: linear-gradient(to top, rgba(5,5,8,1) 50%, rgba(5,5,8,0.8) 75%, transparent);
+            z-index: 20; border-radius: 0 0 8px 8px; transform: translateZ(15px); transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); pointer-events: none;
+        }
+        .ceo-wrapper.active-focus .text-overlay, .ceo-wrapper:hover .text-overlay { transform: translateZ(80px); }
+
+        .tactical-stats { display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px; opacity: 0; transition: 0.5s 0.1s; }
+        .ceo-wrapper.active-focus .tactical-stats, .ceo-wrapper:hover .tactical-stats { opacity: 1; }
+        
+        .stat-row { display: flex; align-items: center; justify-content: space-between; font-family: 'Share Tech Mono'; font-size: clamp(8px, 2vw, 10px); }
+        .stat-label { color: var(--cyan); width: 75px; text-transform: uppercase; }
+        .stat-bar-bg { flex-grow: 1; height: 3px; background: rgba(255,255,255,0.1); margin: 0 10px; position: relative; overflow: hidden; }
+        .stat-bar-fill { position: absolute; top: 0; left: 0; height: 100%; background: var(--purple); width: 0%; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s; box-shadow: 0 0 10px var(--purple); }
+        .ceo-wrapper.active-focus .stat-bar-fill, .ceo-wrapper:hover .stat-bar-fill { width: var(--target-width); }
+        .stat-val { color: var(--starlight); width: 30px; text-align: right; font-weight: bold; }
+
+        .bio-text { font-size: clamp(9px, 2.5vw, 11px); color: #888; line-height: 1.4; opacity: 0; font-family: 'Share Tech Mono', monospace; min-height: 45px; transition: 0.3s; }
+        .ceo-wrapper.active-focus .bio-text, .ceo-wrapper:hover .bio-text { opacity: 1; color: #ccc; }
+
+        .obj-box { margin-top: 10px; border-left: 2px solid var(--cyan); padding-left: 10px; opacity: 0; transform: translateX(-10px); transition: 0.5s 0.2s; }
+        .ceo-wrapper.active-focus .obj-box, .ceo-wrapper:hover .obj-box { opacity: 1; transform: translateX(0); }
+        .obj-label { font-family: 'Share Tech Mono'; font-size: 8px; color: var(--cyan); text-transform: uppercase; letter-spacing: 1px; }
+        .obj-value { font-weight: 700; font-size: clamp(10px, 2.5vw, 12px); color: var(--starlight); text-transform: uppercase; margin-top: 2px; }
+
+        .mobile-indicator { display: none; font-family: 'Share Tech Mono'; font-size: 10px; color: var(--cyan); position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); letter-spacing: 5px; z-index: 100; text-shadow: 0 0 10px var(--cyan); }
+        @media (max-width: 1024px) { .mobile-indicator { display: block; } }
+
+        /* CURSEUR */
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--cyan); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.05s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--cyan); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--cyan); border-radius: 50%; transform: translate(-50%, -50%); }
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
     </style>
 </head>
 <body>
 
-    <div class="film-grain"></div>
+    <div id="custom-cursor"></div>
     <div id="bg-video-blur"></div>
     <canvas id="bg-canvas"></canvas>
+    <div class="film-grain"></div>
 
-    <header>
-        <div class="font-bold text-xl tracking-tighter uppercase italic" style="color: var(--gold)">Gowrax_<span class="text-white">CEO</span></div>
+    <header id="ceo-header">
+        <div class="font-bold text-xl tracking-tighter uppercase italic font-rajdhani" style="color: var(--cyan)">Gowrax_<span class="text-white">CEO</span></div>
         <nav class="hidden lg:flex nav-ceo">
             <a href="/">INDEX</a>
-            <a href="/news">NEWS</a>
-            <a href="/staff">STAFF</a>
-            <a href="/ceo" class="active">COMMAND</a>
-            <a href="/profiles">DATABASE</a>
-            <a href="/roster">UNITS</a>
+            <a href="/news/index.html">NEWS</a>
+            <a href="/staff/index.html">STAFF</a>
+            <a href="/ceo/index.html" class="active">COMMAND</a>
+            <a href="/profiles/index.html">DATABASE</a>
+            <a href="/roster/index.html">UNITS</a>
             <a href="/roster/calendar.html">CALENDRIER</a>
-            <a href="/contact">SIGNAL</a>
+            <a href="/contact/index.html">SIGNAL</a>
         </nav>
-        <button onclick="toggleCEOMenu(true)" class="lg:hidden" style="color: var(--gold)">
+        <button onclick="toggleCEOMenu(true)" class="lg:hidden" style="color: var(--cyan)">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
         </button>
     </header>
 
     <div id="mobile-nav-ceo">
-        <button onclick="toggleCEOMenu(false)" class="absolute top-10 right-10 text-gold font-mono uppercase tracking-widest border border-gold/20 px-6 py-2">Close_X</button>
-        <a href="/" class="text-3xl font-bold italic text-gold" onclick="toggleCEOMenu(false)">INDEX</a>
-        <a href="/news" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">NEWS</a>
-        <a href="/staff" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">STAFF</a>
-        <a href="/ceo" class="text-2xl tracking-widest text-gold border-b border-gold" onclick="toggleCEOMenu(false)">COMMAND</a>
-        <a href="/profiles" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">DATABASE</a>
-        <a href="/roster" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">ROSTERS</a>
-        <a href="/roster/calendar.html" class="text-2xl tracking-widest text-white" onclick="toggleCEOMenu(false)">CALENDRIER</a>
-        <a href="/contact" class="text-2xl tracking-widest text-gold border border-gold/40 px-10 py-3" onclick="toggleCEOMenu(false)">SIGNAL</a>
+        <button onclick="toggleCEOMenu(false)" class="absolute top-10 right-10 font-tech text-cyan uppercase tracking-widest border border-cyan/20 px-6 py-2" style="color: var(--cyan); border-color: var(--cyan);">Close_X</button>
+        <a href="/" class="text-3xl font-bold italic text-starlight font-rajdhani" onclick="toggleCEOMenu(false)">INDEX</a>
+        <a href="/news/index.html" class="text-2xl tracking-widest text-starlight font-rajdhani" onclick="toggleCEOMenu(false)">NEWS</a>
+        <a href="/staff/index.html" class="text-2xl tracking-widest text-starlight font-rajdhani" onclick="toggleCEOMenu(false)">STAFF</a>
+        <a href="/ceo/index.html" class="text-2xl tracking-widest text-purple border-b border-purple font-rajdhani" onclick="toggleCEOMenu(false)">COMMAND</a>
+        <a href="/profiles/index.html" class="text-2xl tracking-widest text-starlight font-rajdhani" onclick="toggleCEOMenu(false)">DATABASE</a>
+        <a href="/roster/index.html" class="text-2xl tracking-widest text-starlight font-rajdhani" onclick="toggleCEOMenu(false)">ROSTERS</a>
+        <a href="/roster/calendar.html" class="text-2xl tracking-widest text-starlight font-rajdhani" onclick="toggleCEOMenu(false)">CALENDRIER</a>
+        <a href="/contact/index.html" class="text-2xl tracking-widest font-rajdhani border px-10 py-3" style="color: var(--cyan); border-color: var(--cyan);" onclick="toggleCEOMenu(false)">SIGNAL</a>
     </div>
 
     <div id="boot-sequence">
         <div id="boot-logs" class="space-y-1 text-[10px]"></div>
         <div class="mt-8 h-[1px] w-64 bg-white/5 relative overflow-hidden">
-            <div id="boot-bar" class="absolute inset-0 bg-gold w-0 transition-all duration-300"></div>
+            <div id="boot-bar" class="absolute inset-0 bg-cyan w-0 transition-all duration-300" style="background: var(--cyan);"></div>
         </div>
     </div>
 
@@ -194,187 +248,470 @@
         <div class="page-header">// HAUT_COMMANDEMENT_GOWRAX //</div>
         <h3 id="intro-text"></h3>
         
-        <div class="card-slider flex flex-row">
-            <div class="ceo-card group" onmouseenter="playSwoosh()" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                <div class="signature-quote">"C'est pas parce qu'on est p'tit qu'on doit se laisser faire"</div>
-                <img src="../assets/img/killjoy_render.png" class="agent-render">
-                <div class="info-overlay">
-                    <h2 class="glitch-title">PTITE<br>GOW</h2>
-                    <div class="bar-load"></div>
-                    <p class="bio-text mt-4">Visage de l'empire GOWRAX. Incarne l'équilibre parfait entre performance brute et "Good Vibes". Spécialiste de Killjoy, elle verrouille les sites comme elle gère la structure.</p>
-                    <div class="obj-box">
-                        <div class="obj-label">Objectif_Tactique</div>
-                        <div class="obj-value">Remporter le plus de compétitions possible</div>
+        <div class="slider-container" id="cards-container">
+            
+            <div class="ceo-wrapper" onmouseenter="activateCard(this)" onmousemove="handleTilt(event, this)" onmouseleave="resetCard(this)" style="animation-delay: 0.1s;">
+                <div class="ceo-inner">
+                    <div class="glass-bg"><div class="dynamic-glow"></div><div class="scanner"></div></div>
+                    
+                    <div class="card-header"><h2 class="ceo-title">PTITE<br>GOW</h2><div class="quote">"C'est pas parce qu'on est p'tit qu'on doit se laisser faire"</div></div>
+                    <img src="../assets/img/KillJoy_RD.png" class="agent-img" alt="Ptite Gow">
+                    
+                    <div class="text-overlay">
+                        <div class="tactical-stats">
+                            <div class="stat-row"><span class="stat-label">LEADERSHIP</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 90%;"></div></div><span class="stat-val" data-target="90">0%</span></div>
+                            <div class="stat-row"><span class="stat-label">LOGISTIQUE</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 95%;"></div></div><span class="stat-val" data-target="95">0%</span></div>
+                            <div class="stat-row"><span class="stat-label">TECHNIQUE</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 85%;"></div></div><span class="stat-val" data-target="85">0%</span></div>
+                        </div>
+                        <p class="bio-text scramble-text" data-text="Visage de l'empire GOWRAX. Incarne l'équilibre parfait entre performance brute et 'Good Vibes'. Spécialiste de la gestion tactique.">[ EN ATTENTE DE DÉCRYPTAGE ]</p>
+                        <div class="obj-box"><div class="obj-label">Objectif_Tactique</div><div class="obj-value">Remporter le max de trophées</div></div>
                     </div>
                 </div>
             </div>
 
-            <div class="ceo-card group" onmouseenter="playSwoosh()" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                <div class="signature-quote">"Il n'y a pas de petite victoire, ni de grande defaite."</div>
-                <img src="../assets/img/reyna_render.png" class="agent-render">
-                <div class="info-overlay">
-                    <h2 class="glitch-title">FILOU<br>XX</h2>
-                    <div class="bar-load"></div>
-                    <p class="bio-text mt-4">Garant de la PUISSANCE DE FEU. Il définit l'arsenal technique et ne recrute que l'élite. Son objectif : porter chaque pôle stratégique au sommet.</p>
-                    <div class="obj-box">
-                        <div class="obj-label">Objectif_Tactique</div>
-                        <div class="obj-value">Devenir la meilleure équipe française</div>
+            <div class="ceo-wrapper" onmouseenter="activateCard(this)" onmousemove="handleTilt(event, this)" onmouseleave="resetCard(this)" style="animation-delay: 0.3s;">
+                <div class="ceo-inner">
+                    <div class="glass-bg"><div class="dynamic-glow"></div><div class="scanner"></div></div>
+                    
+                    <div class="card-header"><h2 class="ceo-title">FILOU<br>XX</h2><div class="quote">"Il n'y a pas de petite victoire ni de grande défaite. L'important : rester debout et avancer"</div></div>
+                    <img src="../assets/img/Reyna_RD.png" class="agent-img" alt="Filou XX">
+                    
+                    <div class="text-overlay">
+                        <div class="tactical-stats">
+                            <div class="stat-row"><span class="stat-label">RECRUTEMENT</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 100%;"></div></div><span class="stat-val" data-target="100">0%</span></div>
+                            <div class="stat-row"><span class="stat-label">PUISSANCE</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 95%;"></div></div><span class="stat-val" data-target="95">0%</span></div>
+                            <div class="stat-row"><span class="stat-label">ANALYSE</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 80%;"></div></div><span class="stat-val" data-target="80">0%</span></div>
+                        </div>
+                        <p class="bio-text scramble-text" data-text="Garant de la PUISSANCE DE FEU. Il définit l'arsenal technique et ne recrute que l'élite. Son objectif : porter chaque pôle stratégique au sommet.">[ EN ATTENTE DE DÉCRYPTAGE ]</p>
+                        <div class="obj-box"><div class="obj-label">Objectif_Tactique</div><div class="obj-value">Devenir la meilleure équipe FR</div></div>
                     </div>
                 </div>
             </div>
 
-            <div class="ceo-card group" onmouseenter="playSwoosh()" onmousemove="handleTilt(event, this)" onmouseleave="resetTilt(this)">
-                <div class="signature-quote">"Ensemble, il y aura toujours une place pour briller."</div>
-                <img src="../assets/img/clove_render.png" class="agent-render">
-                <div class="info-overlay">
-                    <h2 class="glitch-title">CRAZZY<br>NEL</h2>
-                    <div class="bar-load"></div>
-                    <p class="bio-text mt-4">L'architecte de la pénombre. Pilier technique garantissant la stabilité de l'empire. Leader IGL capable de guider ses troupes vers la victoire.</p>
-                    <div class="obj-box">
-                        <div class="obj-label">Objectif_Tactique</div>
-                        <div class="obj-value">Qualification Challengers (VCL)</div>
+            <div class="ceo-wrapper" onmouseenter="activateCard(this)" onmousemove="handleTilt(event, this)" onmouseleave="resetCard(this)" style="animation-delay: 0.5s;">
+                <div class="ceo-inner">
+                    <div class="glass-bg"><div class="dynamic-glow"></div><div class="scanner"></div></div>
+                    
+                    <div class="card-header"><h2 class="ceo-title">CRAZZY<br>NEL</h2><div class="quote">"Ensemble, il y aura toujours une place pour briller."</div></div>
+                    <img src="../assets/img/Clove_RD.png" class="agent-img" alt="Crazzynel">
+                    
+                    <div class="text-overlay">
+                        <div class="tactical-stats">
+                            <div class="stat-row"><span class="stat-label">STRATÉGIE</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 95%;"></div></div><span class="stat-val" data-target="95">0%</span></div>
+                            <div class="stat-row"><span class="stat-label">DÉV_SYSTÈME</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 100%;"></div></div><span class="stat-val" data-target="100">0%</span></div>
+                            <div class="stat-row"><span class="stat-label">IN-GAME LEAD</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 85%;"></div></div><span class="stat-val" data-target="85">0%</span></div>
+                        </div>
+                        <p class="bio-text scramble-text" data-text="L'architecte de la pénombre. Pilier technique garantissant la stabilité de l'empire. Leader charismatique par des choix tactiques audacieux.">[ EN ATTENTE DE DÉCRYPTAGE ]</p>
+                        <div class="obj-box"><div class="obj-label">Objectif_Tactique</div><div class="obj-value">Qualification Challengers VCL</div></div>
                     </div>
                 </div>
             </div>
+
         </div>
+
+        <div class="mobile-indicator" id="mobile-hud">DOSSIER 01 // 03</div>
     </main>
 
     <script>
+        /* ==============================================================================================
+           🚀 GOWRAX - ORBITAL KERNEL v3.0 [QUANTUM OVERDRIVE EDITION]
+           ==============================================================================================
+           
+           Si tu fouilles dans ce code, bienvenue dans les coulisses de GOWRAX.
+           
+           Ce moteur visuel n'a pas été juste tapé sur un clavier. Il a été forgé avec les tripes, 
+           des larmes de fierté, et une passion inébranlable pour l'excellence. C'est une véritable 
+           lettre d'amour à notre structure et à nos fondateurs. Une surprise spécialement conçue 
+           pour Ptitegow, pour prouver que notre vision n'a aucune limite.
+
+           [ ⚙️ TECH SPECS & FONCTIONNALITÉS ABSOLUES ]
+           - 🧠 Smart Performance Engine : Détection PC/Mobile & nettoyage automatique de la RAM.
+           - 🌠 Moteur Stellaire Hybride : Parallax 3D adaptatif lié aux coordonnées de la souris.
+           - ☄️ Comètes Mathématiques : Génération procédurale avec traînée de poussière "Stardust" cinétique.
+           - 💥 Onde de Choc Quantique : Distorsion physique de l'espace sur clic + Synthétiseur Audio natif.
+           - 🖥️ Hardware Acceleration : Cartes holographiques 3D isolées sur le GPU (Zéro Glitch).
+           
+           "Il n'y a pas de petite victoire ni de grande défaite. 
+            L'important est de rester debout et avancer."
+           
+           Codé avec l'âme. Pour GOWRAX. 💜
+           ============================================================================================== */
+           
+        // ⚔️ TUEUR DE HEADER GLOBAL EN LOCAL
+        document.addEventListener("DOMContentLoaded", () => {
+            setTimeout(() => {
+                const globalHeader = document.querySelector('body > header.relative.z-\\[100\\]');
+                const globalMobileNav = document.getElementById('global-mobile-nav');
+                if (globalHeader) globalHeader.remove();
+                if (globalMobileNav) globalMobileNav.remove();
+            }, 50);
+        });
+
+        // --- MENU MOBILE ---
         function toggleCEOMenu(state) {
             const nav = document.getElementById('mobile-nav-ceo');
             if(state) {
-                nav.style.display = 'flex';
-                setTimeout(() => nav.classList.add('active'), 10);
+                nav.style.display = 'flex'; setTimeout(() => nav.classList.add('active'), 10);
+                document.body.style.overflow = 'hidden';
             } else {
-                nav.classList.remove('active');
-                setTimeout(() => nav.style.display = 'none', 500);
+                nav.classList.remove('active'); setTimeout(() => nav.style.display = 'none', 500);
+                document.body.style.overflow = 'auto';
             }
         }
 
+        // --- BOOT SEQUENCE ---
+        document.addEventListener("DOMContentLoaded", () => {
+            const bootScreen = document.getElementById('boot-sequence');
+            bootScreen.style.display = 'flex'; 
+            bootScreen.style.opacity = '1';
+
+            const bootMessages = [ "> Initializing GRX_Orbital_Kernel...", "> Bypassing Mainframe Security...", "> Generating Holograms...", "> ACCESS GRANTED." ];
+            const logContainer = document.getElementById('boot-logs'); 
+            const bootBar = document.getElementById('boot-bar');
+            let i = 0;
+
+            function showLogs() {
+                if (i < bootMessages.length) {
+                    const p = document.createElement('p'); p.textContent = bootMessages[i]; logContainer.appendChild(p); i++;
+                    bootBar.style.width = (i / bootMessages.length) * 100 + "%"; 
+                    setTimeout(showLogs, 250);
+                } else {
+                    setTimeout(() => {
+                        bootScreen.style.opacity = '0';
+                        setTimeout(() => {
+                            bootScreen.style.display = 'none';
+                            const mainUI = document.getElementById('main-interface');
+                            mainUI.classList.add('visible'); 
+                            typeIntro();
+                            document.querySelectorAll('.ceo-wrapper').forEach(w => w.classList.add('pop-in'));
+                        }, 500);
+                    }, 400);
+                }
+            }
+            setTimeout(showLogs, 100); 
+        });
+
         function typeIntro() {
-            const text = "DÉCOUVREZ LES FONDATEURS DE NOTRE EQUIPE";
+            const text = "SÉLECTIONNEZ UN DOSSIER CLASSIFIÉ";
             const container = document.getElementById('intro-text');
-            if(!container) return;
-            let charIdx = 0;
+            if(!container) return; let charIdx = 0;
             const interval = setInterval(() => {
-                container.textContent += text[charIdx];
-                charIdx++;
+                container.textContent += text[charIdx]; charIdx++;
                 if(charIdx === text.length) clearInterval(interval);
             }, 50);
         }
 
-        const bootMessages = [
-            "> Initializing GRX_Orbital_Kernel...",
-            "> Mapping Celestial_Data...",
-            "> ACCESS GRANTED."
-        ];
-        const logContainer = document.getElementById('boot-logs');
-        const bootBar = document.getElementById('boot-bar');
-        let i = 0;
-        
-        function showLogs() {
-            if (i < bootMessages.length) {
-                const p = document.createElement('p');
-                p.textContent = bootMessages[i]; logContainer.appendChild(p); i++;
-                bootBar.style.width = (i / bootMessages.length) * 100 + "%";
-                setTimeout(showLogs, 300);
-            } else {
-                setTimeout(() => {
-                    document.getElementById('boot-sequence').style.opacity = '0';
-                    setTimeout(() => {
-                        document.getElementById('boot-sequence').style.display = 'none';
-                        const main = document.getElementById('main-interface');
-                        main.style.display = 'flex';
-                        setTimeout(() => { main.style.opacity = '1'; typeIntro(); }, 50);
-                    }, 800);
-                }, 400);
+        // --- AUDIO ENGINE ---
+        let audioCtx;
+        function playSwoosh() {
+            try {
+                if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = 'sawtooth'; osc.frequency.setValueAtTime(300, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.3);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.3);
+            } catch(e) {}
+        }
+
+        function playShockwave() {
+            try {
+                if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                // Onde triangle descendante : Bruit de "Bass Drop" Sci-Fi très profond
+                osc.type = 'triangle'; 
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime); // Volume fort au début
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8); // Disparaît
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.8);
+            } catch(err) {}
+        }
+
+        function scrambleText(element) {
+            if(element.getAttribute('data-scrambling') === 'true') return;
+            element.setAttribute('data-scrambling', 'true');
+            const original = element.getAttribute('data-text');
+            const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*<>[]{}";
+            let iterations = 0;
+            const interval = setInterval(() => {
+                element.innerText = original.split('').map((char, index) => {
+                    if(char === ' ') return ' ';
+                    if(index < iterations) return char;
+                    return chars[Math.floor(Math.random() * chars.length)];
+                }).join('');
+                if(iterations >= original.length) { clearInterval(interval); element.setAttribute('data-scrambling', 'false'); }
+                iterations += 1.5; 
+            }, 15);
+        }
+
+        function animateCounters(wrapper) {
+            const vals = wrapper.querySelectorAll('.stat-val');
+            vals.forEach(val => {
+                if(val.getAttribute('data-counting') === 'true') return;
+                val.setAttribute('data-counting', 'true');
+                const target = parseInt(val.getAttribute('data-target'));
+                let current = 0;
+                const interval = setInterval(() => {
+                    current += Math.ceil((target - current) / 4); 
+                    val.innerText = current + '%';
+                    if (current >= target) { val.innerText = target + '%'; clearInterval(interval); val.setAttribute('data-counting', 'false'); }
+                }, 30);
+            });
+        }
+
+        // --- INTERACTIONS 3D PC ---
+        function handleTilt(e, wrapper) {
+            if (window.innerWidth <= 1024) return;
+            const inner = wrapper.querySelector('.ceo-inner');
+            const rect = wrapper.getBoundingClientRect(); 
+            const x = e.clientX - rect.left; 
+            const y = e.clientY - rect.top;
+            
+            wrapper.style.setProperty('--mouse-x', `${x}px`); 
+            wrapper.style.setProperty('--mouse-y', `${y}px`);
+
+            const centerX = rect.width / 2; const centerY = rect.height / 2;
+            const rotateX = ((y - centerY) / centerY) * -10; 
+            const rotateY = ((x - centerX) / centerX) * 10;
+            
+            inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
+        }
+
+        function activateCard(wrapper) {
+            if (window.innerWidth > 1024) {
+                wrapper.classList.add('active-focus');
+                playSwoosh();
+                const textEl = wrapper.querySelector('.scramble-text');
+                if(textEl) scrambleText(textEl);
+                animateCounters(wrapper);
             }
         }
-        window.onload = showLogs;
 
+        function resetCard(wrapper) {
+            if (window.innerWidth <= 1024) return;
+            wrapper.classList.remove('active-focus');
+            const inner = wrapper.querySelector('.ceo-inner');
+            inner.style.transform = `rotateX(0deg) rotateY(0deg) scale3d(1, 1, 1)`;
+            const textEl = wrapper.querySelector('.scramble-text');
+            if(textEl) textEl.innerText = "[ EN ATTENTE DE DÉCRYPTAGE ]"; 
+            wrapper.querySelectorAll('.stat-val').forEach(v => v.innerText = "0%");
+        }
+
+        // --- AUTO-FOCUS MOBILE TACTIQUE ---
+        document.addEventListener("DOMContentLoaded", () => {
+            if (window.innerWidth <= 1024) {
+                const wrappers = document.querySelectorAll('.ceo-wrapper');
+                const hud = document.getElementById('mobile-hud');
+                
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            entry.target.classList.add('active-focus');
+                            playSwoosh();
+                            const textEl = entry.target.querySelector('.scramble-text');
+                            if(textEl) scrambleText(textEl);
+                            animateCounters(entry.target);
+                            const index = Array.from(wrappers).indexOf(entry.target) + 1;
+                            hud.innerText = `DOSSIER 0${index} // 03`;
+                        } else {
+                            entry.target.classList.remove('active-focus');
+                            const textEl = entry.target.querySelector('.scramble-text');
+                            if(textEl) textEl.innerText = "[ EN ATTENTE DE DÉCRYPTAGE ]";
+                            entry.target.querySelectorAll('.stat-val').forEach(v => v.innerText = "0%");
+                        }
+                    });
+                }, { root: null, rootMargin: '0px -20% 0px -20%', threshold: 0.6 });
+                wrappers.forEach(wrapper => observer.observe(wrapper));
+            }
+        });
+
+        // ====================================================================
+        // 🚀 LE MOTEUR QUANTIQUE "SMART PERFORMANCE" (Low End Ready)
+        // ====================================================================
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
-        let stars = [];
-        let meteors = [];
+        let stars = []; let comets = []; let stardusts = []; let ripples = [];
+        
+        let globalMouseX = window.innerWidth / 2;
+        let globalMouseY = window.innerHeight / 2;
+        let lastMouseX = globalMouseX;
+        let lastMouseY = globalMouseY;
+        const cursor = document.getElementById('custom-cursor');
+        
+        // DÉTECTION DES PERFORMANCES (Mobile vs PC)
+        const isMobile = window.innerWidth <= 768;
+        const MAX_STARS = isMobile ? 80 : 200;
+        const MAX_COMETS = isMobile ? 1 : 2;
+        const MAX_STARDUST = isMobile ? 50 : 250; // Limite stricte pour éviter les crashs RAM
 
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.onresize = resize; resize();
 
-        class Star {
-            constructor() { this.reset(); }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.5;
-                this.speed = Math.random() * 0.2;
-                this.alpha = Math.random();
+        // 1. Capter la souris (Parallax + Traînée de Poussière Cinétique)
+        window.addEventListener('mousemove', e => { 
+            globalMouseX = e.clientX; globalMouseY = e.clientY;
+            cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; 
+            
+            // Calcul de la vitesse de la souris
+            let dx = globalMouseX - lastMouseX;
+            let dy = globalMouseY - lastMouseY;
+            let speed = Math.sqrt(dx*dx + dy*dy);
+            
+            // Si on bouge la souris très vite, on lâche plein de stardust
+            if (speed > 15 && stardusts.length < MAX_STARDUST) {
+                let amount = Math.min(Math.floor(speed / 10), 6); // Max 6 particules par frame pour pas exploser le CPU
+                for(let i=0; i<amount; i++) {
+                    const color = Math.random() > 0.5 ? '214, 47, 127' : '0, 240, 255';
+                    stardusts.push(new Stardust(globalMouseX + (Math.random()-0.5)*20, globalMouseY + (Math.random()-0.5)*20, color));
+                }
             }
-            update() { this.y += this.speed; if (this.y > canvas.height) this.y = 0; }
-            draw() { ctx.fillStyle = `rgba(212, 175, 55, ${this.alpha})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
+            lastMouseX = globalMouseX;
+            lastMouseY = globalMouseY;
+        });
+
+        // 2. Capter le Clic (Onde de Choc Sonar Majeure)
+        window.addEventListener('click', e => {
+            // Empêcher l'onde de choc si on clique sur un lien ou un bouton du menu
+            if(e.target.closest('header') || e.target.closest('a')) return;
+
+            ripples.push({ x: e.clientX, y: e.clientY, radius: 0, life: 1 });
+            playShockwave(); // Lance le Bass Drop
+        });
+
+        class Star {
+            constructor() { this.reset(); this.y = Math.random() * canvas.height; }
+            reset() {
+                this.x = Math.random() * canvas.width; 
+                this.y = canvas.height + 10;
+                this.size = Math.random() * 1.5 + 0.5; 
+                this.speed = (Math.random() * 0.5 + 0.1) * this.size; 
+                this.alpha = Math.random() * 0.6 + 0.1;
+                this.parallaxFactor = this.size * 0.015;
+            }
+            update() { 
+                this.y -= this.speed; 
+                if (this.y < -10) this.reset(); 
+
+                // Interaction Physique avec l'Onde de Choc
+                ripples.forEach(r => {
+                    let dx = this.x - r.x; let dy = this.y - r.y;
+                    let dist = Math.sqrt(dx*dx + dy*dy);
+                    if (dist > 0 && Math.abs(dist - r.radius) < 60) {
+                        let force = (60 - Math.abs(dist - r.radius)) / 60;
+                        this.x += (dx / dist) * force * 8; // Expulsion violente
+                        this.y += (dy / dist) * force * 8;
+                    }
+                });
+            }
+            draw() { 
+                const offsetX = (globalMouseX - canvas.width / 2) * this.parallaxFactor;
+                const offsetY = (globalMouseY - canvas.height / 2) * this.parallaxFactor;
+                ctx.fillStyle = `rgba(240, 242, 245, ${this.alpha})`; 
+                ctx.beginPath(); ctx.arc(this.x - offsetX, this.y - offsetY, this.size, 0, Math.PI * 2); ctx.fill(); 
+            }
         }
 
-        class Meteor {
-            constructor() { this.reset(); }
+        class Stardust {
+            constructor(x, y, color) {
+                this.x = x; this.y = y; this.color = color;
+                this.size = Math.random() * 1.5 + 0.5;
+                this.vx = (Math.random() - 0.5) * 4; 
+                this.vy = (Math.random() - 0.5) * 4; 
+                this.life = 1;
+                this.decay = Math.random() * 0.04 + 0.02; 
+            }
+            update() { this.x += this.vx; this.y += this.vy; this.life -= this.decay; }
+            draw() {
+                ctx.fillStyle = `rgba(${this.color}, ${this.life})`;
+                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        class Comet {
+            constructor() { this.reset(); this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; }
             reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = -100;
-                this.length = Math.random() * 80 + 20;
-                this.speed = Math.random() * 10 + 5;
+                this.x = canvas.width + Math.random() * 800; 
+                this.y = Math.random() * (canvas.height * 0.8) - 200;
+                this.size = Math.random() * 2 + 1.5;
+                this.speedX = -(Math.random() * 40 + 25); 
+                this.speedY = Math.random() * 15 + 5;
+                this.length = Math.random() * 400 + 150; 
+                this.color = Math.random() > 0.5 ? '0, 240, 255' : '214, 47, 127';
+                this.alpha = Math.random() * 0.5 + 0.5;
             }
             update() {
-                this.x -= this.speed;
-                this.y += this.speed;
-                if (this.y > canvas.height || this.x < -100) this.reset();
+                this.x += this.speedX; this.y += this.speedY; 
+
+                // Lâche énormément de poussière
+                if (stardusts.length < MAX_STARDUST) {
+                    for(let i=0; i<3; i++) {
+                        stardusts.push(new Stardust(this.x + (Math.random()-0.5)*30, this.y + (Math.random()-0.5)*30, this.color));
+                    }
+                }
+
+                if (this.x < -this.length || this.y > canvas.height + this.length) {
+                    // ÉVÉNEMENT RARE (Env. 1 comète toutes les 5-10 secondes)
+                    if(Math.random() > 0.998) this.reset(); 
+                }
             }
             draw() {
-                ctx.strokeStyle = 'rgba(212, 175, 55, 0.4)';
-                ctx.lineWidth = 1;
-                ctx.beginPath();
-                ctx.moveTo(this.x, this.y);
-                ctx.lineTo(this.x + this.length, this.y - this.length);
-                ctx.stroke();
+                const grad = ctx.createLinearGradient(this.x, this.y, this.x - this.speedX * 4, this.y - this.speedY * 4);
+                grad.addColorStop(0, `rgba(${this.color}, ${this.alpha})`);
+                grad.addColorStop(1, `rgba(${this.color}, 0)`);
+                
+                ctx.beginPath(); ctx.strokeStyle = grad; ctx.lineWidth = this.size; ctx.lineCap = "round";
+                ctx.moveTo(this.x, this.y); ctx.lineTo(this.x - this.speedX * 4, this.y - this.speedY * 4); ctx.stroke();
+                
+                ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2); ctx.fill();
             }
         }
 
-        for (let i = 0; i < 200; i++) stars.push(new Star());
-        for (let i = 0; i < 3; i++) meteors.push(new Meteor());
+        // INIT DU MOTEUR (Sécurisé pour Mobile)
+        for (let i = 0; i < MAX_STARS; i++) stars.push(new Star()); 
+        for (let i = 0; i < MAX_COMETS; i++) comets.push(new Comet()); 
 
-        function animate() {
+        function animateGalactic() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
             stars.forEach(s => { s.update(); s.draw(); });
-            meteors.forEach(m => { m.update(); m.draw(); });
-            requestAnimationFrame(animate);
-        }
-        animate();
+            comets.forEach(c => { c.update(); c.draw(); });
 
-        // --- STABLE TILT ENGINE ---
-        function handleTilt(e, card) {
-            if (window.innerWidth <= 768) return; 
-            const rect = card.getBoundingClientRect();
-            const x = (e.clientX - rect.left) / rect.width - 0.5;
-            const y = (e.clientY - rect.top) / rect.height - 0.5;
-            card.style.transform = `rotateY(${x * 30}deg) rotateX(${y * -30}deg)`;
-        }
+            // Nettoyage de la RAM automatique pour les stardusts
+            for (let i = stardusts.length - 1; i >= 0; i--) {
+                let p = stardusts[i]; p.update(); p.draw();
+                if (p.life <= 0) stardusts.splice(i, 1); 
+            }
+            // Sécurité absolue : si le tableau déborde, on coupe les plus vieux
+            if(stardusts.length > MAX_STARDUST) { stardusts.splice(0, stardusts.length - MAX_STARDUST); }
 
-        function resetTilt(card) {
-            if (window.innerWidth <= 768) return;
-            card.style.transform = `rotateY(0deg) rotateX(0deg)`;
-        }
+            // Rendu Visuel de l'Onde de Choc
+            for (let i = ripples.length - 1; i >= 0; i--) {
+                let r = ripples[i];
+                r.radius += 25; // Expansion très rapide
+                r.life -= 0.015; // Disparition lente
+                
+                // Anneau externe Cyan Flou
+                ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(0, 240, 255, ${r.life * 0.6})`;
+                ctx.lineWidth = 5; ctx.shadowBlur = 20; ctx.shadowColor = 'rgba(0, 240, 255, 1)'; ctx.stroke();
 
-        function playSwoosh() {
-            try {
-                const context = new (window.AudioContext || window.webkitAudioContext)();
-                const osc = context.createOscillator();
-                const gain = context.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(60, context.currentTime);
-                osc.frequency.exponentialRampToValueAtTime(0.01, context.currentTime + 0.4);
-                gain.gain.setValueAtTime(0.1, context.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.001, context.currentTime + 0.4);
-                osc.connect(gain); gain.connect(context.destination);
-                osc.start(); osc.stop(context.currentTime + 0.4);
-            } catch(e) {}
+                // Anneau interne Magenta
+                ctx.beginPath(); ctx.arc(r.x, r.y, r.radius * 0.85, 0, Math.PI * 2);
+                ctx.strokeStyle = `rgba(214, 47, 127, ${r.life * 0.4})`;
+                ctx.lineWidth = 2; ctx.shadowBlur = 0; ctx.stroke(); // On reset le shadowBlur
+
+                if (r.life <= 0) ripples.splice(i, 1);
+            }
+
+            requestAnimationFrame(animateGalactic);
         }
+        animateGalactic();
     </script>
 </body>
 </html>
