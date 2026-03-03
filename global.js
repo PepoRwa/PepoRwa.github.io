@@ -49,6 +49,7 @@
         else if (path.includes('/roster')) suffix = "UNITS";
         else if (path.includes('join')) suffix = "RECRUIT";
         else if (path.includes('/contact')) suffix = "SIGNAL";
+        else if (path.includes('/partners')) suffix = "NETWORK";
 
         // 2. Détermination de la page active (Le lien souligné)
         const isHome = path === '/' || path === '/index.html';
@@ -80,6 +81,7 @@
                 <a href="/profiles/index.html" class="${getNavClass('/profiles')}">DATABASE</a>
                 <a href="/roster/index.html" class="${getNavClass('/roster')}">UNITS</a>
                 <a href="/roster/calendar.html" class="${getNavClass('/calendar')}">CALENDRIER</a>
+                <a href="/partners/index.html" class="${getNavClass('/partners')} text-[#D4AF37]">PARTNERS</a>
                 <a href="/contact/index.html" class="${getNavClass('/contact')}">SIGNAL</a>
             </nav>
 
@@ -105,7 +107,9 @@
             <a href="/profiles/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">DATABASE</a>
             <a href="/roster/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">ROSTERS</a>
             <a href="/roster/calendar.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">CALENDRIER</a>
+            <a href="/partners/index.html" class="text-2xl tracking-widest pointer-events-auto text-[#D4AF37]" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">PARTNERS</a>
             <a href="/contact/index.html" class="text-2xl tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">SIGNAL</a>
+            
         </div>
         `;
 

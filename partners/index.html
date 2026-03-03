@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GRX | Tactical Network</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="/global.js" defer></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Poppins:wght@400;500&family=Share+Tech+Mono&family=Rock+Salt&display=swap" rel="stylesheet">
+    
+<style>
+        :root { --abyss: #0B0C15; --magenta: #D62F7F; --gold: #D4AF37; }
+        body { 
+            background: var(--abyss); color: #fff; 
+            font-family: 'Poppins', sans-serif; 
+            overflow-x: hidden; min-height: 100vh; display: flex; flex-direction: column; 
+        }
+        
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+        .accent-font { font-family: 'Rock Salt', cursive; }
+        
+        canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.6; }
+
+        /* Curseurs Custom (PC uniquement) */
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
+
+        /* --- STYLES DES CARTES --- */
+        .partner-card {
+            background: rgba(26, 28, 46, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            position: relative; overflow: hidden;
+            display: flex; flex-direction: column;
+            clip-path: polygon(0 0, 100% 0, 100% calc(100% - 15px), calc(100% - 15px) 100%, 0 100%);
+        }
+        
+        .partner-card::before {
+            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px;
+            background: linear-gradient(90deg, transparent, var(--magenta), transparent);
+            transform: translateX(-100%); transition: 0.5s;
+        }
+
+        .partner-card:hover {
+            background: rgba(26, 28, 46, 0.8);
+            border-color: rgba(214, 47, 127, 0.3);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 20px rgba(214, 47, 127, 0.1);
+        }
+        .partner-card:hover::before { transform: translateX(100%); }
+
+        /* Styles Spécifiques par Tiers */
+        .tier-PRIME { border: 1px solid rgba(212, 175, 55, 0.2); background: rgba(212, 175, 55, 0.02); }
+        .tier-PRIME:hover { border-color: var(--gold); box-shadow: 0 15px 30px rgba(0,0,0,0.5), 0 0 40px rgba(212, 175, 55, 0.15); }
+        .tier-PRIME::before { background: linear-gradient(90deg, transparent, var(--gold), transparent); }
+
+        .tier-PATRON { border-style: dashed; border-color: rgba(255,255,255,0.1); }
+        .tier-PATRON:hover { border-color: #fff; }
+
+        /* Boîte Code Promo */
+        .promo-box {
+            background: repeating-linear-gradient(45deg, rgba(214,47,127,0.05), rgba(214,47,127,0.05) 5px, transparent 5px, transparent 10px);
+            border: 1px dashed var(--magenta);
+            transition: 0.3s; cursor: pointer;
+        }
+        .promo-box:hover { background: rgba(214,47,127,0.15); box-shadow: 0 0 15px rgba(214,47,127,0.3); transform: scale(1.02); }
+
+        /* --- CARROUSEL MOBILE INTELLIGENT --- */
+        .mobile-carousel {
+            display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; padding-bottom: 20px;
+        }
+        .mobile-carousel::-webkit-scrollbar { display: none; }
+        .carousel-item { scroll-snap-align: start; flex: 0 0 85vw; margin-right: 15px; }
+        
+        @media (min-width: 768px) {
+            .mobile-carousel { display: grid; overflow-x: visible; padding-bottom: 0; gap: 24px; }
+            .mobile-carousel.grid-2 { grid-template-columns: repeat(2, 1fr); }
+            .mobile-carousel.grid-3 { grid-template-columns: repeat(3, 1fr); }
+            .carousel-item { flex: auto; margin-right: 0; }
+        }
+
+        /* --- BOUTON REJOINDRE --- */
+        .btn-join {
+            background: var(--magenta);
+            color: white;
+            border: 1px solid transparent;
+            transition: all 0.3s ease;
+        }
+        .btn-join:hover {
+            background: rgba(255, 255, 255, 0.05); /* Fond presque transparent au lieu de full blanc */
+            color: var(--magenta);
+            border-color: var(--magenta);
+            box-shadow: inset 0 0 15px rgba(214, 47, 127, 0.2), 0 0 20px rgba(214, 47, 127, 0.4);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="custom-cursor"></div>
+    <canvas id="starCanvas"></canvas>
+
+    <main class="flex-1 w-full max-w-7xl mx-auto px-4 md:px-8 py-24 relative z-10 mt-10 lg:mt-0">
+        
+        <header class="text-center mb-16 lg:mb-24">
+            <div class="inline-block border border-magenta/30 bg-magenta/5 px-6 py-2 mb-6">
+                <span class="tech-font text-[10px] text-magenta tracking-[0.4em] uppercase animate-pulse">// TACTICAL_ALLIANCES</span>
+            </div>
+            <h1 class="title-font text-5xl lg:text-7xl font-black italic tracking-tighter uppercase drop-shadow-lg">
+                Gowrax_<span class="text-magenta">Network</span>
+            </h1>
+            <p class="font-poppins text-xs lg:text-sm text-gray-400 mt-4 max-w-2xl mx-auto leading-relaxed">
+                Le déploiement de nos unités sur le terrain est rendu possible grâce au soutien tactique et financier de nos partenaires. Rejoignez l'alliance.
+            </p>
+        </header>
+
+        <div id="partners-container" class="space-y-16 lg:space-y-24">
+            <div class="text-center py-20 tech-font text-gray-500 animate-pulse">
+                DÉCRYPTAGE DU RÉSEAU SATELLITE...
+            </div>
+        </div>
+
+        <div class="mt-20 text-center border-t border-white/5 pt-16">
+            <h3 class="accent-font text-xl text-white mb-6 tracking-wide opacity-80">Vous souhaitez intégrer le réseau ?</h3>
+            <a href="/contact/index.html" class="btn-join inline-block font-bold title-font text-lg px-10 py-4 uppercase tracking-widest shadow-[0_0_20px_rgba(214,47,127,0.3)]">
+                Initier un protocole Business
+            </a>
+        </div>
+
+    </main>
+
+    <footer class="mt-auto py-10 border-t border-white/5 w-full text-center tech-font text-[9px] text-gray-600 tracking-[0.5em] uppercase z-10 bg-black/40 backdrop-blur-md">
+        GOWRAX BUSINESS & RELATIONS // FORGING THE FUTURE // 2026
+    </footer>
+
+    <script>
+        // Fonction utilitaire de copie
+        function copyPromo(code) {
+            navigator.clipboard.writeText(code).then(() => {
+                alert(`Code promo [${code}] copié dans le presse-papier !`);
+            });
+        }
+
+        async function loadPartners() {
+            // Sécurité : on attend global.js
+            if (typeof window._supabaseGlobal === 'undefined') {
+                setTimeout(loadPartners, 50);
+                return;
+            }
+
+            try {
+                const { data: partners, error } = await window._supabaseGlobal
+                    .from('partners')
+                    .select('*')
+                    .eq('is_active', true)
+                    .order('priority_level', { ascending: false })
+                    .order('created_at', { ascending: false });
+
+                if (error) throw error;
+
+                const container = document.getElementById('partners-container');
+                container.innerHTML = '';
+
+                // Séparation par Tiers
+                const primes = partners.filter(p => p.tier === 'PRIME');
+                const officials = partners.filter(p => p.tier === 'OFFICIAL');
+                const affiliates = partners.filter(p => p.tier === 'AFFILIATE');
+                const patrons = partners.filter(p => p.tier === 'PATRON');
+
+                // Rendu PRIME (Gros affichage)
+                if (primes.length > 0) {
+                    let html = `<div class="mb-4 tech-font text-[10px] text-gold tracking-[0.3em] uppercase border-b border-gold/20 pb-2">// PRIME_OPERATORS</div>`;
+                    html += `<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">`;
+                    primes.forEach(p => html += createCard(p));
+                    html += `</div>`;
+                    container.innerHTML += html;
+                }
+
+                // Rendu OFFICIAL (Grille moyenne / Carrousel mobile)
+                if (officials.length > 0) {
+                    let html = `<div class="mt-16 mb-4 tech-font text-[10px] text-white tracking-[0.3em] uppercase border-b border-white/10 pb-2">// OFFICIAL_LINKS</div>`;
+                    html += `<div class="mobile-carousel grid-2">`;
+                    officials.forEach(p => html += createCard(p));
+                    html += `</div>`;
+                    container.innerHTML += html;
+                }
+
+                // Rendu AFFILIATE (Petite grille / Carrousel mobile)
+                if (affiliates.length > 0) {
+                    let html = `<div class="mt-16 mb-4 tech-font text-[10px] text-gray-500 tracking-[0.3em] uppercase border-b border-white/5 pb-2">// AFFILIATES & SUPPORT</div>`;
+                    html += `<div class="mobile-carousel grid-3">`;
+                    affiliates.forEach(p => html += createCard(p));
+                    html += `</div>`;
+                    container.innerHTML += html;
+                }
+
+                // Rendu PATRONS (Liste Mécènes)
+                if (patrons.length > 0) {
+                    let html = `<div class="mt-16 mb-4 tech-font text-[10px] text-magenta tracking-[0.3em] uppercase border-b border-magenta/20 pb-2">// WALL_OF_HONOR (MÉCÈNES)</div>`;
+                    html += `<div class="flex flex-wrap gap-4">`;
+                    patrons.forEach(p => {
+                        html += `
+                        <div class="partner-card tier-PATRON p-4 flex items-center gap-4 w-full md:w-auto md:min-w-[300px]">
+                            <img src="${p.logo_url}" class="w-10 h-10 object-contain rounded-full border border-white/10" onerror="this.style.display='none'">
+                            <div>
+                                <h4 class="title-font font-bold text-lg leading-none tracking-wider">${p.name}</h4>
+                                ${p.description ? `<p class="text-[10px] text-gray-400 mt-1">${p.description}</p>` : ''}
+                            </div>
+                        </div>`;
+                    });
+                    html += `</div>`;
+                    container.innerHTML += html;
+                }
+
+                if (partners.length === 0) {
+                    container.innerHTML = `<div class="text-center tech-font text-gray-500 border border-white/5 bg-white/5 p-10">AUCUNE ALLIANCE ACTIVE ENREGISTRÉE.</div>`;
+                }
+
+            } catch (err) {
+                console.error("Erreur de liaison:", err);
+                document.getElementById('partners-container').innerHTML = `<div class="text-center tech-font text-red-500 p-10 border border-red-500/20 bg-red-500/5">ERREUR SYSTEME: IMPOSSIBLE DE CHARGER LE RESEAU.</div>`;
+            }
+        }
+
+        // Générateur de Carte Partenaire
+        function createCard(p) {
+            const isPrime = p.tier === 'PRIME';
+            const tierClass = `tier-${p.tier}`;
+            
+            // Gestion du lien externe
+            const linkTag = p.website_url ? `<a href="${p.website_url}" target="_blank" class="absolute inset-0 z-0"></a>` : '';
+            
+            // Bloc Avantage / Code Promo
+            let promoHtml = '';
+            if (p.promo_code || p.perk_desc) {
+                promoHtml = `
+                <div class="mt-auto pt-6 relative z-10">
+                    ${p.perk_desc ? `<div class="text-[10px] font-bold text-magenta mb-2 uppercase tracking-widest">${p.perk_desc}</div>` : ''}
+                    ${p.promo_code ? `
+                    <div onclick="copyPromo('${p.promo_code}')" class="promo-box flex justify-between items-center p-3" title="Cliquer pour copier">
+                        <span class="tech-font text-xs text-gray-300">CODE:</span>
+                        <span class="tech-font text-lg font-bold text-white tracking-widest">${p.promo_code}</span>
+                        <svg class="w-4 h-4 text-magenta" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path></svg>
+                    </div>` : ''}
+                </div>`;
+            }
+
+            return `
+            <div class="carousel-item partner-card ${tierClass} p-6 lg:p-8 group">
+                ${linkTag}
+                
+                <div class="flex items-start justify-between mb-6 relative z-10 pointer-events-none">
+                    <div class="h-16 lg:h-20 flex-shrink-0 bg-white/5 p-2 border border-white/10 rounded">
+                        <img src="${p.logo_url}" class="h-full w-auto object-contain drop-shadow-lg" alt="${p.name}" onerror="this.style.display='none'">
+                    </div>
+                    ${p.website_url ? `
+                    <div class="text-gray-500 group-hover:text-white transition">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path></svg>
+                    </div>` : ''}
+                </div>
+                
+                <div class="relative z-10 pointer-events-none mb-6">
+                    <h3 class="title-font text-3xl ${isPrime ? 'text-gold lg:text-4xl' : 'text-white'} font-bold uppercase tracking-tight leading-none mb-3">
+                        ${p.name}
+                    </h3>
+                    ${p.description ? `<p class="font-poppins text-xs text-gray-400 leading-relaxed">${p.description}</p>` : ''}
+                </div>
+
+                ${promoHtml}
+            </div>
+            `;
+        }
+
+        // CANVAS: ÉTOILES
+        // CANVAS: ÉTOILES + ÉTOILES FILANTES
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+        let stars = [];
+        let shootingStars = [];
+        
+        function initStars() {
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            stars = []; 
+            for(let i=0; i<80; i++) stars.push({
+                x: Math.random() * canvas.width, 
+                y: Math.random() * canvas.height, 
+                s: Math.random() * 1.2, 
+                op: Math.random()
+            });
+        }
+
+        function createShootingStar() { 
+            shootingStars.push({
+                x: Math.random() * canvas.width, 
+                y: -20, 
+                speed: Math.random() * 8 + 4, 
+                len: Math.random() * 80 + 40, 
+                op: 1
+            }); 
+        }
+        
+        function animate() {
+            ctx.clearRect(0,0,canvas.width, canvas.height); 
+            
+            // Étoiles de fond
+            ctx.fillStyle = "rgba(255,255,255,0.3)";
+            stars.forEach(s => { 
+                ctx.globalAlpha = s.op; 
+                ctx.fillRect(s.x, s.y, s.s, s.s); 
+                s.op += (Math.random() - 0.5) * 0.05;
+                if(s.op > 1) s.op = 1; if(s.op < 0) s.op = 0;
+            });
+
+            // Étoiles filantes
+            ctx.globalAlpha = 1;
+            shootingStars.forEach((ss, i) => {
+                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.op})`; 
+                ctx.lineWidth = 1.5; 
+                ctx.beginPath();
+                ctx.moveTo(ss.x, ss.y); 
+                ctx.lineTo(ss.x - ss.len, ss.y + ss.len); 
+                ctx.stroke();
+                ss.x -= ss.speed; ss.y += ss.speed; 
+                ss.op -= 0.02; 
+                if(ss.op <= 0) shootingStars.splice(i, 1);
+            });
+
+            if(Math.random() < 0.05) createShootingStar();
+            requestAnimationFrame(animate);
+        }
+        
+        window.addEventListener('resize', initStars); 
+        initStars(); animate();
+
+        // CURSEUR CUSTOM
+        const cursor = document.getElementById('custom-cursor');
+        window.addEventListener('mousemove', e => {
+            cursor.style.left = e.clientX + 'px'; 
+            cursor.style.top = e.clientY + 'px'; 
+        });
+
+        // LANCEMENT
+        document.addEventListener('DOMContentLoaded', loadPartners);
+    </script>
+</body>
+</html>
