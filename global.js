@@ -243,7 +243,7 @@
                     ${buttonHTML}
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-top:20px;">
                         <div style="display:flex; align-items:center; gap:10px;">
-                            <img src="${LOGO_URL}" style="width:24px; height:24px; filter: grayscale(100%) brightness(200%);" alt="CEO">
+                            <img src="https://cdn.discordapp.com/avatars/733320797245931520/f034acc53b801d76ec0ced158870811c.png?size=1024" style="width:24px; height:24px; filter: grayscale(100%) brightness(200%);" alt="CEO">
                             <div style="font-family:'Share Tech Mono', monospace;">
                                 <span style="display:block; font-size:12px; color:#D62F7F; font-weight:bold; text-transform:uppercase;">Crazzynel</span>
                                 <span style="display:block; font-size:9px; color:#666; text-transform:uppercase; font-style:italic;">Commanding Officer</span>
