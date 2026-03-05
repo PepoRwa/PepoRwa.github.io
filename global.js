@@ -43,7 +43,7 @@
         else if (path.includes('/profiles')) suffix = "DATABASE";
         else if (path.includes('/roster/fortnite')) suffix = "UNIT";
         else if (path.includes('/roster/rl')) suffix = "SOCAR";
-        else if (path.includes('/roster/valorant')) suffix = "UNITS";
+        else if (path.includes('/roster/valorant')) suffix = "VALORANT";
         else if (path.includes('/roster/cs2')) suffix = "TACTICAL";
         else if (path.includes('/roster/calendar')) suffix = "SCHEDULE";
         else if (path.includes('/roster')) suffix = "UNITS";

@@ -3,327 +3,528 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRX VALORANT | Dossiers du Personnel</title>
+    <title>GOWRAX VALORANT | Effectifs & Roster</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/global.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;800&family=Poppins:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
     <style>
-        :root { --abyss: #0B0C15; --void: #1A1C2E; --magenta: #D62F7F; --gold: #D4AF37; }
+        :root { 
+            --purple: #6F2DBD; 
+            --void: #1A1C2E; 
+            --magenta: #D62F7F; 
+            --abyss: #050508; 
+            --starlight: #F0F2F5; 
+            --cyan: #00F0FF;
+            --gold: #D4AF37;
+        }
+        
+        html { scroll-behavior: smooth; }
         body { 
-            background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; 
-            overflow-x: hidden; -webkit-font-smoothing: antialiased;
-            -moz-osx-font-smoothing: grayscale;
+            background-color: var(--abyss); 
+            color: var(--starlight); 
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden; 
+            margin: 0; 
+            min-height: 100vh;
         }
 
-        /* Navigation Standard */
-        .nav-link { transition: 0.4s; letter-spacing: 0.2em; position: relative; opacity: 0.6; }
-        .nav-link:hover { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); opacity: 1 !important; }
-        
-        #mobile-nav { 
-            display: none;
-            background: rgba(2, 2, 5, 0.98);
-            backdrop-filter: blur(20px);
-        }
-        #mobile-nav.active { display: flex; }
+        /* NOTE DEV : L'ancienne ligne qui tuait le header global.js a été SUPPRIMÉE ici !
+           Le menu s'affichera donc normalement.
+        */
 
         .tech-font { font-family: 'Share Tech Mono', monospace; }
-        .accent-font { font-family: 'Rock Salt', cursive; }
         .title-font { font-family: 'Rajdhani', sans-serif; }
 
-        .slot-card { 
-            border: 1px solid rgba(214, 47, 127, 0.1); 
-            background: rgba(26, 28, 46, 0.4); 
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 10;
-        }
-        .slot-filled { border-left: 3px solid var(--magenta); background: linear-gradient(90deg, rgba(214, 47, 127, 0.05) 0%, transparent 100%); }
-        .slot-empty { border: 1px dashed rgba(214, 47, 127, 0.2); opacity: 0.5; }
-        .slot-empty:hover { opacity: 1; border-color: var(--magenta); }
+        /* --- BACKGROUND ÉTOILÉ (Z-INDEX POSITIF) --- */
+        #bg-base { position: fixed; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(26,28,46,0.8) 0%, var(--abyss) 100%); z-index: 1; pointer-events: none; }
+        #bg-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+        .film-grain { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.04; mix-blend-mode: overlay; z-index: 3; pointer-events: none; }
 
-        .slot-gold { 
-            border: 1px solid var(--gold); 
-            background: linear-gradient(135deg, rgba(212, 175, 55, 0.1) 0%, transparent 100%); 
-            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
-        }
-        .text-gold { color: var(--gold); text-shadow: 0 0 10px rgba(212, 175, 55, 0.5); }
-
-        .coach-banner {
-            background: linear-gradient(45deg, var(--void), var(--abyss));
-            border: 1px solid var(--magenta);
-            box-shadow: 0 0 15px rgba(214, 47, 127, 0.1);
+        /* Conteneur Principal (Ajusté pour le header global) */
+        #main-wrapper { 
+            position: relative; z-index: 10; 
+            max-width: 1400px; margin: 0 auto; 
+            padding: 40px 20px 100px 20px; /* Padding réduit en haut car le global.js prend déjà de la place */
         }
 
-        /* CURSEUR HAUTE PRIORITÉ */
-        #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
-        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
-        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
+        /* --- HEADER & PRÉSENTATION GLOBALE --- */
+        .page-header {
+            text-align: center; margin-bottom: 3rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+        .global-lore {
+            max-width: 800px; margin: 2rem auto 0 auto;
+            background: rgba(26, 28, 46, 0.4); border: 1px solid rgba(255,255,255,0.05);
+            border-left: 2px solid var(--cyan); padding: 30px;
+            backdrop-filter: blur(10px); text-align: left;
+        }
+
+        /* --- BARRE DE NAVIGATION TACTIQUE (STICKY) --- */
+        #sticky-nav {
+            position: -webkit-sticky;
+            position: sticky; 
+            top: 0; /* Colle parfaitement en haut de l'écran lors du scroll */
+            z-index: 90;
+            background: rgba(5,5,8,0.95);
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding: 15px 20px;
+            margin: 0 -20px 4rem -20px; 
+            display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+        #sticky-nav::-webkit-scrollbar { display: none; }
+        @media (min-width: 1024px) {
+            #sticky-nav { justify-content: center; padding: 15px 0; }
+        }
+
+        .nav-anchor {
+            background: rgba(26,28,46,0.5); border: 1px solid rgba(255,255,255,0.1);
+            color: rgba(255,255,255,0.6); font-family: 'Share Tech Mono', monospace;
+            font-size: 10px; text-transform: uppercase; letter-spacing: 2px;
+            padding: 10px 15px; border-radius: 2px; white-space: nowrap;
+            cursor: pointer; transition: 0.3s;
+        }
+        .nav-anchor:hover, .nav-anchor.active {
+            color: white; border-color: var(--nav-color, var(--cyan));
+            background: rgba(255,255,255,0.05); text-shadow: 0 0 10px var(--nav-color, var(--cyan));
+        }
+
+        /* --- SÉPARATEURS DE SECTIONS --- */
+        .roster-section { scroll-margin-top: 80px; margin-bottom: 6rem; }
         
-        @keyframes pulse-neon { 0% { opacity: 1; } 50% { opacity: 0.3; } 100% { opacity: 1; } }
-        .recruiting-blink { animation: pulse-neon 2s infinite; }
+        .section-header { display: flex; align-items: center; gap: 20px; margin-bottom: 2rem; }
+        .section-line { flex-grow: 1; height: 1px; background: linear-gradient(90deg, rgba(255,255,255,0.1), transparent); }
+        .section-title { font-family: 'Rajdhani', sans-serif; font-size: 3rem; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; }
 
-        #recruitment-popup {
-            position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%);
-            z-index: 1000; width: 95%; max-width: 450px;
-            background: rgba(11, 12, 21, 0.95); border: 1px solid var(--magenta);
-            backdrop-filter: blur(12px); box-shadow: 0 0 40px rgba(214, 47, 127, 0.4);
-            display: flex; flex-direction: column; align-items: center; padding: 20px;
-            text-align: center;
-        }
-        .discord-btn { background: var(--magenta); color: white; padding: 12px 30px; margin-top: 15px; transition: 0.3s; text-decoration: none; box-shadow: 0 0 15px var(--magenta); }
-        .discord-btn:hover { transform: scale(1.05) rotate(-1deg); background: #fff; color: var(--magenta); }
+        /* --- GRILLES DE CARTES --- */
+        .roster-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px; }
 
-        .stream-btn {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: #6441a5; color: white; font-size: 9px;
-            padding: 4px 10px; border-radius: 2px; margin-top: 10px;
-            transition: 0.3s; animation: pulse-twitch 2s infinite;
+        @media (min-width: 1024px) {
+            .roster-grid:hover .player-card { opacity: 0.3; filter: blur(2px); transform: scale(0.98); }
+            .roster-grid .player-card:hover { opacity: 1; filter: blur(0); transform: scale(1.05) translateY(-10px); z-index: 20; box-shadow: 0 30px 50px rgba(0,0,0,0.8); }
         }
 
-        .bar { width: 2px; height: 8px; background: var(--magenta); transition: 0.3s; opacity: 0.3; }
-        .bar.active { animation: audio-pulse 0.5s infinite alternate; opacity: 1; }
-        @keyframes audio-pulse { from { height: 4px; } to { height: 12px; } }
-        @keyframes pulse-twitch { 0% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0.7); } 70% { box-shadow: 0 0 0 10px rgba(100, 65, 165, 0); } 100% { box-shadow: 0 0 0 0 rgba(100, 65, 165, 0); } }
-    
-        #audio-init-prompt { position: fixed; top: 100px; right: 10px; z-index: 1000; }
+        /* --- LES CARTES JOUEURS --- */
+        .player-card {
+            background: linear-gradient(180deg, rgba(26,28,46,0.6) 0%, rgba(11,12,21,0.8) 100%);
+            border: 1px solid rgba(255,255,255,0.05); border-top: 1px solid rgba(255,255,255,0.2);
+            padding: 30px 20px; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden; min-height: 280px; border-radius: 4px;
+        }
+        .player-card::before {
+            content: ''; position: absolute; inset: 0; opacity: 0; transition: 0.5s;
+            background: radial-gradient(circle at top, var(--role-color, rgba(255,255,255,0.1)) 0%, transparent 70%);
+        }
+        .player-card:hover::before { opacity: 0.2; }
+        .player-card:hover { border-color: var(--role-color, var(--cyan)); }
+
+        .role-icon-container { width: 70px; height: 70px; margin-bottom: 25px; position: relative; display: flex; align-items: center; justify-content: center; }
+        .role-glow {
+            position: absolute; inset: 0; border-radius: 50%;
+            background: var(--role-color, var(--cyan)); opacity: 0.15; filter: blur(15px);
+            transition: 0.4s; animation: pulse-glow 3s infinite alternate;
+        }
+        .player-card:hover .role-glow { opacity: 0.5; filter: blur(20px); transform: scale(1.2); }
+        .role-svg { width: 35px; height: 35px; fill: var(--role-color, #fff); transition: 0.4s; z-index: 2; opacity: 0.8; }
+        .player-card:hover .role-svg { opacity: 1; transform: scale(1.1); filter: drop-shadow(0 0 15px var(--role-color)); }
+
+        .player-role { font-family: 'Share Tech Mono', monospace; font-size: 10px; letter-spacing: 3px; color: var(--role-color, #aaa); margin-bottom: 8px; text-transform: uppercase; border: 1px solid rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 2px; }
+        .player-name { font-family: 'Rajdhani', sans-serif; font-size: 2.2rem; font-weight: 800; text-transform: uppercase; line-height: 1; transition: 0.4s; letter-spacing: 1px; color: white; text-shadow: 0 0 10px rgba(0,0,0,0.3); }
+        .player-card:hover .player-name { letter-spacing: 3px; }
+        .player-sub { font-family: 'Share Tech Mono', monospace; font-size: 9px; color: #888; margin-top: 10px; }
+
+        .slot-vacant { border: 1px dashed rgba(255,255,255,0.1); background: rgba(0,0,0,0.2); border-top: 1px dashed rgba(255,255,255,0.1); }
+        .slot-vacant:hover { border-style: solid; background: rgba(255,255,255,0.02); }
+        .slot-vacant .role-svg { fill: #444; }
+        .slot-vacant .role-glow { display: none; }
+        .slot-vacant .player-name { color: #666; font-size: 1.6rem; }
+
+        /* Bouton Recrutement */
+        .btn-recruit {
+            display: inline-block; padding: 15px 40px; background: rgba(26,28,46,0.6);
+            border: 1px solid var(--section-color, var(--cyan)); color: white; font-family: 'Share Tech Mono', monospace;
+            font-size: 11px; text-transform: uppercase; letter-spacing: 3px; transition: 0.3s;
+            text-decoration: none; margin-top: 2rem;
+        }
+        .btn-recruit:hover { background: var(--section-color, var(--cyan)); box-shadow: 0 0 20px rgba(255,255,255,0.2); transform: translateY(-2px); }
+
+        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes pulse-glow { from { transform: scale(0.9); } to { transform: scale(1.1); } }
+
+        /* --- AUDIO UI --- */
+        .bar { width: 2px; height: 8px; background: rgba(255,255,255,0.3); transition: 0.3s; }
+        .bar.active { animation: audio-pulse 0.5s infinite alternate; background: var(--cyan); box-shadow: 0 0 5px var(--cyan); }
+        @keyframes audio-pulse { from { height: 4px; } to { height: 14px; } }
+
+        /* --- CURSEUR --- */
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid rgba(0,240,255,0.3); position: fixed; pointer-events: none !important; z-index: 1000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--cyan); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--cyan);}
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
+
     </style>
 </head>
-<body class="bg-[#050508]">
+<body>
 
+    <div id="bg-base"></div>
+    <canvas id="bg-canvas"></canvas>
+    <div class="film-grain"></div>
+    <div id="yt-player-container" style="position:absolute; top:-9999px; z-index:0;"><div id="yt-player"></div></div>
     <div id="custom-cursor"></div>
-    <canvas id="starCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
 
-    <div id="audio-init-prompt" class="tech-font text-[8px] text-magenta/50 tracking-widest uppercase animate-pulse">
-        [ Cliquez pour synchroniser l'audio ]
-    </div>
-
-    <div id="yt-player-container" style="position:absolute; top:-9999px;"><div id="yt-player"></div></div>
-
-    <div id="recruitment-popup">
-        <span class="tech-font text-magenta text-[10px] tracking-[0.4em] uppercase">Alerte // Candidature_Ouverte</span>
-        <p class="title-font text-xl md:text-2xl font-bold mt-1 tracking-tight">REJOINS L'UNITÉ GOWRAX</p>
-        <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="discord-btn accent-font text-sm">Postuler sur Discord</a>
-        <button onclick="this.parentElement.style.display='none'" class="text-[8px] tech-font text-gray-600 mt-4 hover:text-white uppercase tracking-widest">[ Fermer ]</button>
-    </div>
-
-    <div class="relative z-10 p-4 md:p-12 max-w-7xl mx-auto pb-32">
-        <header class="mb-8 md:mb-12 border-b border-magenta/20 pb-6 md:pb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
-            <div>
-                <span class="tech-font text-magenta text-[8px] md:text-[10px] tracking-[0.5em] mb-2 block uppercase">Accès Sécurisé // Archives GRX</span>
-                <h1 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter italic leading-none">Valorant_<span class="text-magenta">Unité</span></h1>
-            </div>
-        </header>
-
-        <section class="mb-12 md:mb-20">
-            <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 tracking-widest uppercase">// Commandement_Tactique</h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
-                <div class="coach-banner p-6 md:p-8 rounded-sm relative overflow-hidden">
-                    <div class="flex items-center gap-4 md:gap-6">
-                        <div class="h-12 w-12 md:h-16 md:w-16 bg-magenta/20 border border-magenta flex items-center justify-center title-font text-2xl md:text-3xl font-bold text-magenta shadow-[0_0_15px_rgba(214,47,127,0.3)]">S</div>
-                        <div>
-                            <span class="tech-font text-magenta text-[8px] md:text-[10px] tracking-[0.3em]">STRATÈGE_EN_CHEF</span>
-                            <h2 class="title-font text-3xl md:text-4xl font-bold uppercase tracking-tight">SILVADA</h2>
-                            <div class="flex flex-wrap gap-2 md:gap-3 mt-2">
-                                <span class="bg-magenta text-white text-[8px] md:text-[9px] px-2 py-0.5 tech-font">COACH OFFICIEL</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section class="mb-12 md:mb-20">
-            <div class="flex items-center gap-4 mb-6 md:mb-8">
-                <h2 class="tech-font text-magenta text-xs md:text-sm tracking-widest uppercase">// Escouade_Élite</h2>
-                <div class="h-px flex-1 bg-magenta/10"></div>
-                <span class="tech-font text-[8px] md:text-[10px] text-gray-600 uppercase">02 / 10 Slots</span>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 md:gap-4">
-                <div class="slot-card slot-filled p-4 md:p-6">
-                    <span class="tech-font text-[8px] md:text-[9px] text-gray-500 uppercase">Id_01</span>
-                    <h3 class="title-font text-xl md:text-2xl font-bold mt-1">NATI</h3>
-                    <p class="accent-font text-magenta text-[9px] md:text-[10px] mt-2">Opérateur Élite</p>
-                </div>
-                <div class="slot-card slot-filled p-4 md:p-6">
-                    <span class="tech-font text-[8px] md:text-[9px] text-gray-500 uppercase">Id_02</span>
-                    <h3 class="title-font text-xl md:text-2xl font-bold mt-1">ADRI</h3>
-                    <p class="accent-font text-magenta text-[9px] md:text-[10px] mt-2">Unité de Choc</p>
-                </div>
-                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
-                    <span class="tech-font text-[9px] text-magenta tracking-tighter">SLOT_VACANT</span>
-                </div>
-                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
-                    <span class="tech-font text-[9px] text-magenta tracking-tighter">SLOT_VACANT</span>
-                </div>
-                <div class="slot-card slot-empty p-4 md:p-6 flex flex-col justify-center items-center recruiting-blink min-h-[100px]">
-                    <span class="tech-font text-[9px] text-magenta tracking-tighter">SLOT_VACANT</span>
-                </div>
-            </div>
-        </section>
-
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-16">
-            <section>
-                <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Unités_de_Front</h3>
-                <div class="space-y-4">
-                    <div class="slot-card slot-gold p-4 md:p-5 relative overflow-hidden">
-                        <span class="tech-font text-gold text-[8px] tracking-[0.3em] uppercase block mb-1">FOUNDER_TRYHARDEUSE</span>
-                        <h4 class="title-font text-xl md:text-2xl font-bold text-gold uppercase tracking-tighter">PTITEGOW</h4>
-                        <a href="https://twitch.tv/ptitegow" target="_blank" class="stream-btn tech-font uppercase tracking-tighter">
-                            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Stream
-                        </a>
-                    </div>
-                    
-                    <div class="slot-card slot-gold p-4 md:p-5 relative overflow-hidden">
-                        <span class="tech-font text-gold text-[8px] tracking-[0.3em] uppercase block mb-1">FOUNDER_TRYHARDEUR</span>
-                        <h4 class="title-font text-xl md:text-2xl font-bold text-gold uppercase tracking-tighter">FILOUXX</h4>
-                        <a href="https://twitch.tv/filouxx_" target="_blank" class="stream-btn tech-font uppercase tracking-tighter">
-                            <span class="w-2 h-2 bg-red-500 rounded-full animate-pulse"></span> Stream
-                        </a>
-                    </div>
-
-                    <div class="slot-card slot-filled p-4 flex justify-between items-center">
-                        <h4 class="title-font text-lg md:text-xl font-bold uppercase">PASTEK</h4>
-                        <span class="tech-font text-[8px] md:text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase">Opérationnel</span>
-                    </div>
-                    <div class="slot-card slot-filled p-4 flex justify-between items-center">
-                        <h4 class="title-font text-lg md:text-xl font-bold uppercase">BLACKOUTZ</h4>
-                        <span class="tech-font text-[8px] md:text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Stratège</span>
-                    </div>
-                    <div class="slot-card slot-filled p-4 flex justify-between items-center">
-                        <h4 class="title-font text-lg md:text-xl font-bold uppercase">KOKOOER44</h4>
-                        <span class="tech-font text-[8px] md:text-[9px] border border-magenta/30 text-magenta px-2 py-1 uppercase tracking-tighter">Analyste</span>
-                    </div>
-                    <div class="slot-card slot-empty p-4 border-dashed text-center recruiting-blink">
-                        <span class="tech-font text-[9px] md:text-[10px] text-magenta italic uppercase tracking-widest">Candidatures Ouvertes_</span>
-                    </div>
-                </div>
-            </section>
-
-            <section class="space-y-8 md:space-y-12">
-                <div>
-                    <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Programme_Academy</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">PINPIN7850</h4></div>
-                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">Kopoxx</h4></div>
-                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">T3tsu</h4></div>
-                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">SuKu</h4></div>
-                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">Metaphyse</h4></div>
-                        <div class="slot-card slot-filled p-4 text-center sm:text-left"><h4 class="title-font text-lg font-bold uppercase">Just1gars_fan2cookie</h4></div>
-                    </div>
-                </div>
-
-                <div>
-                    <h3 class="tech-font text-magenta text-xs mb-4 md:mb-6 uppercase tracking-widest">// Unités_de_Réserve</h3>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                        <div class="slot-card slot-filled p-4 text-center"><h4 class="title-font text-lg font-bold uppercase">GRIMACE-NRV</h4></div>
-                        <div class="slot-card slot-filled p-4 text-center"><h4 class="title-font text-lg font-bold uppercase">MR.MEGA</h4></div>
-                        <div class="slot-card slot-filled p-4 text-center sm:col-span-2"><h4 class="title-font text-lg font-bold uppercase">Dragon</h4></div>
-                    </div>
-                </div>
-            </section>
+    <main id="main-wrapper">
+        
+        <header class="page-header">
+            <span class="tech-font text-cyan text-[10px] md:text-[12px] tracking-[0.8em] uppercase block mb-4 animate-pulse">CLASSIFIÉ // ARCHIVES GOWRAX</span>
+            <h1 class="title-font text-5xl md:text-7xl font-bold uppercase italic text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                Roster <span class="text-cyan">Valorant</span>
+            </h1>
+            
+        <div class="global-lore">
+            <span class="tech-font text-cyan text-[10px] tracking-widest uppercase mb-2 block">DIVISION VALORANT // L'ORIGINE DE GOWRAX</span>
+            <p class="text-sm md:text-base text-gray-300 font-poppins leading-relaxed">
+                Bienvenue dans le cœur historique de notre structure eSport.<br><br>
+                Plus qu'une simple division, Valorant est le point de départ de notre histoire. C'est sur ces serveurs que les fondateurs se sont rencontrés et que la volonté de bâtir un projet compétitif majeur est née. Aujourd'hui, notre objectif est la domination absolue. De notre Roster Élite taillé pour les plus hauts sommets, en passant par le programme Academy qui forge l'avenir, jusqu'au Staff qui orchestre nos stratégies, voici l'intégralité des forces qui portent nos couleurs.
+            </p>
         </div>
-    </div>
 
-    <footer class="mt-20 p-6 md:p-8 border-t border-white/5 tech-font text-[8px] md:text-[9px] text-gray-600 flex flex-col md:flex-row justify-between items-center gap-4 bg-black/50 backdrop-blur-md">
-        <div class="flex flex-col md:flex-row gap-2 md:gap-4 items-center text-center">
-            <span>© 2026 GOWRAX_ESPORT. // DESIGNED_BY_CRAZZYNEL</span>
-            <span class="hidden md:inline text-magenta/40">//</span>
-            <div id="audio-terminal" class="flex items-center gap-3 cursor-pointer group" onclick="toggleAudio()">
-                <div class="flex gap-0.5 items-end h-3">
-                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
-                </div>
-                <span id="audio-status" class="text-magenta group-hover:text-white transition uppercase">[ SYNC_AUDIO_REQUIRED ]</span>
+        <nav id="sticky-nav">
+            </nav>
+
+        <div id="roster-container">
             </div>
-        </div>
-        <div class="flex gap-6 uppercase tracking-widest">
-            <span class="text-magenta animate-pulse">VAL_PROTOCOL_V4.0</span>
+
+    </main>
+
+    <footer class="fixed bottom-0 left-0 w-full p-4 tech-font text-[9px] text-gray-500 flex justify-between items-center bg-gradient-to-t from-[#050508] to-transparent pointer-events-none z-50">
+        <div class="pointer-events-auto opacity-50 tracking-widest hidden md:block">GOWRAX // DATABASE</div>
+        <div class="flex items-center gap-3 cursor-pointer group pointer-events-auto ml-auto" onclick="toggleAudio(event)">
+            <div class="flex gap-[2px] items-end h-3">
+                <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+            </div>
+            <span id="audio-status" class="group-hover:text-white transition uppercase tracking-widest animate-pulse">[ CLIQUEZ POUR SYNC AUDIO ]</span>
         </div>
     </footer>
 
     <script>
+        console.log("%c[GOWRAX OS] %cInitialisation de la Database Valorant...", "color: #00F0FF; font-weight: bold;", "color: #888;");
 
-        const cursor = document.getElementById('custom-cursor');
-        window.addEventListener('mousemove', e => { 
-            cursor.style.left = e.clientX + 'px'; 
-            cursor.style.top = e.clientY + 'px'; 
+        // ====================================================================
+        // 🗃️ DATA : LES ROSTERS
+        // ====================================================================
+        const svgs = {
+            duelist: `<svg viewBox="0 0 24 24"><path d="M12 2L15 10L22 12L15 14L12 22L9 14L2 12L9 10L12 2Z"/></svg>`, 
+            sentinel: `<svg viewBox="0 0 24 24"><path d="M12 2L4 6V11C4 16.5 7.5 21.5 12 23C16.5 21.5 20 16.5 20 11V6L12 2Z"/></svg>`, 
+            controller: `<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" stroke-width="2" fill="none" stroke="currentColor"/><path d="M12 6A6 6 0 0 0 6 12A6 6 0 0 0 12 18A6 6 0 0 0 18 12A6 6 0 0 0 12 6Z"/></svg>`, 
+            initiator: `<svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>`, 
+            founder: `<svg viewBox="0 0 24 24"><path d="M12 2L1 12h3v9h6v-6h4v6h6v-9h3L12 2z"/></svg>`, 
+            coach: `<svg viewBox="0 0 24 24"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>`,
+            unknown: `<svg viewBox="0 0 24 24"><path d="M12 2v20M2 12h20M7 7l10 10M17 7L7 17" stroke="currentColor" stroke-width="1"/></svg>` 
+        };
+
+        const rosters = [
+            {
+                id: "elite", title: "ESCADRON ÉLITE", themeColor: "var(--cyan)",
+                desc: "Le fer de lance. L'équipe première, déployée sur les tournois majeurs.",
+                recruit: true,
+                players: [
+                    { name: "NATI", role: "OPÉRATEUR", icon: svgs.duelist },
+                    { name: "ADRI", role: "OPÉRATEUR", sub: "AKA V4NDAL", icon: svgs.sentinel },
+                    { name: "SLOT 03", role: "RECHERCHE EN COURS", icon: svgs.unknown, empty: true },
+                    { name: "SLOT 04", role: "RECHERCHE EN COURS", icon: svgs.unknown, empty: true },
+                    { name: "SLOT 05", role: "RECHERCHE EN COURS", icon: svgs.unknown, empty: true }
+                ]
+            },
+            {
+                id: "gc", title: "GAME CHANGERS (FÉMININ)", themeColor: "var(--magenta)",
+                desc: "Le programme GC. Nous recherchons des joueuses prêtes à représenter nos couleurs.",
+                recruit: true,
+                players: [
+                    { name: "SLOT GC_01", role: "VACANT", icon: svgs.unknown, empty: true },
+                    { name: "SLOT GC_02", role: "VACANT", icon: svgs.unknown, empty: true },
+                    { name: "SLOT GC_03", role: "VACANT", icon: svgs.unknown, empty: true },
+                    { name: "SLOT GC_04", role: "VACANT", icon: svgs.unknown, empty: true },
+                    { name: "SLOT GC_05", role: "VACANT", icon: svgs.unknown, empty: true }
+                ]
+            },
+            {
+                id: "tryhard", title: "NOYAU TRYHARD", themeColor: "var(--gold)",
+                desc: "Le sanctuaire des fondateurs et vétérans. Puissance de feu inébranlable.",
+                recruit: true, 
+                players: [
+                    { name: "PTITEGOW", role: "FOUNDER / BOSS", icon: svgs.founder, forceColor: "var(--gold)" },
+                    { name: "FILOUXX", role: "FOUNDER / ESPORT DIR.", icon: svgs.founder, forceColor: "var(--gold)" },
+                    { name: "CRAZZYNEL", role: "FOUNDER / LEAD DEV", icon: svgs.founder, forceColor: "var(--gold)" },
+                    { name: "PASTEK", role: "OPÉRATEUR", icon: svgs.initiator, forceColor: "var(--magenta)" },
+                    { name: "BLACKOUTZ", role: "OPÉRATEUR", icon: svgs.controller, forceColor: "var(--magenta)" },
+                    { name: "KOKOOER44", role: "CASTER OFFICIEL", icon: svgs.initiator, forceColor: "var(--cyan)" }
+                ]
+            },
+            {
+                id: "academy", title: "PROGRAMME ACADEMY", themeColor: "var(--starlight)",
+                desc: "La forge des talents. Formation et perfectionnement à la méthodologie GOWRAX.",
+                recruit: true,
+                players: [
+                    { name: "PINPIN7850", role: "RECRUE", icon: svgs.duelist },
+                    { name: "KOPOXX", role: "RECRUE", icon: svgs.initiator },
+                    { name: "T3TSU", role: "RECRUE", icon: svgs.controller },
+                    { name: "SUKU", role: "RECRUE", icon: svgs.sentinel },
+                    { name: "METAPHYSE", role: "RECRUE", icon: svgs.duelist },
+                    { name: "JUST1GARS", role: "RECRUE", sub: "FAN2COOKIE", icon: svgs.controller }
+                ]
+            },
+            {
+                id: "chill", title: "ESCADRON CHILL", themeColor: "var(--starlight)",
+                desc: "Cohésion et passion, en dehors de la pression compétitive pure.",
+                recruit: true,
+                players: [
+                    { name: "GRIMACE-NRV", role: "MEMBRE", icon: svgs.duelist },
+                    { name: "MR.MEGA", role: "MEMBRE", icon: svgs.sentinel },
+                    { name: "DRAGON", role: "MEMBRE", icon: svgs.initiator }
+                ]
+            },
+            {
+                id: "staff", title: "STAFF TACTIQUE", themeColor: "var(--purple)",
+                desc: "L'encadrement stratégique et logistique des unités sur le terrain.",
+                recruit: true,
+                players: [
+                    { name: "SILVADA", role: "HEAD COACH", icon: svgs.coach, forceColor: "var(--magenta)" },
+                    { name: "POSTE À POURVOIR", role: "ANALYSTE", icon: svgs.unknown, empty: true },
+                    { name: "POSTE À POURVOIR", role: "TEAM MANAGER", icon: svgs.unknown, empty: true },
+                    { name: "POSTE À POURVOIR", role: "ASSISTANT COACH", icon: svgs.unknown, empty: true }
+                ]
+            }
+        ];
+
+        // --- GÉNÉRATION DYNAMIQUE HTML ---
+        console.log("%c[GOWRAX OS] %cGénération des " + rosters.length + " divisions...", "color: #00F0FF; font-weight: bold;", "color: #888;");
+        const container = document.getElementById('roster-container');
+        const navMenu = document.getElementById('sticky-nav');
+
+        rosters.forEach((section, index) => {
+            // 1. Bouton de navigation
+            const navBtn = document.createElement('button');
+            navBtn.className = `nav-anchor ${index === 0 ? 'active' : ''}`;
+            navBtn.style.setProperty('--nav-color', section.themeColor);
+            
+            let btnText = section.title.split(' ')[0]; 
+            if(section.id === 'gc') btnText = "GAME CHANGERS";
+            if(section.id === 'tryhard') btnText = "TRYHARD";
+            if(section.id === 'staff') btnText = "STAFF";
+            navBtn.innerText = `[ ${btnText} ]`;
+            
+            navBtn.onclick = () => {
+                console.log("%c[NAV] %cScroll vers : " + section.title, "color: #D62F7F;", "color: #aaa;");
+                document.querySelectorAll('.nav-anchor').forEach(b => b.classList.remove('active'));
+                navBtn.classList.add('active');
+                
+                const target = document.getElementById(`section-${section.id}`);
+                const yOffset = target.getBoundingClientRect().top + window.scrollY - 80; 
+                window.scrollTo({ top: yOffset, behavior: 'smooth' });
+                
+                if(audioStarted) playSwoosh();
+            };
+            navMenu.appendChild(navBtn);
+
+            // 2. Section de contenu
+            let cardsHtml = '';
+            section.players.forEach(p => {
+                const color = p.forceColor || section.themeColor;
+                const emptyClass = p.empty ? 'slot-vacant' : '';
+                cardsHtml += `
+                    <div class="player-card ${emptyClass}" style="--role-color: ${color};">
+                        <div class="role-icon-container">
+                            <div class="role-glow"></div>
+                            <div class="role-svg">${p.icon}</div>
+                        </div>
+                        <span class="player-role">${p.role}</span>
+                        <div class="player-name">${p.name}</div>
+                        ${p.sub ? `<div class="player-sub">${p.sub}</div>` : ''}
+                    </div>
+                `;
+            });
+
+            const sectionHtml = `
+                <section id="section-${section.id}" class="roster-section">
+                    <div class="section-header">
+                        <h2 class="section-title" style="color: ${section.themeColor}; text-shadow: 0 0 15px ${section.themeColor}40;">${section.title}</h2>
+                        <div class="section-line"></div>
+                    </div>
+                    <p class="text-gray-400 font-poppins text-sm mb-8 pl-4 border-l-2" style="border-color: ${section.themeColor};">${section.desc}</p>
+                    
+                    <div class="roster-grid">
+                        ${cardsHtml}
+                    </div>
+
+                    ${section.recruit ? `<div class="text-center w-full"><a href="https://discord.gg/rTF6hpthvK" target="_blank" class="btn-recruit" style="--section-color: ${section.themeColor}">>> REJOINDRE CETTE UNITÉ <<</a></div>` : ''}
+                </section>
+            `;
+            
+            container.insertAdjacentHTML('beforeend', sectionHtml);
         });
 
-        var player;
-        var audioStarted = false;
-        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api";
-        document.head.appendChild(tag);
+        // Update active nav button on scroll
+        window.addEventListener('scroll', () => {
+            let currentSection = rosters[0].id;
+            for (let i = 0; i < rosters.length; i++) {
+                const sec = document.getElementById(`section-${rosters[i].id}`);
+                if (sec.getBoundingClientRect().top <= 150) { 
+                    currentSection = rosters[i].id;
+                }
+            }
+            
+            document.querySelectorAll('.nav-anchor').forEach((b, index) => {
+                b.classList.remove('active');
+                if(rosters[index].id === currentSection) {
+                    b.classList.add('active');
+                }
+            });
+        });
+
+
+        // ====================================================================
+        // 🎵 MOTEUR AUDIO YOUTUBE
+        // ====================================================================
+        var player; var audioStarted = false; let audioCtx;
+        console.log("%c[GOWRAX OS] %cChargement du module Audio Tactique...", "color: #00F0FF; font-weight: bold;", "color: #888;");
+        var tag = document.createElement('script'); tag.src = "https://www.youtube.com/iframe_api"; document.head.appendChild(tag);
 
         function onYouTubeIframeAPIReady() {
             player = new YT.Player('yt-player', {
                 height: '0', width: '0',
-                playerVars: {
-                    'listType': 'playlist',
-                    'list': 'PLf8bLE6HsEKO-f8pGzoZRNOLhf19TPiUA',
-                    'autoplay': 0, 'mute': 1, 'loop': 1, 'index': 0
-                }
+                playerVars: { 'listType': 'playlist', 'list': 'PLf8bLE6HsEKO-f8pGzoZRNOLhf19TPiUA', 'autoplay': 0, 'mute': 0, 'loop': 1 }
             });
+            console.log("%c[GOWRAX OS] %cAudio prêt à être synchronisé.", "color: #00F0FF; font-weight: bold;", "color: #888;");
         }
 
-        function toggleAudio() {
-            if (audioStarted) {
-                const statusText = document.getElementById('audio-status');
-                const bars = document.querySelectorAll('.bar');
-                if (player.getPlayerState() == 1) {
-                    player.pauseVideo();
-                    statusText.innerText = "[ AMBIANCE: PAUSE ]";
-                    bars.forEach(b => b.classList.remove('active'));
-                } else {
-                    player.playVideo();
-                    statusText.innerText = "[ AMBIANCE: ACTIVE ]";
-                    bars.forEach(b => b.classList.add('active'));
-                }
-            } else {
-                startTacticalAudio();
-            }
+        function playSwoosh() {
+            try {
+                if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.03, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.15);
+                osc.connect(gain); gain.connect(audioCtx.destination);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.15);
+            } catch(e) {}
         }
 
-        function startTacticalAudio() {
-            if (!audioStarted && player) {
-                const randomIndex = Math.floor(Math.random() * 15); 
-                player.unMute();
-                player.setVolume(15);
-                player.setShuffle(true);
-                player.playVideoAt(randomIndex);
-                document.getElementById('audio-status').innerText = "[ AMBIANCE: ACTIVE ]";
-                document.querySelectorAll('.bar').forEach(b => b.classList.add('active'));
-                document.getElementById('audio-init-prompt').style.display = 'none';
+        document.body.addEventListener('click', function(e) {
+            if (!audioStarted && player && typeof player.playVideo === 'function') {
+                player.setVolume(15); player.setShuffle(true); player.playVideoAt(Math.floor(Math.random() * 10));
                 audioStarted = true;
+                const statusText = document.getElementById('audio-status');
+                statusText.innerText = "[ AUDIO: SYNC ]"; statusText.style.color = "var(--cyan)";
+                statusText.classList.remove('animate-pulse');
+                document.querySelectorAll('.bar').forEach(b => b.classList.add('active'));
+                console.log("%c[AUDIO] %cSynchronisation de l'ambiance réussie.", "color: #D62F7F;", "color: #aaa;");
+            }
+        });
+
+        function toggleAudio(e) {
+            e.stopPropagation(); if (!audioStarted) return; 
+            const statusText = document.getElementById('audio-status'); const bars = document.querySelectorAll('.bar');
+            if (player.getPlayerState() == 1) {
+                player.pauseVideo(); statusText.innerText = "[ AUDIO: MUTE ]"; statusText.style.color = "inherit"; bars.forEach(b => b.classList.remove('active'));
+            } else { 
+                player.playVideo(); statusText.innerText = "[ AUDIO: SYNC ]"; statusText.style.color = "var(--cyan)"; bars.forEach(b => b.classList.add('active'));
             }
         }
 
-        document.addEventListener('click', function() {
-            startTacticalAudio();
-        }, { once: true });
-
-        const canvas = document.getElementById('starCanvas');
+        // ====================================================================
+        // 🌠 MOTEUR GRAPHIQUE : ÉTOILES FILANTES & COMÈTES
+        // ====================================================================
+        const canvas = document.getElementById('bg-canvas'); 
         const ctx = canvas.getContext('2d');
         let stars = []; let shootingStars = [];
-        function initStars() {
-            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
-            stars = []; for(let i=0; i<200; i++) { stars.push({x: Math.random()*canvas.width, y:Math.random()*canvas.height, size: Math.random()*1.5, op: Math.random(), speed: Math.random()*0.01}); }
+        
+        let globalMouseX = window.innerWidth / 2; let globalMouseY = window.innerHeight / 2;
+        const cursor = document.getElementById('custom-cursor');
+        
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        window.addEventListener('mousemove', e => { 
+            globalMouseX = e.clientX; globalMouseY = e.clientY;
+            cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; 
+        });
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5; this.alpha = Math.random();
+                this.speed = (Math.random() * 0.05) + 0.01; 
+                this.parallax = this.size * 0.005;
+                this.fadeSpeed = Math.random() * 0.02 + 0.005;
+                this.fadingOut = Math.random() > 0.5;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -10) { this.y = canvas.height + 10; this.x = Math.random() * canvas.width; }
+                if (this.fadingOut) {
+                    this.alpha -= this.fadeSpeed;
+                    if (this.alpha <= 0.1) this.fadingOut = false;
+                } else {
+                    this.alpha += this.fadeSpeed;
+                    if (this.alpha >= 0.8) this.fadingOut = true;
+                }
+            }
+            draw() {
+                const offsetX = (globalMouseX - canvas.width / 2) * this.parallax;
+                const offsetY = (globalMouseY - canvas.height / 2) * this.parallax;
+                ctx.fillStyle = `rgba(240, 242, 245, ${this.alpha})`;
+                ctx.beginPath(); ctx.arc(this.x - offsetX, this.y - offsetY, this.size, 0, Math.PI * 2); ctx.fill();
+            }
         }
-        function createShootingStar() {
-            shootingStars.push({x: Math.random()*(canvas.width*1.5), y: -100, len: Math.random()*120+80, speed: Math.random()*12+8, opacity: 1});
+
+        class ShootingStar {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width * 1.5; 
+                this.y = -100; 
+                this.length = Math.random() * 150 + 50;
+                this.speedX = -(Math.random() * 15 + 10); 
+                this.speedY = Math.random() * 10 + 5;     
+                this.opacity = 1;
+                this.color = Math.random() > 0.5 ? '214, 47, 127' : '0, 240, 255'; 
+            }
+            update() {
+                this.x += this.speedX; this.y += this.speedY;
+                this.opacity -= 0.015; 
+            }
+            draw() {
+                const grad = ctx.createLinearGradient(this.x, this.y, this.x - (this.speedX * 3), this.y - (this.speedY * 3));
+                grad.addColorStop(0, `rgba(${this.color}, ${this.opacity})`);
+                grad.addColorStop(1, `rgba(${this.color}, 0)`);
+
+                ctx.beginPath(); ctx.strokeStyle = grad; ctx.lineWidth = 2; ctx.lineCap = "round";
+                ctx.moveTo(this.x, this.y); ctx.lineTo(this.x - (this.speedX * 3), this.y - (this.speedY * 3)); ctx.stroke();
+                
+                ctx.fillStyle = `rgba(255,255,255,${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI * 2); ctx.fill();
+            }
         }
-        function animate() {
+
+        const isMobile = window.innerWidth <= 768;
+        for (let i = 0; i < (isMobile ? 80 : 200); i++) stars.push(new Star());
+
+        function animateStars() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            stars.forEach(s => { s.op += s.speed; if(s.op > 1 || s.op < 0) s.speed *= -1; ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.size, s.size); });
-            shootingStars.forEach((ss, i) => {
-                ctx.strokeStyle = `rgba(214, 47, 127, ${ss.opacity})`; ctx.lineWidth = 2; ctx.beginPath();
-                ctx.moveTo(ss.x, ss.y); ctx.lineTo(ss.x - ss.len, ss.y + ss.len); ctx.stroke();
-                ss.x -= ss.speed; ss.y += ss.speed; ss.opacity -= 0.015;
-                if(ss.opacity <= 0) shootingStars.splice(i, 1);
+            stars.forEach(s => { s.update(); s.draw(); });
+            shootingStars.forEach((ss, index) => {
+                ss.update(); ss.draw();
+                if (ss.opacity <= 0) shootingStars.splice(index, 1);
             });
-            if(Math.random() < 0.08) createShootingStar();
-            requestAnimationFrame(animate);
+            if (Math.random() < 0.02) shootingStars.push(new ShootingStar());
+            requestAnimationFrame(animateStars);
         }
-        window.addEventListener('resize', initStars); initStars(); animate();
+        console.log("%c[GOWRAX OS] %cMoteur Stelllaire V3 activé.", "color: #00F0FF; font-weight: bold;", "color: #888;");
+        animateStars();
     </script>
 </body>
 </html>
