@@ -3,154 +3,252 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GRX ROSTER | Sélection de l'Unité</title>
+    <title>GOWRAX | Choix de la Division</title>
     
     <meta name="description" content="Accédez aux divisions d'élite GOWRAX. Fortnite, Rocket League, Valorant et CS2. Choisissez votre protocole.">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/global.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700&family=Share+Tech+Mono&family=Montserrat:wght@400;700&family=Rock+Salt&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;800&family=Poppins:wght@400;500&family=Share+Tech+Mono&family=Rock+Salt&display=swap" rel="stylesheet">
     
     <style>
-        :root { --abyss: #0B0C15; --void: #1A1C2E; --purple: #6F2DBD; --magenta: #D62F7F; }
+        :root { 
+            --abyss: #050508; 
+            --void: #1A1C2E; 
+            --purple: #6F2DBD; 
+            --magenta: #D62F7F; 
+            --cyan: #00F0FF;
+            --starlight: #F0F2F5; 
+        }
         
-        body { background: var(--abyss); color: #fff; font-family: 'Montserrat', sans-serif; overflow-x: hidden; height: 100%; }
-        @media (min-width: 1024px) { body { overflow: hidden; height: 100vh; } }
+        body, html { 
+            background: var(--abyss); color: var(--starlight); 
+            font-family: 'Poppins', sans-serif; 
+            overflow-x: hidden; margin: 0; padding: 0;
+        }
+        @media (min-width: 1024px) { body { overflow: hidden; } }
         
         .accent-font { font-family: 'Rock Salt', cursive; }
         .tech-font { font-family: 'Share Tech Mono', monospace; }
         .title-font { font-family: 'Rajdhani', sans-serif; }
 
-        /* Navigation Standard */
-        .nav-link { transition: 0.4s; letter-spacing: 0.2em; position: relative; opacity: 0.6; }
-        .nav-link:hover { color: var(--magenta); text-shadow: 0 0 10px var(--magenta); opacity: 1 !important; }
-        
-        #mobile-nav { 
-            display: none;
-            background: rgba(2, 2, 5, 0.98);
-            backdrop-filter: blur(20px);
-        }
-        #mobile-nav.active { display: flex; }
+        /* --- EFFETS ARRIÈRE-PLAN --- */
+        #bg-canvas { position: fixed; inset: 0; z-index: -1; pointer-events: none; opacity: 0.6; }
+        .scanline { width: 100%; height: 150px; z-index: 50; pointer-events: none; background: linear-gradient(to bottom, transparent, rgba(0, 240, 255, 0.05), transparent); position: fixed; top: -150px; animation: scan 6s linear infinite; }
+        @keyframes scan { 0% { top: -150px; } 100% { top: 100vh; } }
+        .film-grain { position: fixed; inset: 0; z-index: 60; opacity: 0.03; pointer-events: none; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
 
-        .scanline { width: 100%; height: 100px; z-index: 40; pointer-events: none; background: linear-gradient(0deg, rgba(214, 47, 127, 0) 0%, rgba(214, 47, 127, 0.05) 50%, rgba(214, 47, 127, 0) 100%); position: absolute; top: -100px; animation: scan 4s linear infinite; }
-        @keyframes scan { 0% { top: -100px; } 100% { top: 100%; } }
-
-        /* CURSEUR HAUTE PRIORITÉ */
+        /* --- CURSEUR CUSTOM --- */
         #custom-cursor { 
-            width: 30px; height: 30px; border: 1px solid var(--magenta); 
+            width: 30px; height: 30px; border: 1px solid var(--cyan); 
             position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; 
             transition: transform 0.1s ease-out; transform: translate(-50%, -50%); 
-            box-shadow: 0 0 15px var(--magenta); display: none;
+            box-shadow: 0 0 15px rgba(0, 240, 255, 0.5); display: none;
         }
-        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--magenta); border-radius: 50%; transform: translate(-50%, -50%); }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--cyan); border-radius: 50%; transform: translate(-50%, -50%); }
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
         
-        @media (min-width: 1024px) { 
-            body, html, * { cursor: none !important; } 
-            #custom-cursor { display: block; } 
+        /* --- LAYOUT PRINCIPAL (CORRIGÉ) --- */
+        #app-layout {
+            display: flex; flex-direction: column;
+            /* On soustrait approximativement la hauteur du header global (~85px) pour pas déborder */
+            min-height: calc(100vh - 85px); 
         }
-        
-        .game-card { transition: all 0.5s cubic-bezier(0.23, 1, 0.32, 1); border-left: 1px solid rgba(214, 47, 127, 0.2); position: relative; z-index: 10; }
+        @media (min-width: 1024px) {
+            #app-layout { height: calc(100vh - 85px); } 
+        }
+
+        .roster-selection-area {
+            flex: 1; display: flex; flex-direction: column;
+        }
+        @media (min-width: 1024px) {
+            .roster-selection-area { flex-direction: row; }
+        }
+
+        /* --- LES CARTES DE JEU (Les divisions) --- */
+        .game-card { 
+            position: relative; z-index: 10; display: flex; align-items: flex-end;
+            padding: 30px; border-bottom: 1px solid rgba(255,255,255,0.05);
+            transition: all 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            overflow: hidden; text-decoration: none; cursor: pointer;
+            height: 25vh; 
+        }
         
         @media (min-width: 1024px) {
-            .game-card { filter: grayscale(1) brightness(0.5); }
-            .game-card:hover { filter: grayscale(0) brightness(1); border-left: 4px solid var(--magenta); background: rgba(111, 45, 189, 0.05); }
+            .game-card { 
+                flex: 1; height: auto; border-bottom: none; border-right: 1px solid rgba(255,255,255,0.05);
+                filter: grayscale(0.8) brightness(0.4);
+            }
+            .game-card:last-child { border-right: none; }
+            
+            /* L'Effet Accordéon au survol */
+            .roster-selection-area:hover .game-card { filter: grayscale(1) brightness(0.2); flex: 0.8; }
+            .roster-selection-area .game-card:hover { filter: grayscale(0) brightness(1.1); flex: 1.5; border-left: 2px solid var(--cyan); box-shadow: inset 0 0 100px rgba(0, 240, 255, 0.1); }
         }
+
         @media (max-width: 1023px) {
-            .game-card { border-left: 2px solid var(--magenta); margin-bottom: 2px; height: 30vh; }
+            .game-card { border-left: 2px solid var(--cyan); filter: brightness(0.7); }
+            .game-card:active { filter: brightness(1.1); }
+        }
+
+        /* L'image de fond */
+        .card-bg {
+            position: absolute; inset: 0; background-size: cover; background-position: center;
+            transition: transform 10s ease-out; z-index: 1;
+        }
+        .game-card:hover .card-bg { transform: scale(1.1); }
+        
+        /* Overlay dégradé */
+        .card-overlay {
+            position: absolute; inset: 0; z-index: 2;
+            background: linear-gradient(to top, rgba(5,5,8,1) 0%, rgba(5,5,8,0.5) 50%, transparent 100%);
+            transition: 0.5s;
+        }
+        @media (min-width: 1024px) {
+            .game-card:hover .card-overlay { background: linear-gradient(to top, rgba(0,30,40,0.9) 0%, rgba(5,5,8,0.2) 60%, transparent 100%); }
+        }
+
+        /* Contenu textuel */
+        .card-content { position: relative; z-index: 3; width: 100%; transition: 0.4s; transform: translateY(10px); }
+        @media (min-width: 1024px) { .game-card:hover .card-content { transform: translateY(0); } }
+
+        .division-id { font-family: 'Share Tech Mono', monospace; font-size: 10px; color: var(--cyan); letter-spacing: 5px; margin-bottom: 10px; display: block; transition: 0.3s; }
+        .game-card:hover .division-id { color: white; text-shadow: 0 0 10px var(--cyan); }
+        
+        .game-title { font-family: 'Rajdhani', sans-serif; font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 800; text-transform: uppercase; line-height: 1; color: white; transition: 0.3s; }
+        .game-card:hover .game-title { letter-spacing: 2px; }
+
+        .game-quote { 
+            font-family: 'Rock Salt', cursive; font-size: clamp(0.8rem, 1.5vw, 1.2rem); 
+            color: var(--cyan); opacity: 0; transform: translateY(20px) rotate(-2deg); 
+            transition: all 0.5s ease 0.1s; margin-top: 15px; 
+        }
+        @media (min-width: 1024px) { .game-card:hover .game-quote { opacity: 1; transform: translateY(0) rotate(-2deg); } }
+        @media (max-width: 1023px) { .game-quote { opacity: 1; transform: translateY(0) rotate(-2deg); margin-top: 5px; } }
+
+        /* Badge Deployé */
+        .status-badge {
+            position: absolute; top: 20px; right: 20px; z-index: 10;
+            border: 1px solid var(--magenta); background: rgba(214, 47, 127, 0.1);
+            padding: 5px 10px; backdrop-filter: blur(5px);
+        }
+        .status-text { font-family: 'Share Tech Mono', monospace; font-size: 8px; color: var(--magenta); text-transform: uppercase; letter-spacing: 2px; }
+
+        /* --- FOOTER STATUS --- */
+        #status-footer {
+            padding: 15px 30px; background: rgba(5,5,8,0.9); border-top: 1px solid rgba(255,255,255,0.05);
+            display: flex; justify-content: space-between; align-items: center; z-index: 100;
         }
     </style>
 </head>
-<body class="bg-[#050508]">
+<body>
 
-    <div id="custom-cursor"></div>
-    <canvas id="starCanvas" class="fixed inset-0 z-0 pointer-events-none"></canvas>
+    <canvas id="bg-canvas"></canvas>
     <div class="scanline"></div>
+    <div class="film-grain"></div>
+    <div id="custom-cursor"></div>
 
-    <div class="relative z-10 flex flex-col min-h-screen lg:h-screen">
-
-        <main class="flex-1 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+    <div id="app-layout">
+        
+        <main class="roster-selection-area" id="selection-area">
             
-            <a href="/roster/fortnite" class="game-card flex-1 relative group flex items-end p-8 md:p-12 overflow-hidden border-r border-white/5">
-                <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1589241062272-c0a000072dfa?q=80&w=1000')] bg-cover bg-center opacity-30 lg:opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
-                <div class="relative z-10">
-                    <span class="tech-font text-magenta text-[10px] tracking-[0.5em] block mb-2">DIVISION_01</span>
-                    <h2 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-2 md:mb-4">Fortnite</h2>
-                    <p class="accent-font text-magenta text-lg md:text-xl opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0">Victory Royale</p>
+            <a href="/roster/fortnite" class="game-card" onmouseenter="playHoverSound()">
+                <div class="card-bg" style="background-image: url('https://images.unsplash.com/photo-1589241062272-c0a000072dfa?q=80&w=1000');"></div>
+                <div class="card-overlay"></div>
+                <div class="card-content">
+                    <span class="division-id">DIVISION_01</span>
+                    <h2 class="game-title">Fortnite</h2>
+                    <p class="game-quote">Victory Royale</p>
                 </div>
             </a>
 
-            <a href="/roster/rl" class="game-card flex-1 relative group flex items-end p-8 md:p-12 overflow-hidden border-r border-white/5">
-                <div class="absolute inset-0 bg-[url('https://www.lequipe.fr/_medias/img-photo-jpg/rocket-league-un-jeu-qui-prend-de-l-ampleur-dans-l-esport-psyonix/1500000001326873/15:32,1286:879-828-552-75/10609.jpg')] bg-cover bg-center opacity-30 lg:opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
-                <div class="relative z-10">
-                    <span class="tech-font text-magenta text-[10px] tracking-[0.5em] block mb-2">DIVISION_02</span>
-                    <h2 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-2 md:mb-4">Rocket League</h2>
-                    <p class="accent-font text-magenta text-lg md:text-xl opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0">Supersonic</p>
+            <a href="/roster/rl" class="game-card" onmouseenter="playHoverSound()">
+                <div class="card-bg" style="background-image: url('https://www.lequipe.fr/_medias/img-photo-jpg/rocket-league-un-jeu-qui-prend-de-l-ampleur-dans-l-esport-psyonix/1500000001326873/15:32,1286:879-828-552-75/10609.jpg'); background-position: center left;"></div>
+                <div class="card-overlay"></div>
+                <div class="card-content">
+                    <span class="division-id">DIVISION_02</span>
+                    <h2 class="game-title">Rocket League</h2>
+                    <p class="game-quote">Supersonic</p>
                 </div>
             </a>
 
-            <a href="/roster/valorant" class="game-card flex-1 relative group flex items-end p-8 md:p-12 overflow-hidden border-r border-white/5">
-                <div class="absolute inset-0 bg-[url('https://www.riotgames.com/darkroom/1440/079912352d14904fc4ab9030d42fdcab:532f9940a41045428ef02e1312fd4844/53098657981-5372ccd676-o.png')] bg-cover bg-center opacity-30 lg:opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
-                <div class="relative z-10">
-                    <span class="tech-font text-magenta text-[10px] tracking-[0.5em] block mb-2">DIVISION_03</span>
-                    <h2 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-2 md:mb-4">Valorant</h2>
-                    <p class="accent-font text-magenta text-lg md:text-xl opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0">Clutch or Kick</p>
+            <a href="/roster/valorant" class="game-card" onmouseenter="playHoverSound()">
+                <div class="card-bg" style="background-image: url('https://www.riotgames.com/darkroom/1440/079912352d14904fc4ab9030d42fdcab:532f9940a41045428ef02e1312fd4844/53098657981-5372ccd676-o.png');"></div>
+                <div class="card-overlay"></div>
+                <div class="card-content">
+                    <span class="division-id">DIVISION_03</span>
+                    <h2 class="game-title">Valorant</h2>
+                    <p class="game-quote">Clutch or Kick</p>
                 </div>
             </a>
 
-            <a href="/roster/cs2" class="game-card flex-1 relative group flex items-end p-8 md:p-12 overflow-hidden border-r border-white/5">
-                <div class="absolute inset-0 bg-[url('https://news.exitlag.com/wp-content/uploads/2025/07/esl-pro-league-cs2.webp')] bg-cover bg-center opacity-30 lg:opacity-20 group-hover:scale-105 transition-transform duration-1000"></div>
-                <div class="relative z-10 w-full">
-                    <span class="tech-font text-magenta text-[10px] tracking-[0.5em] block mb-2">DIVISION_04</span>
-                    <h2 class="title-font text-4xl md:text-6xl font-bold uppercase tracking-tighter mb-2 md:mb-4">CS2</h2>
-                    
-                    <div class="absolute top-0 right-0 border border-magenta/50 px-2 py-1 bg-magenta/10">
-                        <span class="tech-font text-magenta text-[7px] md:text-[8px] animate-pulse">UNIT_DEPLOYED</span>
-                    </div>
-
-                    <p class="accent-font text-magenta text-lg md:text-xl opacity-100 lg:opacity-0 lg:group-hover:opacity-100 transition-all duration-500 -rotate-3 translate-y-0 lg:translate-y-4 lg:group-hover:translate-y-0 shadow-sm">
-                        Tactical Supremacy
-                    </p>
+            <a href="/roster/cs2" class="game-card" onmouseenter="playHoverSound()">
+                <div class="card-bg" style="background-image: url('https://news.exitlag.com/wp-content/uploads/2025/07/esl-pro-league-cs2.webp');"></div>
+                <div class="card-overlay"></div>
+                <div class="status-badge"><span class="status-text animate-pulse">UNIT_DEPLOYED</span></div>
+                <div class="card-content">
+                    <span class="division-id">DIVISION_04</span>
+                    <h2 class="game-title">CS2</h2>
+                    <p class="game-quote">Tactical Supremacy</p>
                 </div>
             </a>
 
         </main>
 
-        <footer class="p-4 bg-black border-t border-white/5 tech-font text-[8px] md:text-[9px] flex justify-between text-gray-500 z-[100]">
-            <div class="flex gap-4 md:gap-6">
-                <span class="hidden xs:inline text-green-500">DATABASE: 100% DECRYPTED</span>
-                <span>DIVISIONS: 04_OPERATIONAL</span>
+        <footer id="status-footer">
+            <div class="flex gap-6">
+                <span class="tech-font text-[9px] text-cyan uppercase tracking-widest hidden md:block">DATABASE: 100% DECRYPTED</span>
+                <span class="tech-font text-[9px] text-gray-500 uppercase tracking-widest">DIVISIONS: 04_OPERATIONAL</span>
             </div>
-            <div class="animate-pulse text-magenta text-right">ALL SYSTEMS ONLINE // READY FOR DEPLOYMENT</div>
+            <div class="tech-font text-[9px] text-magenta uppercase tracking-widest animate-pulse">ALL SYSTEMS ONLINE // SELECT TARGET</div>
         </footer>
     </div>
 
     <script>
-
         const cursor = document.getElementById('custom-cursor');
         window.addEventListener('mousemove', e => {
             cursor.style.left = e.clientX + 'px'; 
             cursor.style.top = e.clientY + 'px'; 
         });
 
-        const canvas = document.getElementById('starCanvas');
+        let audioCtx;
+        function playHoverSound() {
+            if (window.innerWidth <= 1024) return;
+            try {
+                if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                if(audioCtx.state === 'suspended') audioCtx.resume();
+                const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
+                osc.type = 'sine'; osc.frequency.setValueAtTime(800, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(100, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.01, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.1);
+                osc.connect(gain); gain.connect(audioCtx.destination); osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } catch(e) {}
+        }
+
+        const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let stars = [];
+
         function initStars() {
             canvas.width = window.innerWidth; canvas.height = window.innerHeight;
             stars = [];
             const count = window.innerWidth < 1024 ? 80 : 150;
-            for(let i=0; i<count; i++) stars.push({x: Math.random()*canvas.width, y:Math.random()*canvas.height, size: Math.random()*1.2, op: Math.random(), s: Math.random()*0.01});
+            for(let i = 0; i < count; i++) {
+                stars.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height, size: Math.random() * 1.5, op: Math.random(), s: (Math.random() * 0.02) + 0.005, fadingOut: Math.random() > 0.5 });
+            }
         }
+
         function animateStars() {
-            ctx.clearRect(0,0,canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
             stars.forEach(s => {
-                s.op += s.s; if(s.op > 1 || s.op < 0) s.s *= -1;
-                ctx.fillStyle = `rgba(255,255,255,${s.op})`;
-                ctx.fillRect(s.x, s.y, s.size, s.size);
+                if (s.fadingOut) { s.op -= s.s; if (s.op <= 0.1) s.fadingOut = false; } 
+                else { s.op += s.s; if (s.op >= 0.8) s.fadingOut = true; }
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.op})`; ctx.fillRect(s.x, s.y, s.size, s.size);
             });
             requestAnimationFrame(animateStars);
         }
-        initStars(); animateStars();
-        window.addEventListener('resize', initStars);
+
+        initStars(); animateStars(); window.addEventListener('resize', initStars);
     </script>
 </body>
 </html>
