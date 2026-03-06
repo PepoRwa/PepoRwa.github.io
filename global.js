@@ -75,7 +75,7 @@
             </div>
             
             <nav class="hidden lg:flex space-x-10 text-[10px] font-bold tracking-[0.4em]" style="font-family: 'Share Tech Mono', monospace;">
-                <a href="/about.html" class="${getNavClass('/about')}">ABOUT</a>
+                <a href="/about/index.html" class="${getNavClass('/about')}">ABOUT</a>
                 <a href="/" class="${getNavClass('/')}">INDEX</a>
                 <a href="/news/index.html" class="${getNavClass('/news')}">NEWS</a>
                 <a href="/staff/index.html" class="${getNavClass('/staff')}">STAFF</a>
@@ -102,7 +102,7 @@
 
         <div id="global-mobile-nav" class="fixed inset-0 z-[999999] p-12 flex flex-col justify-center items-center space-y-8 opacity-0 pointer-events-none transition-all duration-500" style="display: none; background: rgba(2, 2, 5, 0.98); backdrop-filter: blur(20px);">
             <button onclick="window.toggleGlobalNav(false)" class="absolute top-10 right-10 text-magenta text-sm border border-magenta/40 px-6 py-2 uppercase pointer-events-auto" style="font-family: 'Share Tech Mono', monospace;">Close_X</button>
-            <a href="/about.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">ABOUT</a>
+            <a href="/about/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">ABOUT</a>
             <a href="/" class="text-4xl font-bold text-magenta italic pointer-events-auto" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">INDEX</a>
             <a href="/news/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">NEWS</a>
             <a href="/staff/index.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">STAFF</a>
