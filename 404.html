@@ -4,107 +4,159 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GOWRAX | 404_LIAISON_PERDUE</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="/global.js" defer></script>
-    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;900&family=Share+Tech+Mono&family=Montserrat:wght@400;700&display=swap" rel="stylesheet">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@600;700;900&family=Poppins:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
     <style>
         :root { 
-            --abyss: #0B0C15; 
+            --abyss: #050508; 
             --magenta: #D62F7F; 
+            --cyan: #00F0FF;
+            --purple: #6F2DBD;
         }
+
         body, html { 
-            background: var(--abyss); color: #fff; margin: 0; 
-            font-family: 'Montserrat', sans-serif; height: 100vh; width: 100vw;
-            overflow: hidden; display: flex; align-items: center; justify-content: center;
+            background: var(--abyss); 
+            color: #fff; 
+            margin: 0; 
+            font-family: 'Poppins', sans-serif; 
+            height: 100vh; 
+            width: 100vw;
+            overflow: hidden; 
         }
 
-        canvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.6; }
+        /* Fond stellaire GOWRAX */
+        #starCanvas { position: fixed; inset: 0; z-index: 0; pointer-events: none; opacity: 0.5; }
+        .film-grain { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.05; pointer-events: none; z-index: 1; }
 
-        .content-box { position: relative; z-index: 10; text-align: center; padding: 0 20px; width: 100%; max-width: 700px; }
+        .content-box { 
+            position: relative; 
+            z-index: 10; 
+            text-align: center; 
+            padding: 0 20px; 
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center; 
+            justify-content: center;
+        }
 
         .tech-font { font-family: 'Share Tech Mono', monospace; }
         .title-font { font-family: 'Rajdhani', sans-serif; }
 
-        /* Le fameux Halo Magenta doux et pulsant */
+        /* Effet 404 Halo & Glitch */
         .halo-404 {
-            font-size: clamp(6rem, 20vw, 14rem); 
+            font-size: clamp(8rem, 25vw, 16rem); 
             font-weight: 900; 
-            line-height: 0.9;
-            color: #ffffff;
-            margin-bottom: 10px;
+            line-height: 0.8;
+            color: #fff;
+            position: relative;
             animation: pulseHalo 4s infinite ease-in-out;
+            letter-spacing: -0.05em;
         }
 
         @keyframes pulseHalo {
-            0% { text-shadow: 0 0 20px rgba(214, 47, 127, 0.4), 0 0 40px rgba(214, 47, 127, 0.2); }
-            50% { text-shadow: 0 0 30px rgba(214, 47, 127, 0.8), 0 0 60px rgba(214, 47, 127, 0.5), 0 0 100px rgba(214, 47, 127, 0.3); }
-            100% { text-shadow: 0 0 20px rgba(214, 47, 127, 0.4), 0 0 40px rgba(214, 47, 127, 0.2); }
+            0%, 100% { text-shadow: 0 0 20px rgba(214, 47, 127, 0.3), 0 0 40px rgba(111, 45, 189, 0.2); }
+            50% { text-shadow: 0 0 40px rgba(214, 47, 127, 0.7), 0 0 70px rgba(0, 240, 255, 0.4); }
         }
 
-        /* Boutons GOWRAX classiques */
+        /* Boutons Style GOWRAX */
         .btn-grx {
-            background: rgba(214, 47, 127, 0.05); border: 1px solid rgba(214, 47, 127, 0.3);
-            color: white; padding: 14px 24px; font-weight: bold; transition: 0.3s; 
-            text-transform: uppercase; font-size: 0.75rem; letter-spacing: 0.15em;
-            display: inline-block; width: 100%; backdrop-filter: blur(5px);
+            position: relative;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            padding: 16px 32px;
+            font-family: 'Rajdhani', sans-serif;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+            overflow: hidden;
+            width: 100%;
         }
-        @media (min-width: 640px) { .btn-grx { width: auto; min-width: 160px; } }
-        
-        .btn-grx:hover { 
-            background: var(--magenta); color: #fff; 
-            box-shadow: 0 0 20px rgba(214, 47, 127, 0.4); 
-            border-color: var(--magenta);
-            transform: translateY(-2px);
+        @media (min-width: 640px) { .btn-grx { width: auto; min-width: 200px; } }
+
+        .btn-grx::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -100%;
+            width: 100%; height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+            transition: 0.5s;
         }
 
-        .status-link {
-            display: inline-flex; align-items: center; justify-content: center; gap: 8px;
-            font-size: 10px; color: #666; transition: 0.3s; margin-top: 50px;
-            padding: 10px 20px; border: 1px solid transparent; border-radius: 4px;
+        .btn-grx:hover {
+            border-color: var(--cyan);
+            box-shadow: 0 0 20px rgba(0, 240, 255, 0.2);
+            transform: translateY(-3px);
+            color: var(--cyan);
         }
-        .status-link:hover { color: #fff; border-color: rgba(255,255,255,0.1); background: rgba(255,255,255,0.02); }
 
+        .btn-grx:hover::before { left: 100%; }
+
+        /* Curseur Custom */
         #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--magenta); position: fixed; pointer-events: none !important; z-index: 1000; border-radius: 50%; transition: transform 0.08s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--magenta); display: none; }
         @media (min-width: 1024px) { body { cursor: none; } #custom-cursor { display: block; } }
+
+        .error-code {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            opacity: 0.3;
+            font-size: 10px;
+        }
     </style>
 </head>
 <body>
 
     <div id="custom-cursor"></div>
+    <div class="film-grain"></div>
     <canvas id="starCanvas"></canvas>
 
     <div class="content-box">
-        <div class="tech-font text-magenta text-[10px] tracking-[0.4em] uppercase mb-4 opacity-80 flex items-center justify-center gap-3">
-            <span class="w-1.5 h-1.5 bg-magenta animate-pulse rounded-full"></span>
-            Liaison_Perdue
+        <div class="tech-font text-magenta text-[10px] tracking-[0.5em] uppercase mb-4 flex items-center gap-3">
+            <span class="w-2 h-2 bg-magenta rounded-full animate-ping"></span>
+            Liaison_Interrompue // Error_404
         </div>
         
         <h1 class="title-font halo-404 italic uppercase">404</h1>
         
-        <div class="mb-12">
-            <h2 class="title-font text-2xl md:text-4xl font-bold uppercase tracking-tighter mb-3">Cette page a été envoyée au Goulag.</h2>
-            <p class="tech-font text-[10px] md:text-xs text-gray-400 uppercase leading-relaxed max-w-lg mx-auto">
-                (Ou alors quelqu'un a dodge la game). <br>
-                Dans tous les cas, le secteur que vous cherchez n'existe plus ou a été déplacé.
+        <div class="mb-12 max-w-2xl">
+            <h2 class="title-font text-3xl md:text-5xl font-extrabold uppercase tracking-tight mb-4">
+                Secteur <span class="text-cyan">Introuvable.</span>
+            </h2>
+            <p class="text-gray-400 text-sm md:text-base leading-relaxed font-light">
+                La liaison avec cette coordonnée a été perdue. <br class="hidden md:block">
+                Soit la page a dodge la sélection, soit elle a pris un headshot de l'espace.
             </p>
         </div>
 
-        <div class="flex flex-col sm:flex-row justify-center gap-4">
-            <a href="/" class="btn-grx title-font">Base_Accueil</a>
-            <a href="/roster/index.html" class="btn-grx title-font">Nos_Rosters</a>
-            <a href="/contact/index.html" class="btn-grx title-font">Signal_HQ</a>
-        </div>
-
-        <div class="w-full">
-            <a href="https://x.com/team_gowrax" target="_blank" class="status-link tech-font uppercase tracking-widest">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-                Vérifier le statut des systèmes
+        <div class="flex flex-col sm:flex-row gap-6 w-full justify-center px-10 sm:px-0">
+            <a href="/" class="btn-grx">
+                Base_Accueil
+            </a>
+            <a href="/roster/index.html" class="btn-grx" style="border-color: rgba(214, 47, 127, 0.3); color: var(--magenta);">
+                Unités_Roster
             </a>
         </div>
+
+        <a href="https://x.com/team_gowrax" target="_blank" class="mt-20 group">
+            <div class="tech-font text-[9px] text-gray-600 group-hover:text-white transition-colors tracking-[0.4em] uppercase flex items-center gap-3">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+                Signaler une anomalie au HQ
+            </div>
+        </a>
+    </div>
+
+    <div class="error-code tech-font text-gray-500 uppercase tracking-widest">
+        Trace_ID: GRX-VOID-404-01
     </div>
 
     <script>
-        // Un canvas élégant et lent, qui ne donne pas mal à la tête
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
         const cursor = document.getElementById('custom-cursor');
@@ -115,27 +167,25 @@
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
             stars = [];
-            for (let i = 0; i < 120; i++) {
+            for (let i = 0; i < 150; i++) {
                 stars.push({
                     x: Math.random() * canvas.width,
                     y: Math.random() * canvas.height,
-                    size: Math.random() * 1.5,
+                    size: Math.random() * 2,
                     opacity: Math.random(),
-                    speed: Math.random() * 0.005
+                    speed: Math.random() * 0.005 + 0.002
                 });
             }
         }
 
         function animate() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#ffffff";
             stars.forEach(s => {
                 s.opacity += s.speed;
                 if (s.opacity > 1 || s.opacity < 0) s.speed *= -1;
-                ctx.globalAlpha = s.opacity;
+                ctx.fillStyle = `rgba(255, 255, 255, ${s.opacity})`;
                 ctx.fillRect(s.x, s.y, s.size, s.size);
             });
-            ctx.globalAlpha = 1;
             requestAnimationFrame(animate);
         }
 
