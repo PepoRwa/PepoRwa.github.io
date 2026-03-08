@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOWRAX OS | MAINTENANCE EN COURS</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700;800&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --abyss: #050508;
+            --magenta: #D62F7F;
+            --cyan: #00F0FF;
+            --void: #1A1C2E;
+        }
+
+        body, html {
+            margin: 0; padding: 0;
+            background-color: var(--abyss);
+            color: white;
+            font-family: 'Share Tech Mono', monospace;
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+
+        .scanlines {
+            position: fixed; inset: 0; z-index: 50; pointer-events: none;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 2px, 3px 100%;
+        }
+
+        .terminal-box {
+            position: relative; z-index: 10;
+            width: 95%; max-width: 800px;
+            background: rgba(26, 28, 46, 0.85);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), inset 0 0 20px rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+            padding: 20px; 
+        }
+        @media (min-width: 768px) {
+            .terminal-box { padding: 30px; }
+        }
+        
+        .terminal-header {
+            border-bottom: 1px dashed rgba(0, 240, 255, 0.4);
+            padding-bottom: 15px; margin-bottom: 20px;
+            display: flex; justify-content: space-between; align-items: flex-end;
+        }
+
+        /* Message d'alerte HQ */
+        .hq-broadcast {
+            background: rgba(214, 47, 127, 0.1);
+            border-left: 3px solid var(--magenta);
+            padding: 15px; margin-bottom: 25px;
+        }
+
+        .log-line { 
+            opacity: 0; transform: translateX(-10px); transition: all 0.3s ease-out; 
+            margin-bottom: 8px; font-size: 12px; color: #aaa; 
+        }
+        @media (min-width: 768px) {
+            .log-line { font-size: 13px; }
+        }
+        .log-line.active { opacity: 1; transform: translateX(0); }
+        .log-status.ok { color: #00ff00; }
+        .log-status.pending { color: var(--cyan); animation: pulse 1.5s infinite; }
+
+        .progress-container {
+            width: 100%; height: 20px;
+            border: 1px solid var(--cyan); background: rgba(0, 0, 0, 0.5);
+            margin-top: 25px; position: relative; overflow: hidden;
+        }
+        .progress-bar {
+            height: 100%; width: 0%;
+            background: repeating-linear-gradient(-45deg, var(--cyan), var(--cyan) 10px, #0088ff 10px, #0088ff 20px);
+            box-shadow: 0 0 15px var(--cyan); transition: width 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-term {
+            display: inline-block; padding: 8px 15px; border: 1px solid var(--cyan); color: var(--cyan);
+            text-transform: uppercase; text-decoration: none; font-size: 11px; letter-spacing: 1px;
+            transition: 0.3s; background: rgba(0,240,255,0.05); margin-right: 10px; margin-top: 10px;
+        }
+        .btn-term:hover { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
+        
+        .btn-discord { border-color: var(--magenta); color: var(--magenta); background: rgba(214,47,127,0.05); }
+        .btn-discord:hover { background: var(--magenta); color: #fff; box-shadow: 0 0 15px var(--magenta); }
+
+        .cursor-blink { display: inline-block; width: 8px; height: 14px; background: var(--cyan); animation: blink 1s step-end infinite; vertical-align: middle; margin-left: 5px; }
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+    </style>
+</head>
+<body>
+
+    <div class="scanlines"></div>
+
+    <div class="terminal-box">
+        <div class="terminal-header">
+            <div>
+                <h1 class="title-font text-3xl md:text-4xl font-bold uppercase text-white tracking-widest">
+                    GOWRAX <span class="text-cyan">OS</span>
+                </h1>
+                <div class="text-[10px] text-magenta uppercase tracking-[0.3em] mt-1">SYS_UPDATE_PROTOCOL_v2.4</div>
+            </div>
+            <div class="text-right hidden sm:block">
+                <div class="text-xs text-cyan">STATUS: <span class="text-magenta animate-pulse">MAINTENANCE</span></div>
+            </div>
+        </div>
+
+        <div class="hq-broadcast">
+            <div class="text-[10px] text-magenta uppercase tracking-widest mb-2 flex items-center gap-2">
+                <span class="w-1.5 h-1.5 bg-magenta rounded-full animate-ping"></span> TRANSMISSION GLOBALE DU HQ
+            </div>
+            <p class="font-sans text-sm text-gray-300 leading-relaxed mb-4">
+                L'interface principale de GOWRAX subit actuellement une refonte (sécurité & conformité RGPD). Durée estimée : 1 à 2 semaines. <br><br>
+                <strong>Attention :</strong> Les modules opérationnels restent accessibles. Vous pouvez toujours consulter les profils de nos joueurs et l'interface de commandement. Pour toute question, rejoignez la base de communication.
+            </p>
+            <div>
+                <a href="/roster/index.html" class="btn-term">> ACCÉDER AUX ROSTERS</a>
+                <a href="/ceo/index.html" class="btn-term">> ACCÈS CEO</a>
+                <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="btn-term btn-discord">> REJOINDRE LE DISCORD</a>
+            </div>
+        </div>
+
+        <div id="terminal-logs" class="min-h-[120px] font-mono text-sm pl-2 border-l border-gray-700">
+        </div>
+
+        <div class="mt-8 pt-4 border-t border-dashed border-cyan/30">
+            <div class="flex justify-between text-xs mb-2">
+                <span class="text-cyan">Progression globale de la mise à jour...</span>
+                <span id="progress-text" class="text-white font-bold">0%</span>
+            </div>
+            <div class="progress-container">
+                <div id="progress-bar" class="progress-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const logs = [
+            { text: "Initialisation de GOWRAX OS...", delay: 500, status: "ok" },
+            { text: "Correction de bugs de balises structurelles", delay: 1500, status: "ok" },
+            { text: "Compilation des profils : Amélioration Rosters", delay: 2800, status: "ok" },
+            { text: "Mise en conformité de la sécurité & RGPD", delay: 4200, status: "pending" },
+            { text: "Déploiement de l'infrastructure en attente...", delay: 5500, status: "pending" }
+        ];
+
+        const terminal = document.getElementById('terminal-logs');
+        const progressBar = document.getElementById('progress-bar');
+        const progressText = document.getElementById('progress-text');
+
+        const getStatusHTML = (status) => {
+            if (status === "ok") return `<span class="log-status ok">[OK]</span>`;
+            if (status === "pending") return `<span class="log-status pending">[EN COURS]</span>`;
+            return ``;
+        };
+
+        logs.forEach(log => {
+            setTimeout(() => {
+                const line = document.createElement('div');
+                line.className = 'log-line';
+                line.innerHTML = `> ${log.text} ${getStatusHTML(log.status)}`;
+                terminal.appendChild(line);
+                setTimeout(() => line.classList.add('active'), 50);
+            }, log.delay);
+        });
+
+        // Confirmation du maintien des accès
+        setTimeout(() => {
+            const line = document.createElement('div');
+            line.className = 'log-line active';
+            line.innerHTML = `> Maintien des sous-réseaux (Roster/CEO) actifs <span class="log-status ok">[OK]</span>`;
+            terminal.appendChild(line);
+        }, 6500);
+
+        // Attente validation HQ avec le curseur
+        setTimeout(() => {
+            const cursorLine = document.createElement('div');
+            cursorLine.className = 'log-line active mt-2';
+            cursorLine.innerHTML = `> Attente de la validation HQ... <span class="cursor-blink"></span>`;
+            terminal.appendChild(cursorLine);
+        }, 8000);
+
+        let currentProgress = 0;
+        const targetProgress = 68;
+
+        const updateProgress = () => {
+            if (currentProgress < targetProgress) {
+                const jump = Math.random() * 5;
+                currentProgress += jump;
+                if (currentProgress > targetProgress) currentProgress = targetProgress;
+                
+                progressBar.style.width = `${currentProgress}%`;
+                progressText.innerText = `${Math.floor(currentProgress)}%`;
+                
+                setTimeout(updateProgress, Math.random() * 800 + 200);
+            }
+        };
+
+        setTimeout(updateProgress, 1000);
+    </script>
+</body>
+</html>

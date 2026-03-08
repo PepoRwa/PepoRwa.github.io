@@ -1,12 +1,28 @@
 /**
- * GOWRAX - Global System Injector V7.0
+ * GOWRAX - Global System Injector V7.1
  * --------------------------------------------------
  * NOUVEAU : Auto-Injection de la Navigation Dynamique !
  * INCLUS : Cookies (HUD), Ghost Link, Supabase Auto-load, Broadcast
+ * SECURE : Mode Maintenance Global intégré
  * --------------------------------------------------
  */
 
 (function() {
+    // --- 0. SYSTÈME DE MAINTENANCE (LE BOUTON ROUGE) ---
+    const MAINTENANCE_MODE = true; // Passe à 'false' pour rouvrir le site
+    const MAINTENANCE_PAGE = '/maintenance.html'; // La page de destination
+
+    if (MAINTENANCE_MODE) {
+        const path = window.location.pathname;
+        // On autorise la page de maintenance (pour éviter une boucle infinie), le CEO et tout le dossier Roster
+        const isAllowed = path.includes(MAINTENANCE_PAGE) || path.includes('/ceo') || path.includes('/roster');
+        
+        if (!isAllowed) {
+            window.location.replace(MAINTENANCE_PAGE); // Replace évite que l'utilisateur fasse "Retour"
+            return; // On stoppe l'exécution du reste du script
+        }
+    }
+
     // --- 1. CONFIGURATION ET PARAMÈTRES RÉSEAU ---
     const LOGO_URL = "https://gowrax.me/assets/img/logo-team-esport.png";
     const GA_MEASUREMENT_ID = "G-PECF9PMWRC"; 
@@ -31,8 +47,8 @@
     const injectNavigation = () => {
         const path = window.location.pathname;
 
-        // 🛡️ EXCEPTION MAJEURE : On ne touche pas à la page CEO !
-        if (path.includes('/ceo')) return;
+        // 🛡️ EXCEPTION MAJEURE : On ne touche pas à la page CEO ni Maintenance !
+        if (path.includes('/ceo') || path.includes('/maintenance')) return;
 
         // 1. Détermination du Titre (Logo)
         let suffix = "HQ";
@@ -283,7 +299,7 @@
 
     // --- 6. BOOT SEQUENCE ---
     const bootSequence = () => {
-        injectNavigation(); // Injection du nouveau menu en tout premier !
+        injectNavigation();
         injectIcons();
         enforceSecurity();
         injectAnalytics();
