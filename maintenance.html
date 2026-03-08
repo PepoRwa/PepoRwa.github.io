@@ -21,11 +21,12 @@
             background-color: var(--abyss);
             color: white;
             font-family: 'Share Tech Mono', monospace;
-            height: 100vh;
-            overflow: hidden;
+            min-height: 100vh; /* Permet au contenu de s'étendre si nécessaire */
+            overflow-x: hidden; /* Empêche le scroll horizontal */
             display: flex;
             align-items: center;
             justify-content: center;
+            padding: 20px 0; /* Ajoute un peu de marge en haut/bas sur petit écran */
         }
 
         .title-font { font-family: 'Rajdhani', sans-serif; }
@@ -38,12 +39,13 @@
 
         .terminal-box {
             position: relative; z-index: 10;
-            width: 95%; max-width: 800px;
+            width: 90%; max-width: 800px;
             background: rgba(26, 28, 46, 0.85);
             border: 1px solid rgba(0, 240, 255, 0.3);
             box-shadow: 0 0 30px rgba(0, 240, 255, 0.1), inset 0 0 20px rgba(0, 0, 0, 0.8);
             backdrop-filter: blur(10px);
             padding: 20px; 
+            margin: auto;
         }
         @media (min-width: 768px) {
             .terminal-box { padding: 30px; }
@@ -64,7 +66,8 @@
 
         .log-line { 
             opacity: 0; transform: translateX(-10px); transition: all 0.3s ease-out; 
-            margin-bottom: 8px; font-size: 12px; color: #aaa; 
+            margin-bottom: 8px; font-size: 11px; color: #aaa; 
+            word-wrap: break-word; /* Évite que le texte sorte de la boîte sur mobile */
         }
         @media (min-width: 768px) {
             .log-line { font-size: 13px; }
@@ -85,9 +88,9 @@
         }
 
         .btn-term {
-            display: inline-block; padding: 8px 15px; border: 1px solid var(--cyan); color: var(--cyan);
+            display: inline-block; padding: 10px 15px; border: 1px solid var(--cyan); color: var(--cyan);
             text-transform: uppercase; text-decoration: none; font-size: 11px; letter-spacing: 1px;
-            transition: 0.3s; background: rgba(0,240,255,0.05); margin-right: 10px; margin-top: 10px;
+            transition: 0.3s; background: rgba(0,240,255,0.05);
         }
         .btn-term:hover { background: var(--cyan); color: #000; box-shadow: 0 0 15px var(--cyan); }
         
@@ -120,14 +123,14 @@
             <div class="text-[10px] text-magenta uppercase tracking-widest mb-2 flex items-center gap-2">
                 <span class="w-1.5 h-1.5 bg-magenta rounded-full animate-ping"></span> TRANSMISSION GLOBALE DU HQ
             </div>
-            <p class="font-sans text-sm text-gray-300 leading-relaxed mb-4">
+            <p class="font-sans text-xs md:text-sm text-gray-300 leading-relaxed mb-5">
                 L'interface principale de GOWRAX subit actuellement une refonte (sécurité & conformité RGPD). Durée estimée : 1 à 2 semaines. <br><br>
-                <strong>Attention :</strong> Les modules opérationnels restent accessibles. Vous pouvez toujours consulter les profils de nos joueurs et l'interface de commandement. Pour toute question, rejoignez la base de communication.
+                <strong class="text-white">Attention :</strong> Les modules opérationnels restent accessibles. Vous pouvez toujours consulter les profils de nos joueurs et l'interface de commandement. Pour toute question, rejoignez la base de communication.
             </p>
-            <div>
-                <a href="/roster/index.html" class="btn-term">> ACCÉDER AUX ROSTERS</a>
-                <a href="/ceo/index.html" class="btn-term">> ACCÈS CEO</a>
-                <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="btn-term btn-discord">> REJOINDRE LE DISCORD</a>
+            <div class="flex flex-col sm:flex-row flex-wrap gap-3">
+                <a href="/roster/index.html" class="btn-term w-full sm:w-auto text-center">> ACCÉDER AUX ROSTERS</a>
+                <a href="/ceo/index.html" class="btn-term w-full sm:w-auto text-center">> ACCÈS CEO</a>
+                <a href="https://discord.gg/rTF6hpthvK" target="_blank" class="btn-term btn-discord w-full sm:w-auto text-center">> REJOINDRE DISCORD</a>
             </div>
         </div>
 
@@ -136,7 +139,7 @@
 
         <div class="mt-8 pt-4 border-t border-dashed border-cyan/30">
             <div class="flex justify-between text-xs mb-2">
-                <span class="text-cyan">Progression globale de la mise à jour...</span>
+                <span class="text-cyan">Progression globale...</span>
                 <span id="progress-text" class="text-white font-bold">0%</span>
             </div>
             <div class="progress-container">
