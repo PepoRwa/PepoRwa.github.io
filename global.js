@@ -9,7 +9,7 @@
 
 (function() {
     // --- 0. SYSTÈME DE MAINTENANCE (LE BOUTON ROUGE) ---
-    const MAINTENANCE_MODE = true; // Passe à 'false' pour rouvrir le site
+    const MAINTENANCE_MODE = false; // Passe à 'false' pour rouvrir le site
     const MAINTENANCE_PAGE = '/maintenance.html'; // La page de destination
 
     if (MAINTENANCE_MODE) {
