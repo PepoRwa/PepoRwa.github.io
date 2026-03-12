@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GOWRAX | Règlement Officiel</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="/global.js" defer></script>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700;800&family=Poppins:wght@300;400;600&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <style>
+        :root { 
+            --purple: #6F2DBD; 
+            --void: #1A1C2E; 
+            --magenta: #D62F7F; 
+            --abyss: #050508; 
+            --starlight: #F0F2F5; 
+            --cyan: #00F0FF;
+            --gold: #D4AF37;
+        }
+        
+        html { scroll-behavior: smooth; }
+        body { 
+            background-color: var(--abyss); 
+            color: var(--starlight); 
+            font-family: 'Poppins', sans-serif;
+            overflow-x: hidden; 
+            margin: 0; 
+            min-height: 100vh;
+        }
+
+        .tech-font { font-family: 'Share Tech Mono', monospace; }
+        .title-font { font-family: 'Rajdhani', sans-serif; }
+
+        /* --- BACKGROUND ÉTOILÉ --- */
+        #bg-base { position: fixed; inset: 0; background: radial-gradient(circle at 50% 0%, rgba(26,28,46,0.8) 0%, var(--abyss) 100%); z-index: 1; pointer-events: none; }
+        #bg-canvas { position: fixed; inset: 0; z-index: 2; pointer-events: none; }
+        .film-grain { position: fixed; inset: 0; background: url('https://grainy-gradients.vercel.app/noise.svg'); opacity: 0.04; mix-blend-mode: overlay; z-index: 3; pointer-events: none; }
+
+        #main-wrapper { 
+            position: relative; z-index: 10; 
+            max-width: 1400px; margin: 0 auto; 
+            padding: 40px 20px 100px 20px; 
+        }
+
+        /* --- STYLES DES RÈGLES --- */
+        .chapter-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 2.5rem; font-weight: 800; text-transform: uppercase;
+            color: white; border-bottom: 2px solid rgba(255,255,255,0.1);
+            padding-bottom: 10px; margin-top: 4rem; margin-bottom: 2rem;
+            display: flex; align-items: center; gap: 15px;
+        }
+        .chapter-number { color: var(--cyan); font-family: 'Share Tech Mono', monospace; font-size: 1.5rem; }
+
+        .article-box {
+            background: rgba(26, 28, 46, 0.4);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-top: 2px solid rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 25px; margin-bottom: 20px;
+            transition: 0.3s;
+        }
+        .article-box:hover { border-color: rgba(0,240,255,0.2); background: rgba(26, 28, 46, 0.6); }
+        
+        .article-title {
+            font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; font-weight: 700;
+            color: var(--cyan); text-transform: uppercase; margin-bottom: 15px;
+            letter-spacing: 1px;
+        }
+
+        .rule-list { list-style: none; padding: 0; margin: 0; }
+        .rule-list > li { margin-bottom: 12px; color: #cbd5e1; font-size: 0.95rem; line-height: 1.6; }
+        .rule-index { color: white; font-family: 'Share Tech Mono', monospace; font-weight: bold; margin-right: 8px; }
+
+        /* --- BLOCS SPÉCIFIQUES --- */
+        .alert-box {
+            background: rgba(214, 47, 127, 0.1); border-left: 4px solid var(--magenta);
+            padding: 15px 20px; margin: 15px 0;
+        }
+        .alert-box-title { color: var(--magenta); font-family: 'Share Tech Mono', monospace; font-weight: bold; text-transform: uppercase; margin-bottom: 5px; font-size: 0.85rem; letter-spacing: 1px; }
+
+        .game-header {
+            display: inline-block; padding: 5px 15px; background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1); font-family: 'Share Tech Mono', monospace;
+            font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 15px;
+        }
+
+        .protocol-box { border: 1px solid; padding: 20px; margin-top: 15px; background: rgba(0,0,0,0.3); }
+        .protocol-slayer { border-color: rgba(214, 47, 127, 0.4); }
+        .protocol-slayer h4 { color: var(--magenta); }
+        .protocol-vanguard { border-color: rgba(0, 240, 255, 0.4); }
+        .protocol-vanguard h4 { color: var(--cyan); }
+
+        /* --- SOMMAIRE LATÉRAL (STICKY) --- */
+        .toc-container { position: sticky; top: 100px; }
+        .toc-link {
+            display: block; padding: 8px 15px; color: #888; font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem; text-transform: uppercase; text-decoration: none;
+            border-left: 2px solid transparent; transition: 0.3s; margin-bottom: 5px;
+        }
+        .toc-link:hover, .toc-link.active { color: white; border-left-color: var(--cyan); background: rgba(0,240,255,0.05); }
+
+        /* --- CURSEUR --- */
+        #custom-cursor { width: 30px; height: 30px; border: 1px solid rgba(0,240,255,0.3); position: fixed; pointer-events: none !important; z-index: 1000; border-radius: 50%; transition: transform 0.1s ease-out; transform: translate(-50%, -50%); display: none; }
+        #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--cyan); border-radius: 50%; transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--cyan);}
+        @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="bg-base"></div>
+    <canvas id="bg-canvas"></canvas>
+    <div class="film-grain"></div>
+    <div id="custom-cursor"></div>
+
+    <main id="main-wrapper">
+        
+        <header class="text-center mb-16 mt-8">
+            <span class="tech-font text-cyan text-[10px] md:text-[12px] tracking-[0.8em] uppercase block mb-4 animate-pulse">LÉGAL // PROTOCOLES DE COMBAT</span>
+            <h1 class="title-font text-4xl md:text-6xl font-bold uppercase italic text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.1)]">
+                Règlement <span class="text-cyan">Officiel</span>
+            </h1>
+            
+            <div class="max-w-3xl mx-auto mt-8 bg-[rgba(214,47,127,0.05)] border border-magenta/30 p-6 backdrop-blur-md">
+                <div class="tech-font text-magenta text-[12px] tracking-widest uppercase mb-2">⚠ CLAUSE D'ANNEXE</div>
+                <p class="font-poppins text-sm text-gray-300 leading-relaxed text-left">
+                    Ce document constitue le socle général et immuable des compétitions organisées par GOWRAX. <strong>Des annexes spécifiques</strong> (format des brackets, dates, cashprize, règles temporaires) peuvent s'y ajouter selon les tournois. En cas de contradiction, <strong>l'annexe spécifique du tournoi en cours prévaut toujours</strong> sur ce règlement général.
+                </p>
+            </div>
+        </header>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            
+            <div class="lg:col-span-3 order-2 lg:order-1 hidden md:block">
+                <div class="toc-container bg-[rgba(11,12,21,0.8)] border border-white/5 p-6">
+                    <div class="tech-font text-white text-xs tracking-widest uppercase mb-4 pb-2 border-b border-white/10">Index des Systèmes</div>
+                    <nav id="toc">
+                        <a href="#chap1" class="toc-link">1. Administration & Inscriptions</a>
+                        <a href="#chap2" class="toc-link">2. Règles par Jeu (Val, RL, FN)</a>
+                        <a href="#chap3" class="toc-link">3. Streaming & Sanctions</a>
+                    </nav>
+                </div>
+            </div>
+
+            <div class="lg:col-span-9 order-1 lg:order-2">
+
+                <section id="chap1" class="mb-20">
+                    <h2 class="chapter-title"><span class="chapter-number">01 //</span> Administration et conditions</h2>
+                    
+                    <div class="article-box">
+                        <h3 class="article-title">ARTICLE 1 : ÉLIGIBILITÉ ET COMPOSITION</h3>
+                        <ul class="rule-list">
+                            <li><span class="rule-index">1.1.1.</span> L'effectif (Roster) inscrit lors de l'enregistrement initial est considéré comme définitif pour toute la durée du tournoi.</li>
+                            <li><span class="rule-index">1.1.2.</span> <strong class="text-white">Interdiction des Remplaçants (Subs) :</strong> L'ajout, le remplacement ou l'échange de joueurs en cours de compétition est strictement interdit, sauf cas de force majeure validé par l'Administration GOWRAX (décès, hospitalisation). Une simple indisponibilité ne constitue pas un cas de force majeure.</li>
+                            <li><span class="rule-index">1.1.3.</span> Si un joueur titulaire est manquant, l'équipe a deux options : <br>
+                                a) Jouer en infériorité numérique (ex: 4vs5 sur Valorant, 2vs3 sur Rocket League). <br>
+                                b) Déclarer forfait (FF) pour le match ou le tournoi complet.</li>
+                            
+                            <li class="mt-6"><span class="rule-index">1.2.1.</span> Le Pseudo (Riot ID, Epic ID) utilisé durant le tournoi doit être strictement identique à celui fourni lors de l'inscription. Tout joueur utilisant un compte différent (Alt-Account) sera immédiatement disqualifié.</li>
+                            <li><span class="rule-index">1.2.2.</span> <strong class="text-white">Niveaux Requis (Anti-Smurf) :</strong>
+                                <ul class="list-disc pl-8 mt-2 space-y-1 text-sm text-gray-400">
+                                    <li><span class="text-cyan">VALORANT :</span> Niveau de compte 20 minimum (Accès Ranked). Historique de parties visible sur Tracker.gg.</li>
+                                    <li><span class="text-cyan">ROCKET LEAGUE :</span> Titre "Vétéran" minimum ou historique compétitif vérifiable.</li>
+                                </ul>
+                            </li>
+                            <li><span class="rule-index">1.2.3.</span> L'Administration se réserve le droit de refuser l'accès à tout compte jugé "suspect" (ratio K/D aberrant, compte créé < 7 jours) sans avoir à se justifier.</li>
+                            
+                            <li class="mt-6"><span class="rule-index">1.3.1.</span> Chaque équipe doit fournir un Nom et un Logo (Format PNG, fond transparent).</li>
+                            <li><span class="rule-index">1.3.2.</span> <strong class="text-white">Affichage des Logos :</strong> Afin de garantir une homogénéité visuelle, un logo générique GOWRAX sera attribué par défaut sur l'overlay. <em>Exception :</em> Seules les équipes "High Roster" (Élite / Pro) pourront voir leur propre logo affiché, sous réserve de fournir un fichier conforme 5 heures avant l'événement.</li>
+                        </ul>
+                    </div>
+
+                    <div class="article-box">
+                        <h3 class="article-title">ARTICLE 2 : AVANT-MATCH ET RETARDS</h3>
+                        <ul class="rule-list">
+                            <li><span class="rule-index">2.1.1.</span> Les capitaines doivent confirmer leur présence (Check-in) sur Discord <strong>30 minutes</strong> avant le début officiel via le système mis en place par le staff.</li>
+                            <li><span class="rule-index">2.1.2.</span> L'équipe doit être complète, connectée en vocal sur le Discord GOWRAX et prête au plus tard <strong>5 minutes</strong> avant l'heure planifiée.</li>
+                        </ul>
+                        <div class="alert-box">
+                            <div class="alert-box-title">Tolérance Zéro sur les retards</div>
+                            <p class="text-sm text-gray-300"><span class="rule-index text-magenta">2.2.1.</span> Retard injustifié : Si une équipe n'est pas complète dans le lobby à l'heure H précise, elle est déclarée Forfait (FF) immédiatement.<br>
+                            <span class="rule-index text-magenta">2.2.2.</span> Retard justifié : Si prévenu via ticket avant l'heure, un délai de grâce unique de 5 minutes est accordé. Passé ce délai, le Forfait est irrévocable (mise à jour du jeu, problème internet, etc.).</p>
+                        </div>
+                    </div>
+
+                    <div class="article-box">
+                        <h3 class="article-title">ARTICLE 3 : CRÉATION DE LA PARTIE (STAFF HOSTING)</h3>
+                        <ul class="rule-list">
+                            <li><span class="rule-index">3.1.1.</span> La création des salons de jeu (Lobby privés) est <strong>exclusivement réservée aux Administrateurs GOWRAX</strong>. Il est formellement interdit aux joueurs de lancer la partie eux-mêmes.</li>
+                            <li><span class="rule-index">3.2.</span> <strong class="text-white">Procédure :</strong> L'Admin communique son ID ➔ Les Capitaines l'ajoutent ➔ L'Admin invite ➔ L'Admin vérifie les paramètres ➔ L'Admin donne le signal "LIVE" in-game.</li>
+                            <li><span class="rule-index">3.3.</span> <strong class="text-magenta">Interdiction de Start :</strong> Tout match lancé sans l'accord de l'Admin ou sans sa présence en "Observateur" sera annulé et recommencé à 0-0.</li>
+                        </ul>
+                    </div>
+                </section>
+
+                <section id="chap2" class="mb-20">
+                    <h2 class="chapter-title"><span class="chapter-number">02 //</span> Règles spécifiques par jeu</h2>
+                    
+                    <div class="article-box">
+                        <h3 class="article-title">ARTICLE 4 : VALORANT</h3>
+                        <div class="game-header text-red-400 border-red-400/30">Configuration Tactique</div>
+                        <ul class="rule-list">
+                            <li><span class="rule-index">4.1.</span> Format <strong>BO1</strong>. Serveur Paris ou Frankfurt. Cheats <strong>DÉSACTIVÉS</strong>. Mode Compétition 5v5 (ou Skirmish 2v2/3v3).</li>
+                            <li><span class="rule-index">4.2.</span> <strong class="text-white">Mapban :</strong> Effectué via l'outil tiers Mapban.gg. L'équipe qui ne bannit pas la dernière carte choisit son Side de départ.</li>
+                        </ul>
+                        <div class="mt-4 p-4 bg-black/40 border border-white/5">
+                            <div class="tech-font text-cyan text-xs mb-2 uppercase tracking-widest">Protocoles de Fin de Match & Pauses</div>
+                            <ul class="rule-list">
+                                <li><span class="rule-index">4.3.</span> <strong>Overtime :</strong> Win by 2 jusqu'à 20-20. À 20-20, la règle du <strong>Golden Round (Mort Subite)</strong> s'applique administrativement. L'équipe marquant le 21ème point gagne le match, peu importe l'affichage in-game.</li>
+                                <li><span class="rule-index">4.4.</span> <strong>Pauses :</strong> 2 pauses tactiques de 60s autorisées par équipe. <span class="text-magenta">Il est strictement interdit de mettre pause en plein round (Action phase).</span> En cas de crash, le round doit se terminer.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="article-box">
+                        <h3 class="article-title">ARTICLE 5 : ROCKET LEAGUE</h3>
+                        <div class="game-header text-blue-400 border-blue-400/30">Configuration Arène</div>
+                        <ul class="rule-list">
+                            <li><span class="rule-index">5.1.</span> Format <strong>BO3</strong>. Carte : DFH Stadium (Jour). Durée : 5 min. Serveur : Europe. Prolongations illimitées (Golden Goal).</li>
+                            <li><span class="rule-index">5.2.</span> <strong class="text-white">Déconnexions :</strong> Si un joueur crash après qu'un but ait été marqué ou après 30s de jeu, le match continue. <strong>Le Remake n'est autorisé que dans les 30 premières secondes SI AUCUN BUT n'a été marqué.</strong></li>
+                            <li><span class="rule-index">5.2.3.</span> Le FF (Forfait) n’est autorisé qu’à partir d’une minute trente (1:30) de match.</li>
+                        </ul>
+                    </div>
+
+                    <div class="article-box">
+                        <h3 class="article-title">ARTICLE 6 : BATTLE ROYALE (FORTNITE)</h3>
+                        <div class="game-header text-purple-400 border-purple-400/30">Protocoles de Survie</div>
+                        <p class="text-sm text-gray-300 mb-4">L'organisateur annonce 48h avant le tournoi quel protocole de scoring sera activé. Les équipes lancent en "Escouade Publique". Une session de temps stricte (ex: 21h-23h) est définie. Règle du Last Call : une partie lancée avant la fin du timer est valide.</p>
+                        
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="protocol-box protocol-slayer">
+                                <h4 class="tech-font text-lg tracking-widest mb-3">OPTION A : SLAYER (KILLRACE)</h4>
+                                <ul class="rule-list text-sm">
+                                    <li><strong>KILL :</strong> +1 Point</li>
+                                    <li><strong>DÉGÂTS :</strong> +3 Points / 100 Dgts</li>
+                                    <li><strong>MORT :</strong> <span class="text-magenta">-3 Points</span> par joueur mort</li>
+                                </ul>
+                                <div class="mt-3 pt-3 border-t border-magenta/20 text-xs text-gray-400">
+                                    Seules les 3 meilleures parties sont retenues pour le calcul final.
+                                </div>
+                            </div>
+
+                            <div class="protocol-box protocol-vanguard">
+                                <h4 class="tech-font text-lg tracking-widest mb-3">OPTION B : VANGUARD (MIXTE)</h4>
+                                <ul class="rule-list text-sm">
+                                    <li><strong>KILL :</strong> +1 Point</li>
+                                    <li><strong>DÉGÂTS :</strong> +1 Point / 100 Dgts</li>
+                                    <li><strong>MORT :</strong> <span class="text-magenta">-3 Points</span> par joueur mort</li>
+                                </ul>
+                                <div class="mt-3 pt-3 border-t border-cyan/20">
+                                    <div class="text-xs text-cyan mb-2">POINTS DE PLACEMENT (Non-cumulables)</div>
+                                    <ul class="rule-list text-xs">
+                                        <li>TOP 10 : +5 Pts | TOP 5 : +10 Pts</li>
+                                        <li>TOP 3 : +15 Pts | <strong>TOP 1 : +25 Pts</strong></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section id="chap3" class="mb-10">
+                    <h2 class="chapter-title"><span class="chapter-number">03 //</span> Diffusion, Fair-Play et Sanctions</h2>
+                    
+                    <div class="article-box">
+                        <h3 class="article-title">ARTICLE 7 : STREAMING ET INTÉGRITÉ</h3>
+                        <ul class="rule-list">
+                            <li><span class="rule-index">7.1.</span> <strong>POV Joueur :</strong> Les joueurs sont autorisés à diffuser sur leurs chaînes personnelles sans délai imposé. Ils assument l'entière responsabilité des risques de Streamhack.</li>
+                            <li><span class="rule-index">7.2.</span> <strong class="text-magenta">Streamhack :</strong> Il est strictement interdit à un joueur ou un coach de visionner le stream officiel GOWRAX ou le POV d'un adversaire en cours de match. Toute preuve entraînera une disqualification et un bannissement.</li>
+                        </ul>
+                    </div>
+
+                    <div class="article-box border-magenta/40 bg-[rgba(214,47,127,0.05)]">
+                        <h3 class="article-title text-magenta">ARTICLE 8 : CODE DE CONDUITE ET SANCTIONS</h3>
+                        <ul class="rule-list">
+                            <li><span class="rule-index">8.1.</span> <strong>Logiciels Tiers et Exploits :</strong> L'utilisation d'assistance (Aimbot, Wallhack, Macros) ou de bugs (Pixel-walking) est sanctionnée par un <strong class="text-magenta">BANNISSEMENT À VIE</strong> et un signalement aux éditeurs.</li>
+                            <li><span class="rule-index">8.2.</span> <strong>Backseating (Coach) :</strong> Si un Coach communique avec ses joueurs pendant un round actif :<br>
+                            - 1ère infraction : Perte automatique de la carte.<br>
+                            - 2ème infraction : Disqualification de l'équipe du tournoi.</li>
+                            <li><span class="rule-index">8.3.</span> <strong>Toxicité :</strong> Tout propos raciste, sexiste, homophobe ou menaçant entraîne l'exclusion immédiate. Les admins peuvent prendre des mesures jusqu'à 48h après la compétition, allant de l'avertissement au bannissement définitif.</li>
+                        </ul>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="mt-20 pb-10 border-t border-white/5 pt-10">
+        <div class="max-w-4xl mx-auto text-center">
+            <p class="tech-font text-[9px] md:text-[10px] text-gray-600 tracking-widest leading-relaxed uppercase px-4">
+                GOWRAX.ME was created under Riot Games' <a href="https://www.riotgames.com/en/legal" target="_blank" class="text-gray-400 hover:text-cyan underline decoration-dotted transition-colors">"Legal Jibber Jabber"</a> policy using assets owned by Riot Games. 
+                Riot Games does not endorse or sponsor this project.
+            </p>
+            <p class="accent-font text-[8px] text-gray-700 mt-4 opacity-50 uppercase tracking-[0.4em] font-mono">
+                © 2026 GOWRAX // RULEBOOK V1.0
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        // Moteur d'étoiles filantes
+        const canvas = document.getElementById('bg-canvas'); 
+        const ctx = canvas.getContext('2d');
+        let stars = []; let shootingStars = [];
+        let globalMouseX = window.innerWidth / 2; let globalMouseY = window.innerHeight / 2;
+        const cursor = document.getElementById('custom-cursor');
+        
+        function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+        window.addEventListener('resize', resize); resize();
+
+        window.addEventListener('mousemove', e => { 
+            globalMouseX = e.clientX; globalMouseY = e.clientY;
+            if(cursor) { cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; }
+        });
+
+        class Star {
+            constructor() {
+                this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.5; this.alpha = Math.random();
+                this.speed = (Math.random() * 0.05) + 0.01; 
+                this.parallax = this.size * 0.005;
+                this.fadeSpeed = Math.random() * 0.02 + 0.005;
+                this.fadingOut = Math.random() > 0.5;
+            }
+            update() {
+                this.y -= this.speed;
+                if (this.y < -10) { this.y = canvas.height + 10; this.x = Math.random() * canvas.width; }
+                if (this.fadingOut) { this.alpha -= this.fadeSpeed; if (this.alpha <= 0.1) this.fadingOut = false; } 
+                else { this.alpha += this.fadeSpeed; if (this.alpha >= 0.8) this.fadingOut = true; }
+            }
+            draw() {
+                const offsetX = (globalMouseX - canvas.width / 2) * this.parallax;
+                const offsetY = (globalMouseY - canvas.height / 2) * this.parallax;
+                ctx.fillStyle = `rgba(240, 242, 245, ${this.alpha})`;
+                ctx.beginPath(); ctx.arc(this.x - offsetX, this.y - offsetY, this.size, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        class ShootingStar {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = Math.random() * canvas.width * 1.5; this.y = -100; 
+                this.length = Math.random() * 150 + 50;
+                this.speedX = -(Math.random() * 15 + 10); this.speedY = Math.random() * 10 + 5;     
+                this.opacity = 1; this.color = Math.random() > 0.5 ? '214, 47, 127' : '0, 240, 255'; 
+            }
+            update() { this.x += this.speedX; this.y += this.speedY; this.opacity -= 0.015; }
+            draw() {
+                const grad = ctx.createLinearGradient(this.x, this.y, this.x - (this.speedX * 3), this.y - (this.speedY * 3));
+                grad.addColorStop(0, `rgba(${this.color}, ${this.opacity})`);
+                grad.addColorStop(1, `rgba(${this.color}, 0)`);
+                ctx.beginPath(); ctx.strokeStyle = grad; ctx.lineWidth = 2; ctx.lineCap = "round";
+                ctx.moveTo(this.x, this.y); ctx.lineTo(this.x - (this.speedX * 3), this.y - (this.speedY * 3)); ctx.stroke();
+                ctx.fillStyle = `rgba(255,255,255,${this.opacity})`; ctx.beginPath(); ctx.arc(this.x, this.y, 2, 0, Math.PI * 2); ctx.fill();
+            }
+        }
+
+        const isMobile = window.innerWidth <= 768;
+        for (let i = 0; i < (isMobile ? 80 : 200); i++) stars.push(new Star());
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(s => { s.update(); s.draw(); });
+            shootingStars.forEach((ss, index) => { ss.update(); ss.draw(); if (ss.opacity <= 0) shootingStars.splice(index, 1); });
+            if (Math.random() < 0.02) shootingStars.push(new ShootingStar());
+            requestAnimationFrame(animateStars);
+        }
+        animateStars();
+
+        // Gestion du Sommaire Actif
+        const tocLinks = document.querySelectorAll('.toc-link');
+        const sections = document.querySelectorAll('section');
+        
+        window.addEventListener('scroll', () => {
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                if (scrollY >= sectionTop - 150) { current = section.getAttribute('id'); }
+            });
+            tocLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href').substring(1) === current) { link.classList.add('active'); }
+            });
+        });
+    </script>
+</body>
+</html>

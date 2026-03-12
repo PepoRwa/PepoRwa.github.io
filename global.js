@@ -1,25 +1,24 @@
 /**
- * GOWRAX - Global System Injector V7.1
+ * GOWRAX - Global System Injector V7.2 (RGPD Compliant)
  * --------------------------------------------------
  * NOUVEAU : Auto-Injection de la Navigation Dynamique !
  * INCLUS : Cookies (HUD), Ghost Link, Supabase Auto-load, Broadcast
  * SECURE : Mode Maintenance Global intégré
+ * COMPLIANCE : Strict RGPD (Opt-in for Analytics)
  * --------------------------------------------------
  */
 
 (function() {
     // --- 0. SYSTÈME DE MAINTENANCE (LE BOUTON ROUGE) ---
     const MAINTENANCE_MODE = false; // Passe à 'false' pour rouvrir le site
-    const MAINTENANCE_PAGE = '/maintenance.html'; // La page de destination
+    const MAINTENANCE_PAGE = '/maintenance.html';
 
     if (MAINTENANCE_MODE) {
         const path = window.location.pathname;
-        // On autorise la page de maintenance (pour éviter une boucle infinie), le CEO et tout le dossier Roster
         const isAllowed = path.includes(MAINTENANCE_PAGE) || path.includes('/ceo') || path.includes('/roster');
-        
         if (!isAllowed) {
-            window.location.replace(MAINTENANCE_PAGE); // Replace évite que l'utilisateur fasse "Retour"
-            return; // On stoppe l'exécution du reste du script
+            window.location.replace(MAINTENANCE_PAGE);
+            return;
         }
     }
 
@@ -43,14 +42,12 @@
         checkAndInjectBroadcast();
     };
 
-    // --- 2. LE MOTEUR DE NAVIGATION DYNAMIQUE (V7.0) ---
+    // --- 2. LE MOTEUR DE NAVIGATION DYNAMIQUE ---
     const injectNavigation = () => {
         const path = window.location.pathname;
 
-        // 🛡️ EXCEPTION MAJEURE : On ne touche pas à la page CEO ni Maintenance !
         if (path.includes('/ceo') || path.includes('/maintenance')) return;
 
-        // 1. Détermination du Titre (Logo)
         let suffix = "HQ";
         if (path.includes('/news/post.html')) suffix = "REPORT";
         else if (path.includes('/news')) suffix = "ARCHIVES";
@@ -68,7 +65,6 @@
         else if (path.includes('/partners')) suffix = "NETWORK";
         else if (path.includes('/about')) suffix = "INFO";
 
-        // 2. Détermination de la page active (Le lien souligné)
         const isHome = path === '/' || path === '/index.html';
         
         const getNavClass = (target) => {
@@ -78,7 +74,6 @@
             return path.includes(target) ? activeClass : 'nav-link';
         };
 
-        // 3. Construction du Header HTML
         const headerHTML = `
         <header class="relative z-[100] p-6 flex justify-between items-center border-b border-white/10 backdrop-blur-xl bg-black/40">
             <div class="flex items-center gap-4">
@@ -128,15 +123,12 @@
             <a href="/roster/calendar.html" class="text-2xl tracking-widest pointer-events-auto text-white" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">CALENDRIER</a>
             <a href="/partners/index.html" class="text-2xl tracking-widest pointer-events-auto text-[#D4AF37]" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">PARTNERS</a>
             <a href="/contact/index.html" class="text-2xl tracking-widest border border-magenta/40 px-10 py-3 text-magenta pointer-events-auto" style="font-family: 'Rajdhani', sans-serif;" onclick="window.toggleGlobalNav(false)">SIGNAL</a>
-            
         </div>
         `;
 
-        // 4. Injection dans le DOM (Juste après l'ouverture du <body>)
         document.body.insertAdjacentHTML('afterbegin', headerHTML);
     };
 
-    // Logique globale du menu mobile
     window.toggleGlobalNav = function(state) { 
         const nav = document.getElementById('global-mobile-nav');
         if(state) {
@@ -150,8 +142,7 @@
         }
     };
 
-
-    // --- 3. MODULES VISUELS (ICONS, GA, COOKIES, GHOST LINK) ---
+    // --- 3. MODULES VISUELS & RGPD (ICONS, GA, COOKIES) ---
     const injectIcons = () => {
         try {
             const favicon = document.createElement('link');
@@ -163,46 +154,80 @@
         } catch (e) {}
     };
 
+    // 🛡️ CORRECTION RGPD : On lance GA UNIQUEMENT si autorisé
     const injectAnalytics = () => {
         if (!GA_MEASUREMENT_ID || GA_MEASUREMENT_ID.includes('XXX')) return;
+        
+        // On vérifie le consentement avant d'injecter
+        const hasConsent = localStorage.getItem('grx_cookies_accepted') === 'true';
+        if (!hasConsent) return; 
+
         try {
             window.dataLayer = window.dataLayer || [];
             window.gtag = function(){ dataLayer.push(arguments); };
             gtag('js', new Date()); gtag('config', GA_MEASUREMENT_ID);
-            const gaScript = document.createElement('script');
-            gaScript.async = true;
-            gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
-            document.head.appendChild(gaScript);
+            
+            // Ne pas injecter deux fois si l'utilisateur navigue
+            if (!document.getElementById('ga-script')) {
+                const gaScript = document.createElement('script');
+                gaScript.id = 'ga-script';
+                gaScript.async = true;
+                gaScript.src = `https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`;
+                document.head.appendChild(gaScript);
+                console.log("[GOWRAX OS] Analytics Loaded (Consent Granted)");
+            }
         } catch (e) {}
     };
 
+    // 🛡️ CORRECTION RGPD : Ajout du bouton "Refuser" et liaison avec Analytics
     const injectCookieHUD = () => {
-        if (localStorage.getItem('grx_cookies_accepted')) return;
+        // Si l'utilisateur a déjà répondu (oui ou non), on ne montre pas la popup
+        if (localStorage.getItem('grx_cookies_accepted') !== null) {
+            // Si c'est oui, on lance les analytics
+            if (localStorage.getItem('grx_cookies_accepted') === 'true') injectAnalytics();
+            return;
+        }
+
         const hud = document.createElement('div');
         hud.id = "grx-cookie-alert";
         hud.style.cssText = `
             position: fixed; bottom: 20px; right: 20px; z-index: 10000;
-            background: rgba(2, 2, 5, 0.9); border: 1px solid #D62F7F;
-            padding: 12px; font-family: 'Share Tech Mono', monospace;
-            width: 260px; box-shadow: 0 0 20px rgba(214, 47, 127, 0.2);
+            background: rgba(2, 2, 5, 0.95); border: 1px solid #D62F7F;
+            padding: 15px; font-family: 'Share Tech Mono', monospace;
+            width: 300px; box-shadow: 0 0 20px rgba(214, 47, 127, 0.2);
             transition: 0.5s; backdrop-filter: blur(10px);
         `;
         hud.innerHTML = `
-            <div style="font-size: 8px; color: #D62F7F; letter-spacing: 2px; margin-bottom: 5px;">[ SYS_MAINTENANCE ]</div>
-            <div style="font-size: 10px; color: #ccc; margin-bottom: 10px; line-height: 1.3;">
-                Liaison optimisée via cookies techniques uniquement.
+            <div style="font-size: 9px; color: #D62F7F; letter-spacing: 2px; margin-bottom: 8px;">[ TRANSMISSION SÉCURISÉE - RGPD ]</div>
+            <div style="font-size: 11px; color: #ccc; margin-bottom: 15px; line-height: 1.4;">
+                GOWRAX utilise des cookies techniques pour le fonctionnement du HUD et des trackers d'analyse (Google Analytics) pour mesurer l'audience. Acceptez-vous ces trackers ?
             </div>
-            <div style="display: flex; gap: 10px;">
-                <button id="btn-accept-grx" style="flex: 1; background: #D62F7F; color: #fff; border: none; font-size: 9px; padding: 5px; cursor: pointer; text-transform: uppercase;">Accepter</button>
-                <a href="/privacy.html" style="flex: 1; border: 1px solid #333; color: #666; font-size: 8px; text-decoration: none; display: flex; align-items: center; justify-content: center; text-transform: uppercase;">Infos</a>
+            <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <button id="btn-accept-grx" style="flex: 1; min-width: 45%; background: #D62F7F; color: #fff; border: 1px solid #D62F7F; font-size: 10px; padding: 8px; cursor: pointer; text-transform: uppercase; font-weight: bold;">Accepter</button>
+                <button id="btn-refuse-grx" style="flex: 1; min-width: 45%; background: transparent; color: #aaa; border: 1px solid #555; font-size: 10px; padding: 8px; cursor: pointer; text-transform: uppercase;">Refuser</button>
+                <a href="/privacy.html" style="flex: 100%; text-align: center; color: #666; font-size: 9px; text-decoration: underline; margin-top: 5px; text-transform: uppercase;">Politique de confidentialité</a>
             </div>
         `;
         document.body.appendChild(hud);
-        document.getElementById('btn-accept-grx').onclick = () => {
-            localStorage.setItem('grx_cookies_accepted', 'true');
+
+        const closeHUD = () => {
             hud.style.opacity = '0';
             hud.style.transform = 'translateX(20px)';
             setTimeout(() => hud.remove(), 500);
+        };
+
+        // Action Accepter
+        document.getElementById('btn-accept-grx').onclick = () => {
+            localStorage.setItem('grx_cookies_accepted', 'true');
+            injectAnalytics(); // On lance GA dynamiquement !
+            closeHUD();
+        };
+
+        // Action Refuser (RGPD Obligatoire)
+        document.getElementById('btn-refuse-grx').onclick = () => {
+            localStorage.setItem('grx_cookies_accepted', 'false'); // On note le refus
+            closeHUD();
+            // On ne lance PAS injectAnalytics()
         };
     };
 
@@ -302,7 +327,7 @@
         injectNavigation();
         injectIcons();
         enforceSecurity();
-        injectAnalytics();
+        // injectAnalytics() est retiré d'ici, il est géré par injectCookieHUD() !
         injectCookieHUD();
         injectGhostLink();
         initGowrax();      
