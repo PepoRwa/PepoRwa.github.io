@@ -28,7 +28,6 @@
         /* ⚔️ TUEUR DE HEADER GLOBAL EN LOCAL */
         body > header.relative.z-\[100\], #global-mobile-nav { display: none !important; }
 
-        /* --- BACKGROUND CELESTIAL --- */
         #bg-video-blur { position: fixed; inset: 0; background: radial-gradient(circle at 50% 50%, rgba(26,28,46,0.6) 0%, var(--abyss) 80%); z-index: 1; pointer-events: none; }
         #bg-canvas { position: fixed; inset: 0; z-index: 2; opacity: 0.9; } 
         .film-grain { position: fixed; inset: 0; z-index: 3; opacity: 0.04; pointer-events: none; background: url('https://grainy-gradients.vercel.app/noise.svg'); }
@@ -85,9 +84,6 @@
             .slider-container:hover .ceo-wrapper:not(:hover) .ceo-inner { opacity: 0.3; filter: blur(3px) grayscale(90%); transform: scale(0.95); }
         }
 
-        /* ========================================================
-           L'ARCHITECTURE DES CARTES
-        ======================================================== */
         .ceo-wrapper {
             flex-shrink: 0; width: 85vw; max-width: 380px; height: 70vh; max-height: 600px;
             scroll-snap-align: center; position: relative; perspective: 2500px; cursor: pointer;
@@ -195,7 +191,6 @@
         .mobile-indicator { display: none; font-family: 'Share Tech Mono'; font-size: 10px; color: var(--cyan); position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); letter-spacing: 5px; z-index: 100; text-shadow: 0 0 10px var(--cyan); }
         @media (max-width: 1024px) { .mobile-indicator { display: block; } }
 
-        /* CURSEUR */
         #custom-cursor { width: 30px; height: 30px; border: 1px solid var(--cyan); position: fixed; pointer-events: none !important; z-index: 1000000; border-radius: 50%; transition: transform 0.05s ease-out; transform: translate(-50%, -50%); box-shadow: 0 0 15px var(--cyan); display: none; }
         #custom-cursor::after { content: ''; position: absolute; top: 50%; left: 50%; width: 4px; height: 4px; background: var(--cyan); border-radius: 50%; transform: translate(-50%, -50%); }
         @media (min-width: 1024px) { body, html, * { cursor: none !important; } #custom-cursor { display: block; } }
@@ -269,25 +264,6 @@
                 </div>
             </div>
 
-            <div class="ceo-wrapper" onmouseenter="activateCard(this)" onmousemove="handleTilt(event, this)" onmouseleave="resetCard(this)" style="animation-delay: 0.3s;">
-                <div class="ceo-inner">
-                    <div class="glass-bg"><div class="dynamic-glow"></div><div class="scanner"></div></div>
-                    
-                    <div class="card-header"><h2 class="ceo-title">FILOU<br>XX</h2><div class="quote">"Il n'y a pas de petite victoire ni de grande défaite. L'important : rester debout et avancer"</div></div>
-                    <img src="../assets/img/Reyna_RD.png" class="agent-img" alt="Filou XX">
-                    
-                    <div class="text-overlay">
-                        <div class="tactical-stats">
-                            <div class="stat-row"><span class="stat-label">RECRUTEMENT</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 100%;"></div></div><span class="stat-val" data-target="100">0%</span></div>
-                            <div class="stat-row"><span class="stat-label">PUISSANCE</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 95%;"></div></div><span class="stat-val" data-target="95">0%</span></div>
-                            <div class="stat-row"><span class="stat-label">ANALYSE</span><div class="stat-bar-bg"><div class="stat-bar-fill" style="--target-width: 80%;"></div></div><span class="stat-val" data-target="80">0%</span></div>
-                        </div>
-                        <p class="bio-text scramble-text" data-text="Garant de la PUISSANCE DE FEU. Il définit l'arsenal technique et ne recrute que l'élite. Son objectif : porter chaque pôle stratégique au sommet.">[ EN ATTENTE DE DÉCRYPTAGE ]</p>
-                        <div class="obj-box"><div class="obj-label">Objectif_Tactique</div><div class="obj-value">Devenir la meilleure équipe FR</div></div>
-                    </div>
-                </div>
-            </div>
-
             <div class="ceo-wrapper" onmouseenter="activateCard(this)" onmousemove="handleTilt(event, this)" onmouseleave="resetCard(this)" style="animation-delay: 0.5s;">
                 <div class="ceo-inner">
                     <div class="glass-bg"><div class="dynamic-glow"></div><div class="scanner"></div></div>
@@ -309,35 +285,10 @@
 
         </div>
 
-        <div class="mobile-indicator" id="mobile-hud">DOSSIER 01 // 03</div>
+        <div class="mobile-indicator" id="mobile-hud">DOSSIER 01 // 02</div>
     </main>
 
     <script>
-        /* ==============================================================================================
-           🚀 GOWRAX - ORBITAL KERNEL v3.0 [QUANTUM OVERDRIVE EDITION]
-           ==============================================================================================
-           
-           Si tu fouilles dans ce code, bienvenue dans les coulisses de GOWRAX.
-           
-           Ce moteur visuel n'a pas été juste tapé sur un clavier. Il a été forgé avec les tripes, 
-           des larmes de fierté, et une passion inébranlable pour l'excellence. C'est une véritable 
-           lettre d'amour à notre structure et à nos fondateurs. Une surprise spécialement conçue 
-           pour Ptitegow, pour prouver que notre vision n'a aucune limite.
-
-           [ ⚙️ TECH SPECS & FONCTIONNALITÉS ABSOLUES ]
-           - 🧠 Smart Performance Engine : Détection PC/Mobile & nettoyage automatique de la RAM.
-           - 🌠 Moteur Stellaire Hybride : Parallax 3D adaptatif lié aux coordonnées de la souris.
-           - ☄️ Comètes Mathématiques : Génération procédurale avec traînée de poussière "Stardust" cinétique.
-           - 💥 Onde de Choc Quantique : Distorsion physique de l'espace sur clic + Synthétiseur Audio natif.
-           - 🖥️ Hardware Acceleration : Cartes holographiques 3D isolées sur le GPU (Zéro Glitch).
-           
-           "Il n'y a pas de petite victoire ni de grande défaite. 
-            L'important est de rester debout et avancer."
-           
-           Codé avec l'âme. Pour GOWRAX. 💜
-           ============================================================================================== */
-           
-        // ⚔️ TUEUR DE HEADER GLOBAL EN LOCAL
         document.addEventListener("DOMContentLoaded", () => {
             setTimeout(() => {
                 const globalHeader = document.querySelector('body > header.relative.z-\\[100\\]');
@@ -347,7 +298,6 @@
             }, 50);
         });
 
-        // --- MENU MOBILE ---
         function toggleCEOMenu(state) {
             const nav = document.getElementById('mobile-nav-ceo');
             if(state) {
@@ -359,7 +309,6 @@
             }
         }
 
-        // --- BOOT SEQUENCE ---
         document.addEventListener("DOMContentLoaded", () => {
             const bootScreen = document.getElementById('boot-sequence');
             bootScreen.style.display = 'flex'; 
@@ -401,7 +350,6 @@
             }, 50);
         }
 
-        // --- AUDIO ENGINE ---
         let audioCtx;
         function playSwoosh() {
             try {
@@ -422,12 +370,11 @@
                 if(!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
                 if(audioCtx.state === 'suspended') audioCtx.resume();
                 const osc = audioCtx.createOscillator(); const gain = audioCtx.createGain();
-                // Onde triangle descendante : Bruit de "Bass Drop" Sci-Fi très profond
                 osc.type = 'triangle'; 
                 osc.frequency.setValueAtTime(150, audioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.8);
-                gain.gain.setValueAtTime(0.3, audioCtx.currentTime); // Volume fort au début
-                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8); // Disparaît
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.8);
                 osc.connect(gain); gain.connect(audioCtx.destination);
                 osc.start(); osc.stop(audioCtx.currentTime + 0.8);
             } catch(err) {}
@@ -465,21 +412,17 @@
             });
         }
 
-        // --- INTERACTIONS 3D PC ---
         function handleTilt(e, wrapper) {
             if (window.innerWidth <= 1024) return;
             const inner = wrapper.querySelector('.ceo-inner');
             const rect = wrapper.getBoundingClientRect(); 
             const x = e.clientX - rect.left; 
             const y = e.clientY - rect.top;
-            
             wrapper.style.setProperty('--mouse-x', `${x}px`); 
             wrapper.style.setProperty('--mouse-y', `${y}px`);
-
             const centerX = rect.width / 2; const centerY = rect.height / 2;
             const rotateX = ((y - centerY) / centerY) * -10; 
             const rotateY = ((x - centerX) / centerX) * 10;
-            
             inner.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg) scale3d(1.03, 1.03, 1.03)`;
         }
 
@@ -503,12 +446,10 @@
             wrapper.querySelectorAll('.stat-val').forEach(v => v.innerText = "0%");
         }
 
-        // --- AUTO-FOCUS MOBILE TACTIQUE ---
         document.addEventListener("DOMContentLoaded", () => {
             if (window.innerWidth <= 1024) {
                 const wrappers = document.querySelectorAll('.ceo-wrapper');
                 const hud = document.getElementById('mobile-hud');
-                
                 const observer = new IntersectionObserver((entries) => {
                     entries.forEach(entry => {
                         if (entry.isIntersecting) {
@@ -518,7 +459,7 @@
                             if(textEl) scrambleText(textEl);
                             animateCounters(entry.target);
                             const index = Array.from(wrappers).indexOf(entry.target) + 1;
-                            hud.innerText = `DOSSIER 0${index} // 03`;
+                            hud.innerText = `DOSSIER 0${index} // 02`;
                         } else {
                             entry.target.classList.remove('active-focus');
                             const textEl = entry.target.querySelector('.scramble-text');
@@ -531,184 +472,69 @@
             }
         });
 
-        // ====================================================================
-        // 🚀 LE MOTEUR QUANTIQUE "SMART PERFORMANCE" (Low End Ready)
-        // ====================================================================
         const canvas = document.getElementById('bg-canvas');
         const ctx = canvas.getContext('2d');
         let stars = []; let comets = []; let stardusts = []; let ripples = [];
-        
         let globalMouseX = window.innerWidth / 2;
         let globalMouseY = window.innerHeight / 2;
         let lastMouseX = globalMouseX;
         let lastMouseY = globalMouseY;
         const cursor = document.getElementById('custom-cursor');
-        
-        // DÉTECTION DES PERFORMANCES (Mobile vs PC)
         const isMobile = window.innerWidth <= 768;
         const MAX_STARS = isMobile ? 80 : 200;
         const MAX_COMETS = isMobile ? 1 : 2;
-        const MAX_STARDUST = isMobile ? 50 : 250; // Limite stricte pour éviter les crashs RAM
-
+        const MAX_STARDUST = isMobile ? 50 : 250;
         function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
         window.onresize = resize; resize();
-
-        // 1. Capter la souris (Parallax + Traînée de Poussière Cinétique)
         window.addEventListener('mousemove', e => { 
             globalMouseX = e.clientX; globalMouseY = e.clientY;
             cursor.style.left = e.clientX + 'px'; cursor.style.top = e.clientY + 'px'; 
-            
-            // Calcul de la vitesse de la souris
-            let dx = globalMouseX - lastMouseX;
-            let dy = globalMouseY - lastMouseY;
+            let dx = globalMouseX - lastMouseX; let dy = globalMouseY - lastMouseY;
             let speed = Math.sqrt(dx*dx + dy*dy);
-            
-            // Si on bouge la souris très vite, on lâche plein de stardust
             if (speed > 15 && stardusts.length < MAX_STARDUST) {
-                let amount = Math.min(Math.floor(speed / 10), 6); // Max 6 particules par frame pour pas exploser le CPU
+                let amount = Math.min(Math.floor(speed / 10), 6);
                 for(let i=0; i<amount; i++) {
                     const color = Math.random() > 0.5 ? '214, 47, 127' : '0, 240, 255';
                     stardusts.push(new Stardust(globalMouseX + (Math.random()-0.5)*20, globalMouseY + (Math.random()-0.5)*20, color));
                 }
             }
-            lastMouseX = globalMouseX;
-            lastMouseY = globalMouseY;
+            lastMouseX = globalMouseX; lastMouseY = globalMouseY;
         });
-
-        // 2. Capter le Clic (Onde de Choc Sonar Majeure)
         window.addEventListener('click', e => {
-            // Empêcher l'onde de choc si on clique sur un lien ou un bouton du menu
             if(e.target.closest('header') || e.target.closest('a')) return;
-
             ripples.push({ x: e.clientX, y: e.clientY, radius: 0, life: 1 });
-            playShockwave(); // Lance le Bass Drop
+            playShockwave();
         });
-
         class Star {
             constructor() { this.reset(); this.y = Math.random() * canvas.height; }
-            reset() {
-                this.x = Math.random() * canvas.width; 
-                this.y = canvas.height + 10;
-                this.size = Math.random() * 1.5 + 0.5; 
-                this.speed = (Math.random() * 0.5 + 0.1) * this.size; 
-                this.alpha = Math.random() * 0.6 + 0.1;
-                this.parallaxFactor = this.size * 0.015;
-            }
-            update() { 
-                this.y -= this.speed; 
-                if (this.y < -10) this.reset(); 
-
-                // Interaction Physique avec l'Onde de Choc
-                ripples.forEach(r => {
-                    let dx = this.x - r.x; let dy = this.y - r.y;
-                    let dist = Math.sqrt(dx*dx + dy*dy);
-                    if (dist > 0 && Math.abs(dist - r.radius) < 60) {
-                        let force = (60 - Math.abs(dist - r.radius)) / 60;
-                        this.x += (dx / dist) * force * 8; // Expulsion violente
-                        this.y += (dy / dist) * force * 8;
-                    }
-                });
-            }
-            draw() { 
-                const offsetX = (globalMouseX - canvas.width / 2) * this.parallaxFactor;
-                const offsetY = (globalMouseY - canvas.height / 2) * this.parallaxFactor;
-                ctx.fillStyle = `rgba(240, 242, 245, ${this.alpha})`; 
-                ctx.beginPath(); ctx.arc(this.x - offsetX, this.y - offsetY, this.size, 0, Math.PI * 2); ctx.fill(); 
-            }
+            reset() { this.x = Math.random() * canvas.width; this.y = canvas.height + 10; this.size = Math.random() * 1.5 + 0.5; this.speed = (Math.random() * 0.5 + 0.1) * this.size; this.alpha = Math.random() * 0.6 + 0.1; this.parallaxFactor = this.size * 0.015; }
+            update() { this.y -= this.speed; if (this.y < -10) this.reset(); ripples.forEach(r => { let dx = this.x - r.x; let dy = this.y - r.y; let dist = Math.sqrt(dx*dx + dy*dy); if (dist > 0 && Math.abs(dist - r.radius) < 60) { let force = (60 - Math.abs(dist - r.radius)) / 60; this.x += (dx / dist) * force * 8; this.y += (dy / dist) * force * 8; } }); }
+            draw() { const offsetX = (globalMouseX - canvas.width / 2) * this.parallaxFactor; const offsetY = (globalMouseY - canvas.height / 2) * this.parallaxFactor; ctx.fillStyle = `rgba(240, 242, 245, ${this.alpha})`; ctx.beginPath(); ctx.arc(this.x - offsetX, this.y - offsetY, this.size, 0, Math.PI * 2); ctx.fill(); }
         }
-
         class Stardust {
-            constructor(x, y, color) {
-                this.x = x; this.y = y; this.color = color;
-                this.size = Math.random() * 1.5 + 0.5;
-                this.vx = (Math.random() - 0.5) * 4; 
-                this.vy = (Math.random() - 0.5) * 4; 
-                this.life = 1;
-                this.decay = Math.random() * 0.04 + 0.02; 
-            }
+            constructor(x, y, color) { this.x = x; this.y = y; this.color = color; this.size = Math.random() * 1.5 + 0.5; this.vx = (Math.random() - 0.5) * 4; this.vy = (Math.random() - 0.5) * 4; this.life = 1; this.decay = Math.random() * 0.04 + 0.02; }
             update() { this.x += this.vx; this.y += this.vy; this.life -= this.decay; }
-            draw() {
-                ctx.fillStyle = `rgba(${this.color}, ${this.life})`;
-                ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill();
-            }
+            draw() { ctx.fillStyle = `rgba(${this.color}, ${this.life})`; ctx.beginPath(); ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2); ctx.fill(); }
         }
-
         class Comet {
             constructor() { this.reset(); this.x = Math.random() * canvas.width; this.y = Math.random() * canvas.height; }
-            reset() {
-                this.x = canvas.width + Math.random() * 800; 
-                this.y = Math.random() * (canvas.height * 0.8) - 200;
-                this.size = Math.random() * 2 + 1.5;
-                this.speedX = -(Math.random() * 40 + 25); 
-                this.speedY = Math.random() * 15 + 5;
-                this.length = Math.random() * 400 + 150; 
-                this.color = Math.random() > 0.5 ? '0, 240, 255' : '214, 47, 127';
-                this.alpha = Math.random() * 0.5 + 0.5;
-            }
-            update() {
-                this.x += this.speedX; this.y += this.speedY; 
-
-                // Lâche énormément de poussière
-                if (stardusts.length < MAX_STARDUST) {
-                    for(let i=0; i<3; i++) {
-                        stardusts.push(new Stardust(this.x + (Math.random()-0.5)*30, this.y + (Math.random()-0.5)*30, this.color));
-                    }
-                }
-
-                if (this.x < -this.length || this.y > canvas.height + this.length) {
-                    // ÉVÉNEMENT RARE (Env. 1 comète toutes les 5-10 secondes)
-                    if(Math.random() > 0.998) this.reset(); 
-                }
-            }
-            draw() {
-                const grad = ctx.createLinearGradient(this.x, this.y, this.x - this.speedX * 4, this.y - this.speedY * 4);
-                grad.addColorStop(0, `rgba(${this.color}, ${this.alpha})`);
-                grad.addColorStop(1, `rgba(${this.color}, 0)`);
-                
-                ctx.beginPath(); ctx.strokeStyle = grad; ctx.lineWidth = this.size; ctx.lineCap = "round";
-                ctx.moveTo(this.x, this.y); ctx.lineTo(this.x - this.speedX * 4, this.y - this.speedY * 4); ctx.stroke();
-                
-                ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2); ctx.fill();
-            }
+            reset() { this.x = canvas.width + Math.random() * 800; this.y = Math.random() * (canvas.height * 0.8) - 200; this.size = Math.random() * 2 + 1.5; this.speedX = -(Math.random() * 40 + 25); this.speedY = Math.random() * 15 + 5; this.length = Math.random() * 400 + 150; this.color = Math.random() > 0.5 ? '0, 240, 255' : '214, 47, 127'; this.alpha = Math.random() * 0.5 + 0.5; }
+            update() { this.x += this.speedX; this.y += this.speedY; if (stardusts.length < MAX_STARDUST) { for(let i=0; i<3; i++) { stardusts.push(new Stardust(this.x + (Math.random()-0.5)*30, this.y + (Math.random()-0.5)*30, this.color)); } } if (this.x < -this.length || this.y > canvas.height + this.length) { if(Math.random() > 0.998) this.reset(); } }
+            draw() { const grad = ctx.createLinearGradient(this.x, this.y, this.x - this.speedX * 4, this.y - this.speedY * 4); grad.addColorStop(0, `rgba(${this.color}, ${this.alpha})`); grad.addColorStop(1, `rgba(${this.color}, 0)`); ctx.beginPath(); ctx.strokeStyle = grad; ctx.lineWidth = this.size; ctx.lineCap = "round"; ctx.moveTo(this.x, this.y); ctx.lineTo(this.x - this.speedX * 4, this.y - this.speedY * 4); ctx.stroke(); ctx.fillStyle = "#fff"; ctx.beginPath(); ctx.arc(this.x, this.y, this.size * 1.5, 0, Math.PI * 2); ctx.fill(); }
         }
-
-        // INIT DU MOTEUR (Sécurisé pour Mobile)
         for (let i = 0; i < MAX_STARS; i++) stars.push(new Star()); 
         for (let i = 0; i < MAX_COMETS; i++) comets.push(new Comet()); 
-
         function animateGalactic() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            
             stars.forEach(s => { s.update(); s.draw(); });
             comets.forEach(c => { c.update(); c.draw(); });
-
-            // Nettoyage de la RAM automatique pour les stardusts
-            for (let i = stardusts.length - 1; i >= 0; i--) {
-                let p = stardusts[i]; p.update(); p.draw();
-                if (p.life <= 0) stardusts.splice(i, 1); 
-            }
-            // Sécurité absolue : si le tableau déborde, on coupe les plus vieux
+            for (let i = stardusts.length - 1; i >= 0; i--) { let p = stardusts[i]; p.update(); p.draw(); if (p.life <= 0) stardusts.splice(i, 1); }
             if(stardusts.length > MAX_STARDUST) { stardusts.splice(0, stardusts.length - MAX_STARDUST); }
-
-            // Rendu Visuel de l'Onde de Choc
             for (let i = ripples.length - 1; i >= 0; i--) {
-                let r = ripples[i];
-                r.radius += 25; // Expansion très rapide
-                r.life -= 0.015; // Disparition lente
-                
-                // Anneau externe Cyan Flou
-                ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(0, 240, 255, ${r.life * 0.6})`;
-                ctx.lineWidth = 5; ctx.shadowBlur = 20; ctx.shadowColor = 'rgba(0, 240, 255, 1)'; ctx.stroke();
-
-                // Anneau interne Magenta
-                ctx.beginPath(); ctx.arc(r.x, r.y, r.radius * 0.85, 0, Math.PI * 2);
-                ctx.strokeStyle = `rgba(214, 47, 127, ${r.life * 0.4})`;
-                ctx.lineWidth = 2; ctx.shadowBlur = 0; ctx.stroke(); // On reset le shadowBlur
-
+                let r = ripples[i]; r.radius += 25; r.life -= 0.015;
+                ctx.beginPath(); ctx.arc(r.x, r.y, r.radius, 0, Math.PI * 2); ctx.strokeStyle = `rgba(0, 240, 255, ${r.life * 0.6})`; ctx.lineWidth = 5; ctx.stroke();
                 if (r.life <= 0) ripples.splice(i, 1);
             }
-
             requestAnimationFrame(animateGalactic);
         }
         animateGalactic();
